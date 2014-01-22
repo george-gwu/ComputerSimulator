@@ -1,0 +1,8 @@
+
+build/built-jar.properties
+
+build/*
+
+nbproject/genfiles.properties
+
+nbproject/private/private.properties
