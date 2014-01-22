@@ -6,3 +6,5 @@ build/*
 nbproject/genfiles.properties
 
 nbproject/private/private.properties
+
+nbproject/private/private.xml

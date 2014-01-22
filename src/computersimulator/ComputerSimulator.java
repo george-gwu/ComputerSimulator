@@ -1,6 +1,5 @@
 package computersimulator;
 
-import computersimulator.components.Unit;
 import javax.swing.SwingUtilities;
 import computersimulator.cpu.Computer;
 import computersimulator.gui.OperatorConsole;
