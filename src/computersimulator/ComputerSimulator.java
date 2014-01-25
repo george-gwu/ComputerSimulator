@@ -40,7 +40,7 @@ public class ComputerSimulator {
         000001 11 00 1 0 00110100
         */        
         Word example = Word.WordFromBinaryString("000001 11 00 1 0 00110100");
-        System.out.println("Raw Word Before Composition: "+example+"\n");              
+        System.out.println("Raw Word Before Decomposition: "+example+"\n");              
         
         Unit opcode = example.decomposeByOffset(0,5);
         System.out.println("OPCODE: "+opcode);                

@@ -90,6 +90,12 @@ public class Unit {
         return data;
     }
     
+    /**
+     * Decomposes a larger Unit and returns a smaller Unit by offset
+     * @param start Start Index
+     * @param stop  Stop Index
+     * @return Unit(Start to Stop)
+     */
     public Unit decomposeByOffset(int start, int stop){
         Integer[] digits = this.getBinaryArray();
         StringBuilder tempBinaryString = new StringBuilder();
@@ -104,15 +110,27 @@ public class Unit {
         
         return new Unit(binary.length(), intValue);        
     }
-    
-    
-    
-    public Unit decomposeByOffset(int index){
+
+    /**
+     * Extract out a single bit from a Unit and return a smaller Unit
+     * @param index
+     * @return Unit(index)
+     */
+    public Unit decomposeByIndex(int index){
         Integer[] digits = this.getBinaryArray();
         
         int intValue = Integer.parseInt(String.valueOf(digits[index]), 2);
         
         return new Unit(1, intValue);        
+    }
+
+    /** 
+     * Alias for decompose by index for cleaner code.
+     * @param index
+     * @return Unit(index)
+     */
+    public Unit decomposeByOffset(int index){       
+        return this.decomposeByIndex(index);       
     }
     
     
