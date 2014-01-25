@@ -1,5 +1,7 @@
 package computersimulator.components;
 
+import java.util.Arrays;
+
 /**
  * I'm not sure if this is the best way to store a word, but I figure we should
  * build a primitive class and add methods to it. I'm trying to figure out how 
@@ -28,17 +30,28 @@ public class Unit {
            
         }
         this.size = Size;
-        this.MIN_VALUE = (int)-(Math.pow(2,(Size-1)));
-        this.MAX_VALUE = (int)Math.pow(2,(Size-1))-1;        
+        
+        // Calculate 0xn for MIN_VALUE
+        char[] zeros = new char[Size];
+        Arrays.fill(zeros, '0');
+        this.MIN_VALUE = Integer.parseInt(new String(zeros),2);
+        
+        // Calculate 1xn for MAX_VALUE
+        char[] ones = new char[Size];
+        Arrays.fill(ones, '1');
+        this.MAX_VALUE = Integer.parseInt(new String(ones),2);        
+        
         this.setValue(Value);
     }
 
     /** 
-     * Creates a Unit from a Binary String
-     * @param binary Binary String
+     * Creates a Unit from a Binary String. This method allows for spacing which is trimmed for readability.
+     * @param binaryReadable Binary String
      * @return Unit 
      */
-    public static Unit UnitFromBinaryString(String binary){
+    public static Unit UnitFromBinaryString(String binaryReadable){              
+        String binary = binaryReadable.replace(" ", "");
+        
         int size = binary.length();
         int intValue = Integer.parseInt(binary, 2);
         
@@ -76,7 +89,33 @@ public class Unit {
     private Integer getValue() {
         return data;
     }
-
+    
+    public Unit decomposeByOffset(int start, int stop){
+        Integer[] digits = this.getBinaryArray();
+        StringBuilder tempBinaryString = new StringBuilder();
+        
+        for(int i=start; i<=stop;i++){
+            tempBinaryString.append(digits[i]);            
+        }
+        
+        String binary = tempBinaryString.toString();
+        
+        int intValue = Integer.parseInt(binary, 2);
+        
+        return new Unit(binary.length(), intValue);        
+    }
+    
+    
+    
+    public Unit decomposeByOffset(int index){
+        Integer[] digits = this.getBinaryArray();
+        
+        int intValue = Integer.parseInt(String.valueOf(digits[index]), 2);
+        
+        return new Unit(1, intValue);        
+    }
+    
+    
     /**
      *
      * @return Array of Bits (Only possible values are 1/0 despite integer storage)

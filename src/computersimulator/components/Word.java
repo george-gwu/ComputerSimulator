@@ -17,4 +17,25 @@ public class Word extends Unit {
         super(WORD_SIZE, value);
     }
     
+    
+    /** 
+     * Creates a Word from a Binary String. This method allows for spacing which is trimmed for readability.
+     * @param binaryReadable Binary String
+     * @return Word 
+     */
+    public static Word WordFromBinaryString(String binaryReadable){              
+        String binary = binaryReadable.replace(" ", "");
+        
+        if(binary.length()!=WORD_SIZE){
+            try {
+                throw new Exception("This isn't a Word. The size should be "+WORD_SIZE+", but instead was: "+Unit.UnitFromBinaryString(binaryReadable));
+            }catch(Exception unusedOnlyForNiceError){}
+            
+        }
+        
+        int intValue = Integer.parseInt(binary, 2);
+        return new Word(intValue);
+        
+    }    
+    
 }

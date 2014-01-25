@@ -1,5 +1,6 @@
 package computersimulator;
 
+import computersimulator.components.Word;
 import computersimulator.components.Unit;
 import javax.swing.SwingUtilities;
 import computersimulator.cpu.Computer;
@@ -28,13 +29,36 @@ public class ComputerSimulator {
          *  Question: Should this be instantiated by the I/O Controller, or does vice-versa?
          */
         
+             
+        /* 
+        Consider the LDR instruction which we did in class:
+        LDR r, x, address [,I]
+        A particular example is:	LDR, 3, 0, 52, I
+        which says “load R3 from address 54 indirect with no indexing”  
+        Let location 52 contain 100, and location 100 contain 1023
+        The format in binary looks like this:
+        000001 11 00 1 0 00110100
+        */        
+        Word example = Word.WordFromBinaryString("000001 11 00 1 0 00110100");
+        System.out.println("Raw Word Before Composition: "+example+"\n");              
         
-        // quick test of Unit superclass ability to convert to/from String
-        Unit test = new Unit(10, 5);
-        System.out.println("test: "+test);
+        Unit opcode = example.decomposeByOffset(0,5);
+        System.out.println("OPCODE: "+opcode);                
         
-        Unit test2 = Unit.UnitFromBinaryString(test.getBinaryString());
-        System.out.println("test2: "+test2);
+        Unit rfi1 = example.decomposeByOffset(6,7);
+        System.out.println("RFI1: "+rfi1);        
+        
+        Unit xfi1 = example.decomposeByOffset(8,9);
+        System.out.println("XFI1: "+xfi1);        
+      
+        Unit index = example.decomposeByOffset(10);
+        System.out.println("INDEX: "+index);        
+
+        Unit trace = example.decomposeByOffset(11);
+        System.out.println("TRACE: "+trace);        
+        
+        Unit address = example.decomposeByOffset(12,19);
+        System.out.println("ADDR: "+address);        
         
         
         
