@@ -1,5 +1,6 @@
 package computersimulator;
 
+import computersimulator.components.Unit;
 import javax.swing.SwingUtilities;
 import computersimulator.cpu.Computer;
 import computersimulator.gui.OperatorConsole;
@@ -26,6 +27,15 @@ public class ComputerSimulator {
          *      The card reader is implemented as a file. (via IO Controller?)
          *  Question: Should this be instantiated by the I/O Controller, or does vice-versa?
          */
+        
+        
+        // quick test of Unit superclass ability to convert to/from String
+        Unit test = new Unit(10, 5);
+        System.out.println("test: "+test);
+        
+        Unit test2 = Unit.UnitFromBinaryString(test.getBinaryString());
+        System.out.println("test2: "+test);
+        
         
         
         

@@ -22,7 +22,7 @@ public class Unit {
         this(Size,0);
     }
     
-    public Unit(int Size, int value){
+    public Unit(int Size, int Value){
         if(Size>32 || Size<1){
             throw new java.lang.ArithmeticException("Unit size valid range 1-32 ("+Size+")");
            
@@ -30,7 +30,19 @@ public class Unit {
         this.size = Size;
         this.MIN_VALUE = (int)-(Math.pow(2,(Size-1)));
         this.MAX_VALUE = (int)Math.pow(2,(Size-1))-1;        
-        this.setValue(value);
+        this.setValue(Value);
+    }
+
+    /** 
+     * Creates a Unit from a Binary String
+     * @param binary Binary String
+     * @return Unit 
+     */
+    public static Unit UnitFromBinaryString(String binary){
+        int size = binary.length();
+        int intValue = Integer.parseInt(binary, 2);
+        
+        return new Unit(size, intValue);       
     }
     
     /**
@@ -51,18 +63,25 @@ public class Unit {
             this.data = value;
         } else {
             throw new java.lang.ArithmeticException("{"+value+"} Out Of Range: ["+this.MIN_VALUE+" through "+this.MAX_VALUE+"]"); 
-            //@TODO: or overflow?
+            //@TODO: this is a great location to throw a special overflow exception which can be caught later
         }
     }
 
-    public Integer getValue() {
+    /**
+     * This method is probably unused outside this class due to the Integer storage type (why it is private).
+     * @return raw value as Integer
+     */
+    private Integer getValue() {
         return data;
-    }   
-    
-    
+    }
+
+    /**
+     *
+     * @return Array of Bits (Only possible values are 1/0 despite integer storage)
+     */
     public Integer[] getBinaryArray(){
         Integer[] digits = new Integer[this.size];
-        int x = this.data;
+        int x = this.getValue();
         for (int i = 0; i < this.size; ++i) {
             digits[this.size-i-1] = x & 0x1;  // mask of the lowest bit and assign it to the next-to-last
             x >>= 1; // Shift off that bit moving the next bit into place
@@ -71,6 +90,10 @@ public class Unit {
         return digits;  
     }
     
+    /**
+     *
+     * @return Binary representation as a String
+     */
     public String getBinaryString(){
         StringBuilder result = new StringBuilder();
         Integer[] arr = getBinaryArray();
@@ -82,7 +105,7 @@ public class Unit {
     
     @Override
     public String toString() {
-        return this.size+"-Bit Unit{" + "base10=" + this.data +",binary=" + this.getBinaryString() + '}';
+        return this.size+"-Bit Unit{" + "base10=" + this.getValue() +",binary=" + this.getBinaryString() + '}';
     }
     
 }
