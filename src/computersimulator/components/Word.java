@@ -26,11 +26,8 @@ public class Word extends Unit {
     public static Word WordFromBinaryString(String binaryReadable){              
         String binary = binaryReadable.replace(" ", "");
         
-        if(binary.length()!=WORD_SIZE){
-            try {
-                throw new Exception("This isn't a Word. The size should be "+WORD_SIZE+", but instead was: "+Unit.UnitFromBinaryString(binaryReadable));
-            }catch(Exception unusedOnlyForNiceError){}
-            
+        if(binary.length()!=WORD_SIZE){           
+            return null;            
         }
         
         int intValue = Integer.parseInt(binary, 2);
