@@ -34,7 +34,7 @@ public class ComputerSimulator {
         System.out.println("test: "+test);
         
         Unit test2 = Unit.UnitFromBinaryString(test.getBinaryString());
-        System.out.println("test2: "+test);
+        System.out.println("test2: "+test2);
         
         
         

@@ -66,6 +66,8 @@ public class Unit {
             //@TODO: this is a great location to throw a special overflow exception which can be caught later
         }
     }
+    
+    
 
     /**
      * This method is probably unused outside this class due to the Integer storage type (why it is private).
