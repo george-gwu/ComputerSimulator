@@ -33,27 +33,29 @@ public class Computer {
     
     private void memoryReadWriteTest(){
         
-        // Fetch (should be 0)
-        System.out.println("Fetching memory address 111. Should be 0 if first run");        
+        Unit addr = Unit.UnitFromBinaryString("111");
+        Word val = new Word(55);
+        // Fetch (should be 0)        
+        System.out.println("Fetching memory address "+addr.getBinaryString()+". Should be 0 if first run");        
         this.memory.clockCycle(); // make sure we're not busy
-        this.memory.setMAR(Unit.UnitFromBinaryString("111"));
+        this.memory.setMAR(addr);
         this.memory.clearMBR();   // wipe MBR for get
         this.memory.clockCycle(); // fetch        
         System.out.println("Result is: "+this.memory.getMBR());  
         
         
         // Set to 55
-        System.out.println("Setting M(111) to 55.");
+        System.out.println("Setting M("+addr.getBinaryString()+") to "+val.getValue()+".");
         this.memory.clockCycle(); // make sure we're not busy
-        this.memory.setMAR(Unit.UnitFromBinaryString("111"));
-        this.memory.setMBR(new Word(55));
+        this.memory.setMAR(addr);
+        this.memory.setMBR(val);
         this.memory.clockCycle();
         
         
         // Fetch(should be 55)
-        System.out.println("Fetching memory address 111. Should be 55 now");         
+        System.out.println("Fetching memory address "+addr.getBinaryString()+". Should be "+val.getValue()+" now");         
         this.memory.clockCycle(); // make sure we're not busy
-        this.memory.setMAR(Unit.UnitFromBinaryString("111"));
+        this.memory.setMAR(addr);
         this.memory.clearMBR();   // wipe MBR for get
         this.memory.clockCycle(); // fetch           
         System.out.println("Result is: "+this.memory.getMBR());  

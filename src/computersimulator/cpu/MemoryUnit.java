@@ -130,13 +130,10 @@ public class MemoryUnit {
     private void fetchStoreController(){
         switch(state){            
             case MemoryUnit.STATE_FETCH:
-                this.resetState(); // We had a chance to pick up the result            
-                break;
-            
             case MemoryUnit.STATE_STORE:
-                this.resetState();  // We had a chance to pick up the result                              
+                this.resetState(); // +1 cycles means we had a chance to pick up the result            
                 break;
-                
+                            
             case MemoryUnit.STATE_NONE:
             default:                
                 if(this.memoryAddressRegister!= null){
