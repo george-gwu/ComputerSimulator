@@ -17,6 +17,14 @@ public class Word extends Unit {
         super(WORD_SIZE, value);
     }
     
+    /**
+     * Copy Constructor
+     * @param c
+     */
+    public Word(Word c){
+        super((Unit)c);
+    }
+    
     
     /** 
      * Creates a Word from a Binary String. This method allows for spacing which is trimmed for readability.

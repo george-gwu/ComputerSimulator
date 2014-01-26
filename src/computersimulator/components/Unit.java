@@ -23,6 +23,7 @@ public class Unit {
     public Unit(int Size) {
         this(Size,0);
     }
+
     
     public Unit(int Size, int Value){
         if(Size>32 || Size<1){
@@ -43,6 +44,18 @@ public class Unit {
         
         this.setValue(Value);
     }
+    
+    
+    /**
+     * Copy constructor
+     * @param c
+     */
+    public Unit(Unit c){
+        this.data = c.data;
+        this.size = c.size;
+        this.MIN_VALUE = c.MIN_VALUE;
+        this.MAX_VALUE = c.MAX_VALUE;
+    }    
 
     /** 
      * Creates a Unit from a Binary String. This method allows for spacing which is trimmed for readability.
@@ -86,7 +99,7 @@ public class Unit {
      * This method is probably unused outside this class due to the Integer storage type (why it is private).
      * @return raw value as Integer
      */
-    private Integer getValue() {
+    public Integer getValue() {
         return data;
     }
     

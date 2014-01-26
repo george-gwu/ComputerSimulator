@@ -38,7 +38,6 @@ public class ControlUnit {
             this.xRegisters[x] = new Unit(13);
         }
                   
-        decodeTest();
         
     }
     
