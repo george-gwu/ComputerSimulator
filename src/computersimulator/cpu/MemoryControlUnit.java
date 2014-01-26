@@ -3,7 +3,7 @@ package computersimulator.cpu;
 import computersimulator.components.*;
 
 /**
- * MemoryUnit - MemoryUnit implements a single port memory. 
+ * MemoryControlUnit - MemoryControlUnit implements a single port memory. 
  * All memory elements need to be set to zero on power up.
  * In one cycle, it should accept an address from the MAR. It should then
  * accept a value in the MBR to be stored in memory on the next cycle or 
@@ -11,7 +11,7 @@ import computersimulator.components.*;
  * 
  * 
  */
-public class MemoryUnit {
+public class MemoryControlUnit {
     
     // Memory 2d Array 8 banks of 256 words each = 2048 addresses
     private final Word[][] memory;    
@@ -31,8 +31,8 @@ public class MemoryUnit {
     private final static int STATE_FETCH = 2;    
     
 
-    public MemoryUnit() {
-        memory = new Word[MemoryUnit.BANK_SIZE][MemoryUnit.BANK_CELLS];     
+    public MemoryControlUnit() {
+        memory = new Word[MemoryControlUnit.BANK_SIZE][MemoryControlUnit.BANK_CELLS];     
         initializeMemoryToZero(); // Upon powering up, set all elements of memory to zero
         
         resetRegisters();
@@ -45,11 +45,11 @@ public class MemoryUnit {
      */
     public boolean setMBR(Word dataWord){
         switch(state){            
-            case MemoryUnit.STATE_FETCH:     
-            case MemoryUnit.STATE_STORE:
+            case MemoryControlUnit.STATE_FETCH:     
+            case MemoryControlUnit.STATE_STORE:
                 return false; // We're currently busy, set fails.
                                 
-            case MemoryUnit.STATE_NONE:
+            case MemoryControlUnit.STATE_NONE:
             default:
                 
                 this.memoryBufferRegister = dataWord;
@@ -79,11 +79,11 @@ public class MemoryUnit {
      */    
     public boolean setMAR(Unit addressUnit){
         switch(state){            
-            case MemoryUnit.STATE_FETCH:     
-            case MemoryUnit.STATE_STORE:
+            case MemoryControlUnit.STATE_FETCH:     
+            case MemoryControlUnit.STATE_STORE:
                 return false; // We're currently busy, set fails.
                                 
-            case MemoryUnit.STATE_NONE:
+            case MemoryControlUnit.STATE_NONE:
             default:
                 
                 this.memoryAddressRegister = addressUnit;
@@ -98,11 +98,11 @@ public class MemoryUnit {
      */
     public boolean isBusy(){
         switch(state){            
-            case MemoryUnit.STATE_FETCH:     
-            case MemoryUnit.STATE_STORE:
+            case MemoryControlUnit.STATE_FETCH:     
+            case MemoryControlUnit.STATE_STORE:
                 return true;
                                 
-            case MemoryUnit.STATE_NONE:
+            case MemoryControlUnit.STATE_NONE:
             default:
                 return false;                         
         }    
@@ -128,19 +128,19 @@ public class MemoryUnit {
     
     private void fetchStoreController(){
         switch(state){            
-            case MemoryUnit.STATE_FETCH:
-            case MemoryUnit.STATE_STORE:
+            case MemoryControlUnit.STATE_FETCH:
+            case MemoryControlUnit.STATE_STORE:
                 this.resetState(); // +1 cycles means we had a chance to pick up the result            
                 break;
                             
-            case MemoryUnit.STATE_NONE:
+            case MemoryControlUnit.STATE_NONE:
             default:                
                 if(this.memoryAddressRegister!= null){
                     if(this.getMBR() == null){  // This is a fetch request
-                        this.state = MemoryUnit.STATE_FETCH;                        
+                        this.state = MemoryControlUnit.STATE_FETCH;                        
                         this.fetchAddressOperation();
                     } else { // This is a store request
-                        this.state = MemoryUnit.STATE_STORE;
+                        this.state = MemoryControlUnit.STATE_STORE;
                         this.storeAddressInMemoryOperation();                        
                     }
                 } // else no memory action requested
@@ -158,11 +158,11 @@ public class MemoryUnit {
         int address = this.memoryAddressRegister.getValue();
                 
         // Decode the Address in MAR
-        int bankIndex = (int)Math.floor((address/ MemoryUnit.BANK_SIZE));
-        int cellIndex = address % MemoryUnit.BANK_CELLS;
+        int bankIndex = (int)Math.floor((address/ MemoryControlUnit.BANK_SIZE));
+        int cellIndex = address % MemoryControlUnit.BANK_CELLS;
         
-        if(bankIndex > MemoryUnit.BANK_SIZE){
-            throw new Exception("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryUnit.BANK_SIZE+"]["+MemoryUnit.BANK_CELLS+"])");
+        if(bankIndex > MemoryControlUnit.BANK_SIZE){
+            throw new Exception("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
         }
 
         
@@ -224,7 +224,7 @@ public class MemoryUnit {
      * Reset state
      */    
     private void resetState(){   
-        this.state = MemoryUnit.STATE_NONE;
+        this.state = MemoryControlUnit.STATE_NONE;
     }    
 
     /**

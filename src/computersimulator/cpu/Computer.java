@@ -10,12 +10,12 @@ import computersimulator.components.*;
 public class Computer {
     
     private CentralProcessingUnit cpu;
-    private MemoryUnit memory;
+    private MemoryControlUnit memory;
     private InputOutputController io;
 
     public Computer() {
         cpu = new CentralProcessingUnit(); // contains ALU,  ControlUnit      
-        memory = new MemoryUnit();  
+        memory = new MemoryControlUnit();  
         io = new InputOutputController();
         
         this.memoryReadWriteTest();
