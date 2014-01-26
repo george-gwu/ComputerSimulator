@@ -28,7 +28,7 @@ public class Computer {
     }   
     
     
-    private void clockCycle(){
+    public void clockCycle(){
             this.cpu.clockCycle();
             this.memory.clockCycle();
             this.io.clockCycle();                
