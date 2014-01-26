@@ -16,8 +16,12 @@ public class Computer {
         memory = new MemoryUnit();  
         io = new InputOutputController();
         
-
+        // do {
+            //cpu.clockCycle();
+            memory.clockCycle();
+            //io.clockCycle()l
         
+        // while (running);
         
     }    
     
