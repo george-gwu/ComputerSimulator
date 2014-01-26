@@ -22,13 +22,17 @@ public class Computer {
         
                 
         // do {
-            //cpu.clockCycle();
-            //memory.clockCycle();
-            //io.clockCycle()l
-        
+            this.clockCycle();
         // while (running);
         
     }   
+    
+    
+    private void clockCycle(){
+            this.cpu.clockCycle();
+            this.memory.clockCycle();
+            this.io.clockCycle();                
+    }
     
     
     private void memoryReadWriteTest(){
@@ -37,27 +41,27 @@ public class Computer {
         Word val = new Word(55);
         // Fetch (should be 0)        
         System.out.println("Fetching memory address "+addr.getBinaryString()+". Should be 0 if first run");        
-        this.memory.clockCycle(); // make sure we're not busy
+        this.clockCycle(); // make sure we're not busy
         this.memory.setMAR(addr);
         this.memory.clearMBR();   // wipe MBR for get
-        this.memory.clockCycle(); // fetch        
+        this.clockCycle(); // fetch        
         System.out.println("Result is: "+this.memory.getMBR());  
         
         
         // Set to 55
         System.out.println("Setting M("+addr.getBinaryString()+") to "+val.getValue()+".");
-        this.memory.clockCycle(); // make sure we're not busy
+        this.clockCycle(); // make sure we're not busy
         this.memory.setMAR(addr);
         this.memory.setMBR(val);
-        this.memory.clockCycle();
+        this.clockCycle();
         
         
         // Fetch(should be 55)
         System.out.println("Fetching memory address "+addr.getBinaryString()+". Should be "+val.getValue()+" now");         
-        this.memory.clockCycle(); // make sure we're not busy
+        this.clockCycle(); // make sure we're not busy
         this.memory.setMAR(addr);
         this.memory.clearMBR();   // wipe MBR for get
-        this.memory.clockCycle(); // fetch           
+        this.clockCycle(); // fetch           
         System.out.println("Result is: "+this.memory.getMBR());  
               
         

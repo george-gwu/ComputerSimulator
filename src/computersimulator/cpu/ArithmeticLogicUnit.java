@@ -17,4 +17,12 @@ public class ArithmeticLogicUnit {
     }
     
     
+    /**
+     * Clock cycle. This is the main function which causes the ALU to do work.
+     *  This serves as a publicly accessible method, but delegates to other methods.
+     */
+    public void clockCycle(){
+
+    }  
+    
 }
