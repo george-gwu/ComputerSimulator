@@ -39,6 +39,37 @@ public class MemoryControlUnit {
     }
     
     /**
+     * Clock cycle. This is the main function which causes the Memory
+     * Unit to do work. This serves as a publicly accessible method, but delegates
+     * to the fetch/store controller.
+     */
+    public void clockCycle(){
+        this.fetchStoreController();                
+    }
+    
+    private void fetchStoreController(){
+        switch(state){            
+            case MemoryControlUnit.STATE_FETCH:
+            case MemoryControlUnit.STATE_STORE:
+                this.resetState(); // +1 cycles means we had a chance to pick up the result            
+                break;
+                            
+            case MemoryControlUnit.STATE_NONE:
+            default:                
+                if(this.memoryAddressRegister!= null){
+                    if(this.getMBR() == null){  // This is a fetch request
+                        this.state = MemoryControlUnit.STATE_FETCH;                        
+                        this.fetchAddressOperation();
+                    } else { // This is a store request
+                        this.state = MemoryControlUnit.STATE_STORE;
+                        this.storeAddressInMemoryOperation();                        
+                    }
+                } // else no memory action requested
+                break;
+        }
+    }    
+    
+    /**
      * Set the Memory Buffer Register (used in store)
      * @param dataWord The value to store
      * @return TRUE/FALSE if successful
@@ -90,7 +121,16 @@ public class MemoryControlUnit {
                 return true;                              
         }         
         
+    }   
+
+    /**
+     *
+     * @return memoryAddressRegister
+     */
+    public Unit getMAR(){
+        return this.memoryAddressRegister;
     }
+    
     
     /**
      * Check to see if we're mid-operation this clock cycle
@@ -108,45 +148,7 @@ public class MemoryControlUnit {
         }    
     }
     
-    /**
-     *
-     * @return memoryAddressRegister
-     */
-    public Unit getMAR(){
-        return this.memoryAddressRegister;
-    }
-    
-    
-    /**
-     * Clock cycle. This is the main function which causes the Memory
-     * Unit to do work. This serves as a publicly accessible method, but delegates
-     * to the fetch/store controller.
-     */
-    public void clockCycle(){
-        this.fetchStoreController();                
-    }
-    
-    private void fetchStoreController(){
-        switch(state){            
-            case MemoryControlUnit.STATE_FETCH:
-            case MemoryControlUnit.STATE_STORE:
-                this.resetState(); // +1 cycles means we had a chance to pick up the result            
-                break;
-                            
-            case MemoryControlUnit.STATE_NONE:
-            default:                
-                if(this.memoryAddressRegister!= null){
-                    if(this.getMBR() == null){  // This is a fetch request
-                        this.state = MemoryControlUnit.STATE_FETCH;                        
-                        this.fetchAddressOperation();
-                    } else { // This is a store request
-                        this.state = MemoryControlUnit.STATE_STORE;
-                        this.storeAddressInMemoryOperation();                        
-                    }
-                } // else no memory action requested
-                break;
-        }
-    }
+       
     
     /**
      * Calculates relative address for memory location from MAR
