@@ -157,13 +157,18 @@ public class MemoryUnit {
      * @TODO: 8191 words are addressable via MAR despite only 2048 exist. (see pg 16)... means we need virtual memory?
      * @return Array{bankIndex,cellIndex}
      */
-    private int[] calculateMemoryAddressFromMAR(){
+    private int[] calculateMemoryAddressFromMAR() throws Exception {
         // Load the address in MAR
         int address = this.memoryAddressRegister.getValue();
                 
         // Decode the Address in MAR
         int bankIndex = (int)Math.floor((address/ MemoryUnit.BANK_SIZE));
         int cellIndex = address % MemoryUnit.BANK_CELLS;
+        
+        if(bankIndex > MemoryUnit.BANK_SIZE){
+            throw new Exception("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryUnit.BANK_SIZE+"]["+MemoryUnit.BANK_CELLS+"])");
+        }
+
         
         // Return the result index array
         int[] result = {bankIndex,cellIndex};        
@@ -177,15 +182,15 @@ public class MemoryUnit {
      * Private because it is called by clockCycle.
      */    
     private void fetchAddressOperation(){
-        // Load and Decode the Address in MAR
-        int[] addr = this.calculateMemoryAddressFromMAR();
-        
-        // Copy the contents of that memory location into the MBR    
         try {
+            // Load and Decode the Address in MAR
+            int[] addr = this.calculateMemoryAddressFromMAR();
+        
+            // Copy the contents of that memory location into the MBR            
             this.memoryBufferRegister = new Word(this.memory[addr[0]][addr[1]]);
         } catch(Exception e){
             //@TODO: Handle bad address (virtual memory?)
-            System.out.println("Bad Address: "+this.memoryAddressRegister+" -> memory["+addr[0]+"]["+addr[1]+"]");
+            System.out.println("Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
         }
         
         
@@ -196,16 +201,16 @@ public class MemoryUnit {
      * the location specified by MAR.
      * Private because it is called by clockCycle.
      */
-    private void storeAddressInMemoryOperation(){        
-        // Load and Decode the Address in MAR
-        int[] addr = this.calculateMemoryAddressFromMAR();
-        
-        //Copy the value from MDR to Memory                
-        try {
+    private void storeAddressInMemoryOperation(){   
+        try {        
+            // Load and Decode the Address in MAR
+            int[] addr = this.calculateMemoryAddressFromMAR();
+
+            //Copy the value from MDR to Memory                
             this.memory[addr[0]][addr[1]] = new Word(this.memoryBufferRegister);
         } catch(Exception e){
             //@TODO: Handle bad address (virtual memory?)
-            System.out.println("Bad Address: "+this.memoryAddressRegister+" -> memory["+addr[0]+"]["+addr[1]+"]");
+            System.out.println("Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
         }                
     }
     
