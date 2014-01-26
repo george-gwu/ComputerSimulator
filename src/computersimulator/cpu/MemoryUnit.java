@@ -233,7 +233,7 @@ public class MemoryUnit {
      * NOTE: Final because it is called in the constructor.
      */   
     private void initializeMemoryToZero(){
-        for (Word[] bank : memory) {
+        for (Word[] bank : this.memory) {
             for (int i = 0; i < bank.length; i++) {
                 bank[i] = new Word(0); // set to zero
             }
