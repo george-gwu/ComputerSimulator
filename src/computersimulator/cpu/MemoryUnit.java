@@ -1,7 +1,6 @@
 package computersimulator.cpu;
 
-import computersimulator.components.Unit;
-import computersimulator.components.Word;
+import computersimulator.components.*;
 
 /**
  * MemoryUnit - MemoryUnit implements a single port memory. 
@@ -15,7 +14,7 @@ import computersimulator.components.Word;
 public class MemoryUnit {
     
     // Memory 2d Array 8 banks of 256 words each = 2048 addresses
-    private Word[][] memory;    
+    private final Word[][] memory;    
     private final static int BANK_SIZE = 8;
     private final static int BANK_CELLS = 256;
     
