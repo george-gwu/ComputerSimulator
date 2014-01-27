@@ -70,6 +70,7 @@ public class SwitchesComposite extends JFrame {
         // add button
         p.add(b);
         f.add(p, BorderLayout.NORTH);
+        f.setVisible(true);
        
     }
     
