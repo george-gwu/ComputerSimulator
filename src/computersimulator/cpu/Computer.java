@@ -20,10 +20,6 @@ public class Computer {
         
         this.instructionCycleTest();
         
-                
-        for(int i=0;i<7;i++){
-            this.clockCycle();
-        }
         // do {
         //    this.clockCycle();
         // while (running);
@@ -44,6 +40,9 @@ public class Computer {
         // set PC to 1111
         cpu.getControlUnit().setPC(Unit.UnitFromBinaryString("1111"));
         
+        for(int i=0;i<7;i++){
+            this.clockCycle();
+        }
         
     }
     
