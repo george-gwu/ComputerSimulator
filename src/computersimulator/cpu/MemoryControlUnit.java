@@ -173,6 +173,22 @@ public class MemoryControlUnit {
         return result;
     }
     
+    public Word engineerFetchByMemoryLocation(Unit address){
+        // Decode the Address
+        int bankIndex = (int)Math.floor((address.getValue() / MemoryControlUnit.BANK_SIZE));
+        int cellIndex = address.getValue() % MemoryControlUnit.BANK_CELLS;        
+        
+        return new Word(this.memory[bankIndex][cellIndex]);
+    }
+    
+    public void engineerSetMemoryLocation(Unit address, Word value){
+         // Decode the Address
+        int bankIndex = (int)Math.floor((address.getValue() / MemoryControlUnit.BANK_SIZE));
+        int cellIndex = address.getValue() % MemoryControlUnit.BANK_CELLS;        
+        
+        this.memory[bankIndex][cellIndex] = value;
+    }
+    
     
     /**
      * fetchAddressOperation - This fetches an address specified by MAR, and

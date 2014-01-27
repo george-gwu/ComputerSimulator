@@ -6,13 +6,17 @@ package computersimulator.cpu;
  */
 public class CentralProcessingUnit {
     
+    private ControlUnit controlUnit;
     private ArithmeticLogicUnit alu;
-    private ControlUnit control;
+    private MemoryControlUnit memory;
     
 
-    public CentralProcessingUnit() {        
+    public CentralProcessingUnit(MemoryControlUnit mem) {        
+        this.memory = mem;
+        
+        controlUnit = new ControlUnit(this.memory);   
         alu = new ArithmeticLogicUnit();
-        control = new ControlUnit();   
+        
     }
     
     /**
@@ -21,8 +25,21 @@ public class CentralProcessingUnit {
      * to the ALU/ControlUnit.
      */
     public void clockCycle(){
-        this.control.clockCycle();
+        this.controlUnit.clockCycle();
         this.alu.clockCycle();
-    }    
+    }           
+
+    public ControlUnit getControlUnit() {
+        return controlUnit;
+    }
+
+    public ArithmeticLogicUnit getALU() {
+        return alu;
+    }
+    
+   
+    
     
 }
+
+
