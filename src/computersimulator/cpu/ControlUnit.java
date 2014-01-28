@@ -339,6 +339,7 @@ public class ControlUnit implements IClockCycle {
                   System.out.println("Micro-8: MDR -> RF(RFI)");
                   int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
                   
+                  // (@TODO: this is wrong because the memory read hasn't happened yet. see note above)
                   this.xRegisters[RFI] = this.memory.getMBR();
                   
                   System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
