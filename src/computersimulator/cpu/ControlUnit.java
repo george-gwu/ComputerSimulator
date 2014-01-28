@@ -121,10 +121,8 @@ public class ControlUnit implements IClockCycle {
 
                 // Micro-2: c(pc) + 1 -> PC
                 System.out.println("Micro-2: c(pc) + 1 -> PC");
-                //@TODO: Convert this to binary math. For now, this is just a hack fix.
-                int temp = this.getPC().getValue();
-                temp++;
-                this.setPC(new Unit(13,temp));
+                                
+                this.getPC().add(new Unit(13, 1));
                 System.out.println("-- PC: "+this.getPC());
 
                 // Set up for next major state
@@ -284,7 +282,7 @@ public class ControlUnit implements IClockCycle {
     }
     
     public Unit getPC() {
-        return programCounter;
+        return this.programCounter;
     }
 
     public void setPC(Unit programCounter) {

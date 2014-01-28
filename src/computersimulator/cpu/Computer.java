@@ -38,7 +38,7 @@ public class Computer implements IClockCycle {
         // fill memory at 1111 with instruction
         this.memory.engineerSetMemoryLocation(Unit.UnitFromBinaryString("1111"), Word.WordFromBinaryString("000001 11 00 1 0 00110100"));
         // set PC to 1111
-        cpu.getControlUnit().setPC(Unit.UnitFromBinaryString("1111"));
+        cpu.getControlUnit().setPC(Unit.UnitFromBinaryString("0000000001111"));
         
         for(int i=0;i<7;i++){
             this.clockCycle();

@@ -93,6 +93,25 @@ public class Unit {
         }
     }
     
+    /**
+     *
+     * @param addee The Unit to add to this Unit. (ie. EAX = EAX + addee)
+     */
+    public void add(Unit addee){
+        // @TODO: This needs to implement twos complement math. 
+        // convert this and addee to binary, run twos complement addition, then add
+        // this should be modifying the return, which creates this:
+        // EAX = EAX + EBX(addee)
+        
+        //@TODO This also needs to handle type conversion ie. adding a 13 bit value to a 20 bit
+        //@TODO This also needs to be tested for negative numbers
+        
+                   
+        //@TODO This is the hack fix.. Convert this.       
+        int combined = (this.getValue() + addee.getValue());
+        this.setValue(combined);                
+    }
+    
     
 
     /**
@@ -177,7 +196,7 @@ public class Unit {
     
     @Override
     public String toString() {
-        return this.size+"-Bit Unit{" + "base10=" + this.getValue() +",binary=" + this.getBinaryString() + '}';
+        return this.size+"-Bit Unit{" + "base10=" + this.getValue() +" (v:["+this.MIN_VALUE+"to"+this.MAX_VALUE+"]),binary=" + this.getBinaryString() + '}';
     }
     
 }
