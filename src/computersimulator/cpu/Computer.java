@@ -18,34 +18,32 @@ public class Computer implements IClockCycle {
         cpu = new CentralProcessingUnit(memory); // contains ALU,  ControlUnit      
         io = new InputOutputController();
         
-        this.instructionCycleTest();
+        // Set Memory location 15 to the instruction LDR
+        this.memory.engineerSetMemoryLocation(new Unit(13, 15), Word.WordFromBinaryString("000001 11 00 1 0 00110100"));
         
-        // do {
-        //    this.clockCycle();
-        // while (running);
+        // TEAM:  You can add more test instructions here. add a 16, then 17, then 18, etc.
+        //this.memory.engineerSetMemoryLocation(new Unit(13, 16), Word.WordFromBinaryString("000001 11 00 1 0 00110100"));
+        
+        // set PC to 15 for testing, this will increment until no more instructions exist, then crash
+        cpu.getControlUnit().setPC(new Unit(13,15));
+        
+        boolean running = true; // @TODO hook this to IPL button
+        
+        do {
+            this.clockCycle();
+        } while(running==true);
         
     }   
     
     
     @Override
-    public void clockCycle(){
+    public final void clockCycle(){
+            System.out.println("-------- CLOCK CYCLE --------");
             this.cpu.clockCycle();
             this.memory.clockCycle();
             this.io.clockCycle();                
     }
-    
-    private void instructionCycleTest(){
         
-        // fill memory at 1111 with instruction
-        this.memory.engineerSetMemoryLocation(Unit.UnitFromBinaryString("1111"), Word.WordFromBinaryString("000001 11 00 1 0 00110100"));
-        // set PC to 1111
-        cpu.getControlUnit().setPC(Unit.UnitFromBinaryString("0000000001111"));
-        
-        for(int i=0;i<7;i++){
-            this.clockCycle();
-        }
-        
-    }
     
     
     private void memoryReadWriteTest(){

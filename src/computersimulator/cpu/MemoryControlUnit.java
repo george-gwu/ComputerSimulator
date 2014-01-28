@@ -28,7 +28,9 @@ public class MemoryControlUnit implements IClockCycle {
     private int state;
     private final static int STATE_NONE = 0;    
     private final static int STATE_STORE = 1;    
-    private final static int STATE_FETCH = 2;    
+    private final static int STATE_FETCH = 2;   
+    private final static int STATE_PRE_STORE = 3;
+    private final static int STATE_PRE_FETCH = 4;
     
 
     public MemoryControlUnit() {
@@ -54,18 +56,22 @@ public class MemoryControlUnit implements IClockCycle {
             case MemoryControlUnit.STATE_STORE:
                 this.resetState(); // +1 cycles means we had a chance to pick up the result            
                 break;
+                
+            case MemoryControlUnit.STATE_PRE_STORE:
+                this.state = MemoryControlUnit.STATE_STORE;
+                this.storeAddressInMemoryOperation();   
+                
+                break;
+                
+            case MemoryControlUnit.STATE_PRE_FETCH:               
+                this.state = MemoryControlUnit.STATE_FETCH;                        
+                this.fetchAddressOperation();
+
+                break;
                             
             case MemoryControlUnit.STATE_NONE:
-            default:                
-                if(this.memoryAddressRegister!= null){
-                    if(this.getMBR() == null){  // This is a fetch request
-                        this.state = MemoryControlUnit.STATE_FETCH;                        
-                        this.fetchAddressOperation();
-                    } else { // This is a store request
-                        this.state = MemoryControlUnit.STATE_STORE;
-                        this.storeAddressInMemoryOperation();                        
-                    }
-                } // else no memory action requested
+            default: // no memory action requested            
+                
                 break;
         }
     }    
@@ -85,6 +91,7 @@ public class MemoryControlUnit implements IClockCycle {
             default:
                 
                 this.memoryBufferRegister = dataWord;
+                this.state = MemoryControlUnit.STATE_PRE_STORE;
                 return true;                              
         }        
     }
@@ -117,7 +124,7 @@ public class MemoryControlUnit implements IClockCycle {
                                 
             case MemoryControlUnit.STATE_NONE:
             default:
-                
+                this.state = MemoryControlUnit.STATE_PRE_FETCH;
                 this.memoryAddressRegister = addressUnit;
                 return true;                              
         }         
