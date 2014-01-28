@@ -6,7 +6,7 @@ import computersimulator.components.Unit;
  *
  * @author george
  */
-public class ArithmeticLogicUnit {
+public class ArithmeticLogicUnit implements IClockCycle {
     
     //CC	4 bits	Condition Code: set when arithmetic/logical operations are executed; it has four 1-bit elements: overflow, underflow, division by zero, equal-or-not. They may be referenced as cc(1), cc(2), cc(3), cc(4). Or by the names OVERFLOW, UNDERFLOW, DIVZERO, EQUALORNOT
     private Unit conditionCode;

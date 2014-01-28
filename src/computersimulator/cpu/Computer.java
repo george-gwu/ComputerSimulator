@@ -7,7 +7,7 @@ import computersimulator.components.*;
  *
  * @author george
  */
-public class Computer {
+public class Computer implements IClockCycle {
     
     private CentralProcessingUnit cpu;
     private MemoryControlUnit memory;

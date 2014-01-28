@@ -6,7 +6,7 @@ package computersimulator.cpu;
  * console printer and a pane that simulates a console keyboard.
  * @author george
  */
-public class InputOutputController {
+public class InputOutputController implements IClockCycle {
 
     public InputOutputController() {
         

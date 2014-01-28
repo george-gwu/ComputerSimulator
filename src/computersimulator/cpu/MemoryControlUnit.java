@@ -11,7 +11,7 @@ import computersimulator.components.*;
  * 
  * 
  */
-public class MemoryControlUnit {
+public class MemoryControlUnit implements IClockCycle {
     
     // Memory 2d Array 8 banks of 256 words each = 2048 addresses
     private final Word[][] memory;    

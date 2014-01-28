@@ -11,7 +11,7 @@ import java.util.HashMap;
  *   I/O controllers.
  * @author george
  */
-public class ControlUnit {
+public class ControlUnit implements IClockCycle {
 
     // PC	13 bits	Program Counter: address of next instruction to be executed
     private Unit programCounter;

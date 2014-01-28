@@ -4,7 +4,7 @@ package computersimulator.cpu;
  *
  * @author george
  */
-public class CentralProcessingUnit {
+public class CentralProcessingUnit implements IClockCycle {
     
     private ControlUnit controlUnit;
     private ArithmeticLogicUnit alu;
