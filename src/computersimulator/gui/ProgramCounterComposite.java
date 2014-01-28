@@ -13,28 +13,31 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 /**
- * Program Counter Composite for creating and setting states in labels based on
- * passed instructions
+ * Program Counter Composite/component
  * 
  * @author pawel
  */
 public class ProgramCounterComposite extends JFrame {
-    private final int numOfPcLabels = 9;
-    private final JLabel [] pcLabels = new JLabel[numOfPcLabels];
-    int [] a = new int[10];
     private JPanel p;
     private JButton b;
     private JFrame f;
     private final Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
         
-    public ProgramCounterComposite() {
-        createProgramCounterComponent();
+    /**
+     * Constructor
+     * @param n number of labels
+     */
+    public ProgramCounterComposite(int n) {
+        createProgramCounterComponent(n);
     }
 
-   /**
-     * Create PC Component
+    /**
+     * Create Program Counter Component with n labels
+     * @param n number of labels
+     * @return returns labels
      */
-    public void createProgramCounterComponent() {
+    public JLabel[] createProgramCounterComponent(int n) {
+        final JLabel [] pcLabels = new JLabel[n];
         f = new JFrame("PC Component");
         f.setVisible(true);
         f.setSize(850, 200);
@@ -44,7 +47,7 @@ public class ProgramCounterComposite extends JFrame {
         p.setBackground(Color.WHITE);
         b = new JButton("SET STATUS");
         
-        for (int i = 0; i < numOfPcLabels; i++) {
+        for (int i = 0; i < n; i++) {
             pcLabels[i] = new JLabel();
             pcLabels[i].setBorder(border);
             pcLabels[i].setOpaque(true);
@@ -55,35 +58,40 @@ public class ProgramCounterComposite extends JFrame {
         p.add(b);
         f.add(p, BorderLayout.NORTH);
         f.setVisible(true);
-        
-        
+
         b.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    setPcStatus("000000111");
+                    setProgramCounterComponent(pcLabels, "000000111");
                 }
-            });
-        }
+        });
+        return pcLabels;
+    }
     
     /**
      * Set program counter status based on instruction passed 
-     * @param instruction current instruction that is passed
+     * @param labels instruction current instruction that is passed
+     * @param instruction instruction to be passed i.e.: 000000111
      */
-    public void setPcStatus(String instruction) {
+    public void setProgramCounterComponent(JLabel[] labels, String instruction) {
         for (int i = 0; i < instruction.length(); i++) {
-            
             String curr = instruction.charAt(i) + "";
             
             if (curr.equals("1")) {
-                pcLabels[i].setBackground(Color.red);
+                labels[i].setBackground(Color.red);
             }    
             else if (curr.equals("0")) {
-                pcLabels[i].setOpaque(true);
+                labels[i].setOpaque(true);
             }
         }
     }
 
+    /**
+     * main method
+     * @param args 
+     */
     public static void main(String[] args) {
-        new ProgramCounterComposite();
+        int numberOfLabels = 9;
+        new ProgramCounterComposite(numberOfLabels);
     }
 }
