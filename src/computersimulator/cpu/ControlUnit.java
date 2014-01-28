@@ -313,7 +313,7 @@ public class ControlUnit implements IClockCycle {
      */
     private void executeOpcodeLDR(){
         
-        for(int i=0; i<2;i++){
+        for(int i=0; i<=2;i++){
             switch(i){
                 case 0:
                   // Micro-5: Compute EA                                
@@ -330,7 +330,7 @@ public class ControlUnit implements IClockCycle {
               case 1:
                   // Micro-7: M(MAR) -> MBR
                   System.out.println("Micro-7: M(MAR) -> MBR");
-                  // do nothing, done by memory
+                  // do nothing, done by memory  (@TODO: this is occurring delayed to the bug of this for loop)
                   this.microState=3;
                   break;
 
@@ -338,9 +338,12 @@ public class ControlUnit implements IClockCycle {
                   // Micro-8: MDR -> RF(RFI)   
                   System.out.println("Micro-8: MDR -> RF(RFI)");
                   int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
-                  System.out.println("-- rfI: "+RFI);
+                  
                   this.xRegisters[RFI] = this.memory.getMBR();
-                  System.out.println("-- Value of EA: "+this.memory.getMBR());
+                  
+                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                  System.out.println("COMPLETED INSTRUCTION: LDR - rfi["+RFI+"] is now: "+ this.memory.getMBR());
+                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                   break;
             }
         }
