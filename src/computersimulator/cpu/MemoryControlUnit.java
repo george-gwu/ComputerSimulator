@@ -202,9 +202,10 @@ public class MemoryControlUnit implements IClockCycle {
         
             // Copy the contents of that memory location into the MBR            
             this.memoryBufferRegister = new Word(this.memory[addr[0]][addr[1]]);
+            System.out.println("-- Fetch MAR("+this.memoryAddressRegister+"): "+this.memoryBufferRegister);
         } catch(Exception e){
             //@TODO: Handle bad address (virtual memory?)
-            System.out.println("Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
+            System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
         }
         
         
@@ -222,9 +223,10 @@ public class MemoryControlUnit implements IClockCycle {
 
             //Copy the value from MDR to Memory                
             this.memory[addr[0]][addr[1]] = new Word(this.memoryBufferRegister);
+            System.out.println("-- Set MAR("+this.memoryAddressRegister+"): "+this.memoryBufferRegister);
         } catch(Exception e){
             //@TODO: Handle bad address (virtual memory?)
-            System.out.println("Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
+            System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
         }                
     }
     

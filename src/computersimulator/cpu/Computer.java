@@ -27,6 +27,7 @@ public class Computer implements IClockCycle {
     }   
     
     
+    @Override
     public void clockCycle(){
             this.cpu.clockCycle();
             this.memory.clockCycle();
