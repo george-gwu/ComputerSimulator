@@ -196,7 +196,7 @@ public class Unit {
     
     @Override
     public String toString() {
-        return this.size+"-Bit Unit{" + "base10=" + this.getValue() +" (v:["+this.MIN_VALUE+"to"+this.MAX_VALUE+"]),binary=" + this.getBinaryString() + '}';
+        return this.size+"-Bit Unit{" + "b10=" + this.getValue() +" (v:["+this.MIN_VALUE+"to"+this.MAX_VALUE+"]), b2=" + this.getBinaryString() + '}';
     }
     
 }
