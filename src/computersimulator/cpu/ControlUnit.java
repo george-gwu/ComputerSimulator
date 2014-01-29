@@ -344,7 +344,7 @@ public class ControlUnit implements IClockCycle {
 
           case 2:
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: MBR- "+ this.memory.getMBR());
+              System.out.println("COMPLETED INSTRUCTION: STR - MBR: "+ this.memory.getMBR());
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               
               //Signal Completion
