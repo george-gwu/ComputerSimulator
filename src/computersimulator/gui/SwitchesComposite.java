@@ -1,12 +1,11 @@
 package computersimulator.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 /**
@@ -14,10 +13,10 @@ import javax.swing.JPanel;
  * 
  * @author pawel
  */
-public class SwitchesComposite extends JFrame {
+public class SwitchesComposite extends JPanel {
     private JPanel p;
     private JButton b;
-    private JFrame f;
+    private JCheckBox[] switches; 
     
     /**
      * Constructor
@@ -33,13 +32,9 @@ public class SwitchesComposite extends JFrame {
      * @return returns check boxes
      */
     public JCheckBox[] createSwitchesComponent(int n) {
-        final JCheckBox[] switches = new JCheckBox[n];
-        f = new JFrame("Switches Component");
-        f.setVisible(true);
-        f.setSize(850, 200);
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        switches = new JCheckBox[n];
         
-        p = new JPanel();
+        p = new JPanel();           
         p.setBackground(Color.GRAY);
         b = new JButton("START");
         
@@ -49,17 +44,15 @@ public class SwitchesComposite extends JFrame {
             p.add(switches[i]);
         }
         
+        // add listener to the button
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Selected state: " + getSwitchesComponent(switches));
+                System.out.println("Selected state: " + getSwitchesComponent());
             }
         });
-        // add button
+        // add button to panel
         p.add(b);
-        f.add(p, BorderLayout.NORTH);
-        f.setVisible(true);
-        
         return switches;
     }
     
@@ -68,7 +61,12 @@ public class SwitchesComposite extends JFrame {
      * @param switches
      * @return the status of Switches
      */
-    public String getSwitchesComponent(JCheckBox[] switches) {
+    public String getSwitchesComponent() {
+        if (switches == null) {
+            throw new RuntimeException("please make sure to initialize "
+                        + "labels in Switches");
+        }
+        
         StringBuilder code = new StringBuilder("");
         
         for (int i = 0; i < switches.length; i++) {
@@ -82,10 +80,9 @@ public class SwitchesComposite extends JFrame {
     }
 
     /**
-     * main method
-     * @param args 
+     * @return panel instance
      */
-    public static void main(String[] args) {
-        new SwitchesComposite(20);      // create 20 switches (checkboxes)
+    public JComponent getGUI() {
+        return p;
     }
 }

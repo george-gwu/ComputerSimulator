@@ -1,13 +1,12 @@
 package computersimulator.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
@@ -17,12 +16,16 @@ import javax.swing.border.Border;
  * 
  * @author pawel
  */
-public class ProgramCounterComposite extends JFrame {
+public class ProgramCounterComposite extends JPanel {
     private JPanel p;
     private JButton b;
-    private JFrame f;
+    private JButton r;
+    private JLabel [] pcLabels;
     private final Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
-        
+    
+    public ProgramCounterComposite() {
+    }    
+    
     /**
      * Constructor
      * @param n number of labels
@@ -37,15 +40,11 @@ public class ProgramCounterComposite extends JFrame {
      * @return returns labels
      */
     public JLabel[] createProgramCounterComponent(int n) {
-        final JLabel [] pcLabels = new JLabel[n];
-        f = new JFrame("PC Component");
-        f.setVisible(true);
-        f.setSize(850, 200);
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        pcLabels = new JLabel[n];
         p = new JPanel();
         p.setBackground(Color.WHITE);
         b = new JButton("SET STATUS");
+        r = new JButton("RESET STATUS");
         
         for (int i = 0; i < n; i++) {
             pcLabels[i] = new JLabel();
@@ -56,42 +55,49 @@ public class ProgramCounterComposite extends JFrame {
         }
         
         p.add(b);
-        f.add(p, BorderLayout.NORTH);
-        f.setVisible(true);
+        p.add(r);
 
         b.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    setProgramCounterComponent(pcLabels, "000000111");
+                    setProgramCounterComponent("101010111");
                 }
         });
+         r.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    setProgramCounterComponent("000000000");
+                }
+        });
+
         return pcLabels;
     }
     
     /**
      * Set program counter status based on instruction passed 
-     * @param labels instruction current instruction that is passed
      * @param instruction instruction to be passed i.e.: 000000111
      */
-    public void setProgramCounterComponent(JLabel[] labels, String instruction) {
+     public void setProgramCounterComponent(String instruction) {
         for (int i = 0; i < instruction.length(); i++) {
+            if (pcLabels == null) {
+                throw new RuntimeException("please make sure to initialize "
+                        + "labels in Program Counter ");
+            }
             String curr = instruction.charAt(i) + "";
             
             if (curr.equals("1")) {
-                labels[i].setBackground(Color.red);
+                pcLabels[i].setBackground(Color.red);
             }    
             else if (curr.equals("0")) {
-                labels[i].setOpaque(true);
+                pcLabels[i].setBackground(Color.gray);
             }
         }
     }
-
+    
     /**
-     * main method
-     * @param args 
-     */
-    public static void main(String[] args) {
-        int numberOfLabels = 9;
-        new ProgramCounterComposite(numberOfLabels);
+     * @return panel instance
+     */ 
+    public JComponent getGUI() {
+        return p;
     }
 }

@@ -1,10 +1,11 @@
 package computersimulator.gui;
 
 import computersimulator.cpu.Computer;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * OperatorConsole should include:
@@ -34,24 +35,29 @@ public class OperatorConsole implements Runnable {
      @Override
     public void run() {
         // Create the window
-        JFrame f = new JFrame("Group 3 Computer Simulator: Operator Console");
+        JFrame f =  new JFrame("Group 3 Computer Simulator: Operator Console");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Set Layout
-        f.setLayout(new FlowLayout());
+        f.setLayout(new GridLayout(4, 1));
+         
+        JPanel labelHolder = new JPanel();
+        labelHolder.add(new JLabel("Operator Console"));
+        f.add(labelHolder);
+         
+        // Invoke ProgramCounter composite and set to the initial state (zeros represent grey labels)
+        ProgramCounterComposite pc = new ProgramCounterComposite(9);
+        pc.setProgramCounterComponent("000000000");
         
-        
-        // Add GUI Elements
-        f.add(new JLabel("Operator Console"));
-        f.add(new JButton("IPL"));
-        
-        // Organize and Display
-        f.setSize(600,400); // w,h
-        //f.pack();        
+        // Instantiate Switches composite
+        SwitchesComposite sc = new SwitchesComposite(20);
+        f.add(pc.getGUI());
+        f.add(sc.getGUI());
+         
+        // IPL 
+        JPanel iplHolder = new JPanel();   
+        iplHolder.add(new JButton("IPL"));
+        f.add(iplHolder);
+         
+        f.pack();
         f.setVisible(true);
     }
-    
-    
-    
-    
 }
