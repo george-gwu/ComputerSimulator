@@ -41,6 +41,9 @@ public class ControlUnit implements IClockCycle {
     private static final int STATE_EXECUTE_INSTRUCTION=3;
     
     
+    private static final int MICROSTATE_EXECUTE_COMPLETE=999;
+    
+    
     private static final int OPCODE_LDR=1;
     private static final int OPCODE_STR=2;
     
@@ -166,41 +169,40 @@ public class ControlUnit implements IClockCycle {
     
     /**
      * execute instruction by issuing the appropriate command to the ALU, memory, and the I/O controllers
+     * Each instruction will receive the microstate at 0 and is responsible for taking action.
+     * When the instruction completes, it sets the microState to MICROSTATE_EXECUTE_COMPLETE
      */
     private void executeInstructionRegister() throws Exception {
-        // Only two micro states, execute(0), and increment PC/return to fetch.
-        switch(this.microState){            
-            case 0: 
-                int opcode = this.instructionRegisterDecoded.get("opcode").getValue();
-                System.out.println("--EXECUTING OPCODE: "+ opcode);
-                switch(opcode){
-                    case ControlUnit.OPCODE_LDR:
-                        this.executeOpcodeLDR();
-                        
-                        break;
-                    case ControlUnit.OPCODE_STR:
-                        this.executeOpcodeSTR();
-                        
-                        break;
-                    default: // Unhandle opcode. Crash!
-                        throw new Exception("Unhandled Opcode: "+opcode);                        
-                    
-                }
-                this.microState++;
-                break;
-                
-            default:
-                // Micro-N: c(pc) + 1 -> PC  --- Increment PC
-                System.out.println("Micro-Final: c(pc) + 1 -> PC (Increment PC)");
-                                
-                this.getPC().add(new Unit(13, 1));
-                System.out.println("-- PC: "+this.getPC());
-                
-                this.microState = null;
-                this.state = ControlUnit.STATE_NONE;
-                
-                break;
-                
+        if(microState==null){
+            microState=0;
+        }
+        /* This delegates the microstate to the instruction, but does handle a special
+            microstate (999) to signal completion. */
+        if(this.microState < ControlUnit.MICROSTATE_EXECUTE_COMPLETE){
+            int opcode = this.instructionRegisterDecoded.get("opcode").getValue();
+            System.out.println("--EXECUTING OPCODE: "+ opcode);
+            switch(opcode){
+                case ControlUnit.OPCODE_LDR:
+                    this.executeOpcodeLDR();
+
+                    break;
+                case ControlUnit.OPCODE_STR:
+                    this.executeOpcodeSTR();
+
+                    break;
+                default: // Unhandle opcode. Crash!
+                    throw new Exception("Unhandled Opcode: "+opcode);                        
+            }            
+            this.microState++; 
+        } else {   //>=999         
+            // Micro-N: c(pc) + 1 -> PC  --- Increment PC
+            System.out.println("Micro-Final: c(pc) + 1 -> PC (Increment PC)");
+
+            this.getPC().add(new Unit(13, 1));
+            System.out.println("-- PC: "+this.getPC());
+
+            this.microState = null;
+            this.state = ControlUnit.STATE_NONE;            
         }        
     }
    
@@ -256,41 +258,7 @@ public class ControlUnit implements IClockCycle {
        decoded.put("address", IR.decomposeByOffset(12, 19));
        
        return decoded;
-   }
-    
-    
-    public void decodeTest(){
-          /* 
-        Consider the LDR instruction which we did in class:
-        LDR r, x, address [,I]
-        A particular example is:	LDR, 3, 0, 52, I
-        which says “load R3 from address 54 indirect with no indexing”  
-        Let location 52 contain 100, and location 100 contain 1023
-        The format in binary looks like this:
-        000001 11 00 1 0 00110100
-        */        
-        Word example = Word.WordFromBinaryString("000001 11 00 1 0 00110100");
-        System.out.println("Raw Word Before Decomposition: "+example+"\n");              
-        
-        Unit opcode = example.decomposeByOffset(0,5);
-        System.out.println("OPCODE: "+opcode);                
-        
-        Unit rfiI = example.decomposeByOffset(6,7);
-        System.out.println("rfiI: "+rfiI);        
-        
-        Unit xfiI = example.decomposeByOffset(8,9);
-        System.out.println("xfiI: "+xfiI);        
-      
-        Unit index = example.decomposeByOffset(10);
-        System.out.println("INDEX: "+index);        
-
-        Unit trace = example.decomposeByOffset(11);
-        System.out.println("TRACE: "+trace);        
-        
-        Unit address = example.decomposeByOffset(12,19);
-        System.out.println("ADDR: "+address);        
-        
-    }
+   }   
     
     public Unit getPC() {
         return this.programCounter;
@@ -312,45 +280,40 @@ public class ControlUnit implements IClockCycle {
     
     /**
      * Execute Load Data Into Register
-     * @TODO: Currently there is a for loop in here, this will be replaced by the
-     * microinstruction call functionality. For now this is just temporary.
      */
     private void executeOpcodeLDR(){
-        
-        for(int i=0; i<=2;i++){
-            switch(i){
-                case 0:
-                  // Micro-5: Compute EA                                
-                  System.out.println("Micro-5: Compute EA    ");
-                  Unit effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-                  System.out.println("-- Loading Effective Address: "+effectiveAddress);
+        switch(this.microState){            
+            case 0:
+                // Micro-5: Compute EA                                
+                System.out.println("Micro-5: Compute EA    ");
+                Unit effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
+                System.out.println("-- Loading Effective Address: "+effectiveAddress);
 
-                  // Micro-6: MAR<-EA
-                  System.out.println("Micro-6: MAR<-EA");
-                  memory.setMAR(effectiveAddress);
-                  this.microState=2;                
+                // Micro-6: MAR<-EA
+                System.out.println("Micro-6: MAR<-EA");
+                memory.setMAR(effectiveAddress);      
+                break;
+            case 1:
+                // Micro-7: M(MAR) -> MBR
+                System.out.println("Micro-7: M(MAR) -> MBR");
+                // do nothing, done by memory
+                break;
 
-                  break;
-              case 1:
-                  // Micro-7: M(MAR) -> MBR
-                  System.out.println("Micro-7: M(MAR) -> MBR");
-                  // do nothing, done by memory  (@TODO: this is occurring delayed to the bug of this for loop)
-                  this.microState=3;
-                  break;
+            case 2:
+                // Micro-8: MDR -> RF(RFI)   
+                System.out.println("Micro-8: MDR -> RF(RFI)");
+                int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
+                this.xRegisters[RFI] = this.memory.getMBR();
 
-              case 2:
-                  // Micro-8: MDR -> RF(RFI)   
-                  System.out.println("Micro-8: MDR -> RF(RFI)");
-                  int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
-                  
-                  // (@TODO: this is wrong because the memory read hasn't happened yet. see note above)
-                  this.xRegisters[RFI] = this.memory.getMBR();
-                  
-                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                  System.out.println("COMPLETED INSTRUCTION: LDR - rfi["+RFI+"] is now: "+ this.memory.getMBR());
-                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                  break;
-            }
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: LDR - rfi["+RFI+"] is now: "+ this.memory.getMBR());
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                
+                //Signal completion
+                this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+
+                break;            
+            
         }
             
                                 
@@ -358,37 +321,35 @@ public class ControlUnit implements IClockCycle {
     
     /**
      * Execute Store Register to Memory
-     * @TODO: Currently there is a for loop in here, this will be replaced by the
-     * microinstruction call functionality. For now this is just temporary.
+
      */
     private void executeOpcodeSTR() {
-        for(int i=0; i<=2;i++){
-            switch(i){
-                case 0:
-                  // Micro-5: Compute EA                                
-                  System.out.println("Micro-5: Compute EA    ");
-                  Unit effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-                  System.out.println("-- Loading Effective Address: "+effectiveAddress);
+        switch(this.microState){    
+            case 0:
+              // Micro-5: Compute EA                                
+              System.out.println("Micro-5: Compute EA    ");
+              Unit effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
+              System.out.println("-- Loading Effective Address: "+effectiveAddress);
 
-                  // Micro-6: MAR<-EA
-                  System.out.println("Micro-6: MAR<-EA");
-                  memory.setMAR(effectiveAddress);
-                  this.microState=2;               
+              // Micro-6: MAR<-EA
+              System.out.println("Micro-6: MAR<-EA");
+              memory.setMAR(effectiveAddress);         
 
-                  break;
-              case 1:
-                  // Micro-7: MBR <- M(MAR)
-                  System.out.println("Micro-7: MBR <- M(MAR)");
-                  // do nothing, done by memory (@TODO: is this valid assumption in this case?)
-                  this.microState=3;
-                  break;
+              break;
+          case 1:
+              // Micro-7: MBR <- M(MAR)
+              System.out.println("Micro-7: MBR <- M(MAR)");
+              // do nothing, done by memory (@TODO: is this valid assumption in this case?)
+              break;
 
-              case 2:
-                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                  System.out.println("COMPLETED INSTRUCTION: MBR- "+ this.memory.getMBR());
-                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                  break;
-            }
+          case 2:
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+              System.out.println("COMPLETED INSTRUCTION: MBR- "+ this.memory.getMBR());
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+              
+              //Signal Completion
+              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+              break;
         }
     }
     

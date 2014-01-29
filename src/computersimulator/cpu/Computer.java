@@ -18,6 +18,16 @@ public class Computer implements IClockCycle {
         cpu = new CentralProcessingUnit(memory); // contains ALU,  ControlUnit      
         io = new InputOutputController();
         
+        
+         /* 
+        Consider the LDR instruction which we did in class:
+        LDR r, x, address [,I]
+        A particular example is:	LDR, 3, 0, 52, I
+        which says “load R3 from address 54 indirect with no indexing”  
+        Let location 52 contain 100, and location 100 contain 1023
+        The format in binary looks like this:
+        000001 11 00 1 0 00110100
+        */    
         // Set Memory location 15 to the instruction LDR
         this.memory.engineerSetMemoryLocation(new Unit(13, 15), Word.WordFromBinaryString("000001 11 00 1 0 00110100"));
         
