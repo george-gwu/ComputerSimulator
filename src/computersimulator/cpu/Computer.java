@@ -23,6 +23,9 @@ public class Computer implements IClockCycle {
         
         // TEAM:  You can add more test instructions here. add a 16, then 17, then 18, etc.
         //this.memory.engineerSetMemoryLocation(new Unit(13, 16), Word.WordFromBinaryString("000001 11 00 1 0 00110100"));
+
+        // Set memory location 16 to the instruction STR
+        this.memory.engineerSetMemoryLocation(new Unit(13, 16), Word.WordFromBinaryString("000010 11 00 1 0 00110100"));
         
         // set PC to 15 for testing, this will increment until no more instructions exist, then crash
         cpu.getControlUnit().setPC(new Unit(13,15));

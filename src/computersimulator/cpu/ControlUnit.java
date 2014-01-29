@@ -42,6 +42,7 @@ public class ControlUnit implements IClockCycle {
     
     
     private static final int OPCODE_LDR=1;
+    private static final int OPCODE_STR=2;
     
     // used to control micro step, defined per state
     private Integer microState = null;
@@ -177,7 +178,10 @@ public class ControlUnit implements IClockCycle {
                         this.executeOpcodeLDR();
                         
                         break;
+                    case ControlUnit.OPCODE_STR:
+                        this.executeOpcodeSTR();
                         
+                        break;
                     default: // Unhandle opcode. Crash!
                         throw new Exception("Unhandled Opcode: "+opcode);                        
                     
@@ -350,6 +354,42 @@ public class ControlUnit implements IClockCycle {
         }
             
                                 
+    }
+    
+    /**
+     * Execute Store Register to Memory
+     * @TODO: Currently there is a for loop in here, this will be replaced by the
+     * microinstruction call functionality. For now this is just temporary.
+     */
+    private void executeOpcodeSTR() {
+        for(int i=0; i<=2;i++){
+            switch(i){
+                case 0:
+                  // Micro-5: Compute EA                                
+                  System.out.println("Micro-5: Compute EA    ");
+                  Unit effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
+                  System.out.println("-- Loading Effective Address: "+effectiveAddress);
+
+                  // Micro-6: MAR<-EA
+                  System.out.println("Micro-6: MAR<-EA");
+                  memory.setMAR(effectiveAddress);
+                  this.microState=2;               
+
+                  break;
+              case 1:
+                  // Micro-7: MBR <- M(MAR)
+                  System.out.println("Micro-7: MBR <- M(MAR)");
+                  // do nothing, done by memory (@TODO: is this valid assumption in this case?)
+                  this.microState=3;
+                  break;
+
+              case 2:
+                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                  System.out.println("COMPLETED INSTRUCTION: MBR- "+ this.memory.getMBR());
+                  System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                  break;
+            }
+        }
     }
     
 }
