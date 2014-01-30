@@ -286,19 +286,22 @@ public class ControlUnit implements IClockCycle {
                 // Micro-5: Compute EA                                
                 System.out.println("Micro-5: Compute EA    ");
                 Unit effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-                System.out.println("-- Loading Effective Address: "+effectiveAddress);
-
+                System.out.println("-- Loading Effective Address: "+effectiveAddress);                
+                this.temp = effectiveAddress;                
+                break;
+                
+            case 1:
                 // Micro-6: MAR<-EA
                 System.out.println("Micro-6: MAR<-EA");
-                memory.setMAR(effectiveAddress);      
+                memory.setMAR(this.temp);      
                 break;
-            case 1:
+            case 2:
                 // Micro-7: M(MAR) -> MBR
                 System.out.println("Micro-7: M(MAR) -> MBR");
                 // do nothing, done by memory
                 break;
 
-            case 2:
+            case 3:
                 // Micro-8: MDR -> RF(RFI)   
                 System.out.println("Micro-8: MBR -> RF(RFI)");
                 int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
