@@ -33,8 +33,8 @@ public class ControlUnit implements IClockCycle {
     //X1…X3	13 bits	Index Register: contains a 13-bit base address that supports base register addressing of memory.
     private Unit[] xRegisters = new Unit[4];
     
-    // TEMP      Used to hold temporary data
-    private Unit temp;
+    // Effective Address   ENGINEER Console: Used to hold EA temporarily in microcycles
+    private Unit effectiveAddress;
     
     // used to control the instruction cycle
     private int state;
@@ -208,23 +208,29 @@ public class ControlUnit implements IClockCycle {
     
     private Unit calculateEffectiveAddress(HashMap<String,Unit> irDecoded){
      
-        if(irDecoded.get("xfiI").getValue()==0 && irDecoded.get("rfiI").getValue()==0){            
-            
-            return irDecoded.get("address");
-            
+        if(irDecoded.get("xfiI").getValue()==0 && irDecoded.get("rfiI").getValue()==0){                        
+            //EA <- ADDR
+            System.out.println("Absolute/Direct:" + irDecoded.get("address"));
+            return irDecoded.get("address");            
         } else if(irDecoded.get("index").getValue()==0 && irDecoded.get("xfiI").getValue()>=1 && irDecoded.get("xfiI").getValue()<=3){
             int contentsOfX = irDecoded.get("xfiI").getValue();
             Unit addr = irDecoded.get("address");
-            Word contentsOfAddr = this.memory.engineerFetchByMemoryLocation(addr);
+            Word contentsOfAddr = this.memory.engineerFetchByMemoryLocation(addr);            
+            Unit ret = new Unit(13, (contentsOfX + contentsOfAddr.getValue()));
             
-            return new Unit(13, (contentsOfX + contentsOfAddr.getValue()));            
+            //EA <- c(Xi) + c(ADDR)
+            System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+contentsOfAddr.getValue()+"): "+ret);
+            return ret;            
             
         } else if(irDecoded.get("index").getValue()==1 && irDecoded.get("xfiI").getValue()==0){
             Unit addr = irDecoded.get("address");
             Word contentsOfAddr = this.memory.engineerFetchByMemoryLocation(addr);
             Word contentsOfContents = this.memory.engineerFetchByMemoryLocation(contentsOfAddr);
+            Unit ret = new Unit(13, (contentsOfContents.getValue()));
             
-            return new Unit(13, contentsOfContents.getValue());                                    
+            //EA <- c(c(ADDR))     
+            System.out.println("Indexed - c(c(ADDR)) =  c(c("+addr.getValue()+")) = c("+contentsOfAddr.getValue()+") = "+ret);
+            return ret;                                    
             
         } else if(irDecoded.get("index").getValue()==1 && irDecoded.get("xfiI").getValue()>=1 && irDecoded.get("xfiI").getValue()<=3){
             int contentsOfX = irDecoded.get("xfiI").getValue();
@@ -233,7 +239,11 @@ public class ControlUnit implements IClockCycle {
             
             Unit location = new Unit(13, (contentsOfX + contentsOfAddr.getValue()));
             Word contentsOfLocation = this.memory.engineerFetchByMemoryLocation(location);
-            return new Unit(13, contentsOfLocation.getValue());
+            
+            Unit ret = new Unit(13, contentsOfLocation.getValue());
+            System.out.println("Indexed + Offset ("+contentsOfX+" + "+contentsOfAddr.getValue()+"): "+ret);    
+            //EA <- c(c(Xi) + c(ADDR))
+            return ret;
             
         } else { // shouldn't end up here, but this should cause a machine fault
             System.out.println("Error");
@@ -285,15 +295,14 @@ public class ControlUnit implements IClockCycle {
             case 0:
                 // Micro-5: Compute EA                                
                 System.out.println("Micro-5: Compute EA    ");
-                Unit effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-                System.out.println("-- Loading Effective Address: "+effectiveAddress);                
-                this.temp = effectiveAddress;                
+                this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
+                System.out.println("-- Loading Effective Address: "+this.effectiveAddress);                            
                 break;
                 
             case 1:
                 // Micro-6: MAR<-EA
                 System.out.println("Micro-6: MAR<-EA");
-                memory.setMAR(this.temp);      
+                memory.setMAR(this.effectiveAddress);      
                 break;
             case 2:
                 // Micro-7: M(MAR) -> MBR
@@ -330,15 +339,14 @@ public class ControlUnit implements IClockCycle {
             case 0:
               // Micro-5: Compute EA                                
               System.out.println("Micro-5: Compute EA    ");
-              Unit effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-              this.temp = effectiveAddress;
-              System.out.println("-- Loading Effective Address: "+effectiveAddress);              
+              this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
+              System.out.println("-- Loading Effective Address: "+this.effectiveAddress);              
             break;
             
             case 1:
               // Micro-6: MAR<-EA
               System.out.println("Micro-6: MAR<-EA");
-              memory.setMAR(this.temp);         
+              memory.setMAR(this.effectiveAddress);         
               
               // Micro-7: MBR <- M(MAR)
               System.out.println("Micro-7: MBR <- RF(RFI)");
@@ -353,7 +361,7 @@ public class ControlUnit implements IClockCycle {
 
           case 3:
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: STR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.temp));
+              System.out.println("COMPLETED INSTRUCTION: STR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               
               //Signal Completion
