@@ -74,7 +74,16 @@ public class MemoryControlUnit implements IClockCycle {
                 
                 break;
         }
-    }    
+    }
+
+    /**
+     * Set the Memory Buffer Register (used in store)
+     * @param dataUnit The value to store (converted to Word)
+     * @return TRUE/FALSE if successful
+     */
+    public boolean setMBR(Unit dataUnit){
+        return setMBR(new Word(dataUnit.getValue()));
+    }
     
     /**
      * Set the Memory Buffer Register (used in store)

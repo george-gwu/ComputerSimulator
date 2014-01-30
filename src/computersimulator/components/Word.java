@@ -25,6 +25,15 @@ public class Word extends Unit {
         super((Unit)c);
     }
     
+    /**
+     * Conversion Constructor
+     * @param c
+     */
+    public Word(Unit c){
+        super(WORD_SIZE);
+        this.setValue(c.getValue());
+    }
+    
     
     /** 
      * Creates a Word from a Binary String. This method allows for spacing which is trimmed for readability.

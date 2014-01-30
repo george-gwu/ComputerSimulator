@@ -301,7 +301,7 @@ public class ControlUnit implements IClockCycle {
 
             case 2:
                 // Micro-8: MDR -> RF(RFI)   
-                System.out.println("Micro-8: MDR -> RF(RFI)");
+                System.out.println("Micro-8: MBR -> RF(RFI)");
                 int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
                 this.xRegisters[RFI] = this.memory.getMBR();
 
@@ -334,12 +334,16 @@ public class ControlUnit implements IClockCycle {
               // Micro-6: MAR<-EA
               System.out.println("Micro-6: MAR<-EA");
               memory.setMAR(effectiveAddress);         
+              
+              // Micro-7: MBR <- M(MAR)
+              System.out.println("Micro-7: MBR <- RF(RFI)");
+              int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
+              memory.setMBR(this.xRegisters[RFI]);
 
               break;
-          case 1:
-              // Micro-7: MBR <- M(MAR)
-              System.out.println("Micro-7: MBR <- M(MAR)");
-              // do nothing, done by memory (@TODO: is this valid assumption in this case?)
+          case 1:   
+              System.out.println("Micro-8: M(MAR) <- MBR");
+              // do nothing, done by memory in this clock cycle                           
               break;
 
           case 2:
