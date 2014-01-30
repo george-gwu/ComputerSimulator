@@ -33,6 +33,9 @@ public class ControlUnit implements IClockCycle {
     //X1…X3	13 bits	Index Register: contains a 13-bit base address that supports base register addressing of memory.
     private Unit[] xRegisters = new Unit[4];
     
+    // TEMP      Used to hold temporary data
+    private Unit temp;
+    
     // used to control the instruction cycle
     private int state;
     private static final int STATE_NONE=0;
@@ -153,16 +156,12 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("Micro-4: Decode IR");
                 this.instructionRegisterDecoded = this.decodeInstructionRegister(this.getIR());     
                 System.out.println("-- IR Decoded: "+this.instructionRegisterDecoded);
-                this.microState=1;
-                break;
                 
-                
-            case 1:
-                // Set up for next major state
                 this.microState=null;
                 this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;
                 
                 break;
+
         }    
 
     }
@@ -329,11 +328,14 @@ public class ControlUnit implements IClockCycle {
               // Micro-5: Compute EA                                
               System.out.println("Micro-5: Compute EA    ");
               Unit effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-              System.out.println("-- Loading Effective Address: "+effectiveAddress);
-
+              this.temp = effectiveAddress;
+              System.out.println("-- Loading Effective Address: "+effectiveAddress);              
+            break;
+            
+            case 1:
               // Micro-6: MAR<-EA
               System.out.println("Micro-6: MAR<-EA");
-              memory.setMAR(effectiveAddress);         
+              memory.setMAR(this.temp);         
               
               // Micro-7: MBR <- M(MAR)
               System.out.println("Micro-7: MBR <- RF(RFI)");
@@ -341,14 +343,14 @@ public class ControlUnit implements IClockCycle {
               memory.setMBR(this.xRegisters[RFI]);
 
               break;
-          case 1:   
+          case 2:   
               System.out.println("Micro-8: M(MAR) <- MBR");
               // do nothing, done by memory in this clock cycle                           
               break;
 
-          case 2:
+          case 3:
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: STR - MBR: "+ this.memory.getMBR());
+              System.out.println("COMPLETED INSTRUCTION: STR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.temp));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               
               //Signal Completion
