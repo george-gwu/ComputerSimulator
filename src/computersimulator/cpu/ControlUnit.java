@@ -33,6 +33,8 @@ public class ControlUnit implements IClockCycle {
     //X1…X3	13 bits	Index Register: contains a 13-bit base address that supports base register addressing of memory.
     private Unit[] xRegisters = new Unit[4];
     
+    private HashMap<String, Unit> indexRegisterDecoded;
+    
     // Effective Address   ENGINEER Console: Used to hold EA temporarily in microcycles
     private Unit effectiveAddress;
     
@@ -49,6 +51,13 @@ public class ControlUnit implements IClockCycle {
     
     private static final int OPCODE_LDR=1;
     private static final int OPCODE_STR=2;
+    private static final int OPCODE_LDA=3;
+    private static final int OPCODE_LDX=41;
+    private static final int OPCODE_STX=42;
+    private static final int OPCODE_AMR=4;
+    private static final int OPCODE_SMR=5;
+    private static final int OPCODE_AIR=6;
+    private static final int OPCODE_SIR=7;
     
     // used to control micro step, defined per state
     private Integer microState = null;
@@ -181,14 +190,50 @@ public class ControlUnit implements IClockCycle {
             int opcode = this.instructionRegisterDecoded.get("opcode").getValue();
             System.out.println("--EXECUTING OPCODE: "+ opcode);
             switch(opcode){
-                case ControlUnit.OPCODE_LDR:
+                case ControlUnit.OPCODE_LDR:        //DONE
                     this.executeOpcodeLDR();
 
                     break;
-                case ControlUnit.OPCODE_STR:
+                case ControlUnit.OPCODE_STR:        //DONE
                     this.executeOpcodeSTR();
 
                     break;
+                    
+                case ControlUnit.OPCODE_LDA:        //DONE
+                    this.executeOpcodeLDA();
+
+                    break;    
+                    
+                case ControlUnit.OPCODE_LDX:        //DONE
+                    this.executeOpcodeLDX();
+
+                    break;
+                
+                case ControlUnit.OPCODE_STX:        //DONE
+                    this.executeOpcodeSTX();
+
+                    break;
+                    
+                case ControlUnit.OPCODE_AMR:
+                    this.executeOpcodeAMR();
+
+                    break;
+                    
+                case ControlUnit.OPCODE_SMR:
+                    this.executeOpcodeSMR();
+
+                    break;
+                    
+                case ControlUnit.OPCODE_AIR:
+                    this.executeOpcodeAIR();
+
+                    break;
+                    
+                case ControlUnit.OPCODE_SIR:
+                    this.executeOpcodeSIR();
+
+                    break;
+                        
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
@@ -300,19 +345,19 @@ public class ControlUnit implements IClockCycle {
                 break;
                 
             case 1:
-                // Micro-6: MAR<-EA
-                System.out.println("Micro-6: MAR<-EA");
+                // Micro-6: MAR <- EA
+                System.out.println("Micro-6: MAR <- EA");
                 memory.setMAR(this.effectiveAddress);      
                 break;
             case 2:
-                // Micro-7: M(MAR) -> MBR
-                System.out.println("Micro-7: M(MAR) -> MBR");
+                // Micro-7: MBR <- M(MAR)
+                System.out.println("Micro-7: MBR <- M(MAR)");
                 // do nothing, done by memory
                 break;
 
             case 3:
-                // Micro-8: MDR -> RF(RFI)   
-                System.out.println("Micro-8: MBR -> RF(RFI)");
+                // Micro-8: RF(RFI) <- MBR   
+                System.out.println("Micro-8: RF(RFI) <- MBR");
                 int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
                 this.xRegisters[RFI] = this.memory.getMBR();
 
@@ -332,7 +377,6 @@ public class ControlUnit implements IClockCycle {
     
     /**
      * Execute Store Register to Memory
-
      */
     private void executeOpcodeSTR() {
         switch(this.microState){    
@@ -344,29 +388,183 @@ public class ControlUnit implements IClockCycle {
             break;
             
             case 1:
-              // Micro-6: MAR<-EA
-              System.out.println("Micro-6: MAR<-EA");
+              // Micro-6: MAR <- EA
+              System.out.println("Micro-6: MAR <- EA");
               memory.setMAR(this.effectiveAddress);         
               
-              // Micro-7: MBR <- M(MAR)
+              // Micro-7: MBR <- RF(RFI)
               System.out.println("Micro-7: MBR <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
               memory.setMBR(this.xRegisters[RFI]);
-
-              break;
-          case 2:   
+            break;
+                
+            case 2:   
               System.out.println("Micro-8: M(MAR) <- MBR");
-              // do nothing, done by memory in this clock cycle                           
-              break;
-
-          case 3:
+              // do nothing, done by memory in this clock cycle    
+              
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               System.out.println("COMPLETED INSTRUCTION: STR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               
               //Signal Completion
               this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
-              break;
+            break;
+        }
+    }
+    
+    /**
+     * Execute Load Register with Address
+     */
+    private void executeOpcodeLDA() {
+        switch(this.microState){
+            case 0:
+              // Micro-5: Compute EA                                
+              System.out.println("Micro-5: Compute EA    ");
+              this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
+              System.out.println("-- Loading Effective Address: "+this.effectiveAddress);              
+            break;
+                
+            case 1:
+                // Micro-6: MAR <- EA
+                System.out.println("Micro-6: MAR <- EA");
+                memory.setMAR(this.effectiveAddress);      
+                break;
+                
+            case 2:
+                // Micro-7: MBR <- M(MAR)
+                System.out.println("Micro-7: MBR <- M(MAR)");
+                // do nothing, done by memory
+            break;
+                
+            case 3:
+                // Micro-8: RF(RFI) <- MBR   
+                System.out.println("Micro-8: RF(RFI) <- MBR");
+                int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
+                this.xRegisters[RFI] = this.memory.getMBR();
+
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: LDA - rfi["+RFI+"] is now: "+ this.memory.getMBR());
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                
+                //Signal completion
+                this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+
+            break;            
+        }
+    }
+    
+    /**
+     * Execute Load Index Register from Memory
+     */
+    private void executeOpcodeLDX() {
+        switch(this.microState){
+            case 0:
+              // Micro-5: Compute EA                                
+              System.out.println("Micro-5: Compute EA    ");
+              this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
+              System.out.println("-- Loading Effective Address: "+this.effectiveAddress);              
+            break;
+            
+            case 1:
+              // Micro-6: MAR <- EA
+              System.out.println("Micro-6: MAR<-EA");
+              memory.setMAR(this.effectiveAddress);
+            break;
+                
+            case 2:
+              // Micro-7: MBR <- M(MAR)
+              System.out.println("Micro-7: MBR <- M(MAR)");
+              // do nothing, done by memory
+            break;
+
+            case 3:
+              // Micro 8: c(XFI) <- MBR
+              int XFI = this.instructionRegisterDecoded.get("xfiI").getValue();
+              this.xRegisters[XFI] = this.memory.getMBR();  
+              
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+              System.out.println("COMPLETED INSTRUCTION: LDX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                
+              //Signal Completion
+              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+            break;
+        }
+    }
+    
+    /**
+     * Execute Store Index Register to Memory
+     */
+    private void executeOpcodeSTX() {
+        switch(this.microState){
+            case 0:
+              // Micro-5: Compute EA                                
+              System.out.println("Micro-5: Compute EA    ");
+              this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
+              System.out.println("-- Loading Effective Address: "+this.effectiveAddress);              
+            break;
+            
+            case 1:
+              // Micro-6: MAR <- EA
+              System.out.println("Micro-6: MAR <- EA");
+              memory.setMAR(this.effectiveAddress);
+            break;
+                
+            case 2:
+              // Micro 7: MBR <- c(XFI)
+              System.out.println("Micro 7: MBR <- c(XFI)");
+              int XFI = this.instructionRegisterDecoded.get("xfiI").getValue();
+              memory.setMBR(this.xRegisters[XFI]);
+            break;
+                
+            case 3:
+              // Micro 8: M(MAR) <- MBR
+              System.out.println("Micro 8: M(MAR) <- MBR");
+              // do nothing, done by memory
+                
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+              System.out.println("COMPLETED INSTRUCTION: STX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                
+              //Signal Completion
+              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+            break;
+        }
+    }
+    
+    /**
+     * Execute Add Memory to Register
+     */
+    private void executeOpcodeAMR() {
+        switch(this.microState){
+            
+        }
+    }
+    
+    /**
+     * Execute Subtract Memory from Register
+     */
+    private void executeOpcodeSMR() {
+        switch(this.microState){
+            
+        }
+    }
+    
+    /**
+     * Execute Add Immediate to Register
+     */
+    private void executeOpcodeAIR() {
+        switch(this.microState){
+            
+        }
+    }
+    
+    /**
+     * Execute Subtract Immediate from Register
+     */
+    private void executeOpcodeSIR() {
+        switch(this.microState){
+            
         }
     }
     

@@ -30,7 +30,29 @@ public class Computer implements IClockCycle {
         */    
         // M(16) <- LDR, 3, 0, 52, I
         this.memory.engineerSetMemoryLocation(new Unit(13, 16), Word.WordFromBinaryString("000001 11 00 1 0 00110100"));
+        
+        /*
+        LDA r, x, address[,I]
+        which says "Load Register with Address"
+        */
+        // M(17) <- LDA, 3, 0, 52, I
+        this.memory.engineerSetMemoryLocation(new Unit(13, 17), Word.WordFromBinaryString("000011 11 00 1 0 00110100"));        
+        
+        /*
+        LDX x, address[,I]
+        which says "Load Index Register from Memory"
+        Let the memory location be 52.
+        */
+        // M(18) <- LDX, 3, 52, I
+        this.memory.engineerSetMemoryLocation(new Unit(13, 18), Word.WordFromBinaryString("101001 00 11 1 0 00110100"));
                
+        /*
+        STX x, address[,I]
+        which says "Store Index Register to Memory"
+        Let the memory location be 52.
+        */
+        // M(19) <- STX, 3, 52, I
+        this.memory.engineerSetMemoryLocation(new Unit(13, 19), Word.WordFromBinaryString("101010 00 11 1 0 00110100"));
         
         // set PC to 15 for testing, this will increment until no more instructions exist, then crash
         cpu.getControlUnit().setPC(new Unit(13,15));
