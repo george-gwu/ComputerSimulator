@@ -60,14 +60,24 @@ public class Computer implements IClockCycle {
         boolean running = true; // @TODO hook this to IPL button
         
         do {
-            this.clockCycle();
+            try {
+                this.clockCycle();
+            } catch(HaltSystemException eHalt){
+                System.out.println("System HALT.");
+                running=false;
+            } catch(Exception e){
+                System.out.println("Error: "+ e);
+            }
         } while(running==true);
         
     }   
     
-    
+    /**
+     * Clock Cycle for Computer
+     * @throws Exception 
+     */
     @Override
-    public final void clockCycle(){
+    public final void clockCycle() throws Exception{
             System.out.println("-------- CLOCK CYCLE --------");
             this.cpu.clockCycle();
             this.memory.clockCycle();

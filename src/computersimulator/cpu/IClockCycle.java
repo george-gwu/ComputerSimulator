@@ -16,5 +16,5 @@ public interface IClockCycle {
      * function sooner to end the control flow and jump to the next cycle. 
      * @TODO: Is that part necessary?
      */
-    public void clockCycle();
+    public void clockCycle() throws Exception;
 }

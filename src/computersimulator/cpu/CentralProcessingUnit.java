@@ -23,8 +23,10 @@ public class CentralProcessingUnit implements IClockCycle {
      * Clock cycle. This is the main function which causes the CPU to do work.
      *  This serves as a publicly accessible method, but delegates
      * to the ALU/ControlUnit.
+     * @throws java.lang.Exception
      */
-    public void clockCycle(){
+    @Override
+    public void clockCycle() throws Exception{
         this.controlUnit.clockCycle();
         this.alu.clockCycle();
     }           

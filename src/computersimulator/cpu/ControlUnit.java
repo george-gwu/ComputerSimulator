@@ -1,5 +1,6 @@
 package computersimulator.cpu;
 
+import computersimulator.components.HaltSystemException;
 import computersimulator.components.Unit;
 import computersimulator.components.Word;
 import java.util.HashMap;
@@ -95,27 +96,24 @@ public class ControlUnit implements IClockCycle {
     /**
      * Clock cycle. This is the main function which causes the ControlUnit to do work.
      *  This serves as a publicly accessible method, but calls the instruction cycle.
+     * @throws java.lang.Exception
      */
     @Override
-    public void clockCycle(){
-        try {
-            // Used to run microcycles without causing a full clock cycle
-            boolean runningMicroCycles=true;
-            do {
-              System.out.println("Micro!");
-              this.instructionCycle();
-              
-              if(this.blocked == true){
-                  // A microcycle signaled it is blocking.
-                  runningMicroCycles=false;
-                  this.blocked=false;
-              }
-            } while(runningMicroCycles);                              
-        } catch(Exception e){
-            System.out.println("Error: "+e);
-            System.exit(1); //@TODO: Signal an error
-            
-        }
+    public void clockCycle() throws Exception {
+        // Used to run microcycles without causing a full clock cycle
+        boolean runningMicroCycles=true;
+        do {
+          System.out.println("Micro!");
+          
+          this.instructionCycle();
+
+          if(this.blocked == true){
+              // A microcycle signaled it is blocking.
+              runningMicroCycles=false;
+              this.blocked=false;
+          }
+        } while(runningMicroCycles);                              
+        
     }  
     
     private void instructionCycle() throws Exception {
@@ -609,8 +607,8 @@ public class ControlUnit implements IClockCycle {
     /**
      * Stop the machine
      */
-    private void executeOpcodeHLT() throws Exception {
-        throw new Exception("HALT!");
+    private void executeOpcodeHLT() throws HaltSystemException {
+        throw new HaltSystemException();
     }    
     
 }
