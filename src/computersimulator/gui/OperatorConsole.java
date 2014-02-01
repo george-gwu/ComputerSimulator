@@ -145,9 +145,9 @@ public class OperatorConsole implements Runnable {
                         if(widget.isChecked()){
                             widget.getSource().setValueBinary(valueToDeposit);
                             widget.uncheck();
-                        }
+                            widget.updateDisplay();
+                        }                        
                         
-                        widget.updateDisplay();
                     }           
                 
                 System.out.println("Deposit Requested");
@@ -165,9 +165,18 @@ public class OperatorConsole implements Runnable {
         });
         
         
+        this.updateDisplay();
         
         mainWindow.pack();
         mainWindow.setVisible(true);
+    }
+    
+    
+    public void updateDisplay(){
+        for(Map.Entry<String, DataDisplayComposite> el : displayComponents.entrySet()){
+            DataDisplayComposite widget = el.getValue();
+            widget.updateDisplay();
+        }                                   
     }
      
 }
