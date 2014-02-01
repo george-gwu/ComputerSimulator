@@ -266,7 +266,7 @@ public class ControlUnit implements IClockCycle {
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
             this.microState++; 
-        } else {   //>=999         
+        } else { // MICROSTATE_EXECUTE_COMPLETE
             // Micro-N: c(pc) + 1 -> PC  --- Increment PC
             System.out.println("Micro-Final: c(pc) + 1 -> PC (Increment PC)");
 
