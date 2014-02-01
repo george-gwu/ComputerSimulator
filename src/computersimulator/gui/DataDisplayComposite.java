@@ -21,48 +21,42 @@ public class DataDisplayComposite {
     private final Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
     private int size;
     
-    public DataDisplayComposite() {
-    }    
-    
     /**
      * Constructor
      * @param size number of labels
      * @param name composite name
      */
     public DataDisplayComposite(int size, String name) {
-        this.size = size;
-        createDataDisplayComposite(size, name);
+        this.size = size;                
+        createDataDisplayComposite(name);        
+    }    
+ 
+    /**
+     * Constructor
+     * @param size number of labels
+     * @param name composite name
+     */
+    public DataDisplayComposite(int size, String name, boolean edit) {
+        this.size = size;                
+        createDataDisplayComposite(name,edit);        
     }
     
-     /**
-     * Initialize data display
-     * @param size 
-     */
-    public void init(int size) {
-        if (labels == null) {
-                throw new RuntimeException("please make sure to initialize " 
-                        + "labels");
-        }
-        for (int i = 0; i < size; i++) {
-            labels[i].setBackground(Color.gray);
-        }
-    }
-
     /**
      * Create Data Display Component with n labels
-     * @param size number of labels
      * @return returns labels
      */
-    public JLabel[] createDataDisplayComposite(int size, String name) {
+    private JLabel[] createDataDisplayComposite(String name, boolean edit) {    
         labels = new JLabel[size];
         
         p = new JPanel();
         p.setBackground(Color.WHITE);
         
-        // checkbox
-        checkBox = new JCheckBox();
-        p.add(checkBox);
-        p.add(new JLabel(" ")); // add empty placeholder between checkbox and labels
+        if(edit){
+            // checkbox       
+            checkBox = new JCheckBox();
+            p.add(checkBox);
+            p.add(new JLabel(" ")); // add empty placeholder between checkbox and labels
+        }
         
         // componenent name
         componentName = new JLabel(name);
@@ -71,6 +65,7 @@ public class DataDisplayComposite {
         for (int i = 0; i < size; i++) {
             labels[i] = new JLabel();
             labels[i].setBorder(border);
+            labels[i].setBackground(Color.gray);
             labels[i].setOpaque(true);
             labels[i].setPreferredSize(new Dimension(15, 15));
             p.add(labels[i]);
@@ -97,7 +92,15 @@ public class DataDisplayComposite {
             else if (curr.equals("0")) {
                 labels[i].setBackground(Color.gray);
             }
-        }
+        }        
+    }
+
+    /**
+     * Create Data Display Component with n labels
+     * @return returns labels
+     */
+    private JLabel[] createDataDisplayComposite(String name) {
+        return createDataDisplayComposite(name, true);
     }
      
     /**

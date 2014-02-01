@@ -33,7 +33,6 @@ public class OperatorConsole implements Runnable {
     
     private Computer computer;
     private List<DataDisplayComposite> displayComponents;         // list for storing components
-    private List<DataEntryComposite> entryComponents;
     
     // declare components
     private DataDisplayComposite ir;
@@ -66,7 +65,6 @@ public class OperatorConsole implements Runnable {
         
         // maintain the lists of all components
         displayComponents = new ArrayList<DataDisplayComposite>();
-        entryComponents = new ArrayList<DataEntryComposite>();
         
         // create title
         JLabel title = new JLabel("Operator Console");
@@ -85,59 +83,28 @@ public class OperatorConsole implements Runnable {
         // Create simulator components and initialize the initial state 
         // create IR
         ir = new DataDisplayComposite(19, "IR");
-        ir.init(19);
-        
-        // create CC
-        cc = new DataDisplayComposite(4, "CC");
-        cc.init(4);
-        
-        // create program counter component
+        cc = new DataDisplayComposite(4, "CC", false);
         pc = new DataDisplayComposite(9, "PC");
-        pc.init(9);
-        
-        // create R0 component
         r0 = new DataDisplayComposite(19, "R0");
-        r0.init(19);
-        
-        // create R1 component
         r1 = new DataDisplayComposite(19, "R1");
-        r1.init(19);
-        
-        // create R2 component
         r2 = new DataDisplayComposite(19, "R2");
-        r2.init(19);
-        
-        // create R3 component
         r3 = new DataDisplayComposite(19, "R3");
-        r3.init(19);
-        
-        // create MDR component
         mdr = new DataDisplayComposite(20, "MDR");
-        mdr.init(20);
-        
-        // create MAR component
         mar = new DataDisplayComposite(20, "MAR");
-        mar.init(20);
-        
-        //create X0 component
         x0 = new DataDisplayComposite(20, "X0");
-        x0.init(20);
-        
-        //create X1 component
         x1 = new DataDisplayComposite(20, "X1");
-        x1.init(20);
-        
-        //create X2 component
         x2 = new DataDisplayComposite(20, "X2");
-        x2.init(20);
-        
-        //create Input component
         input = new DataEntryComposite(20, "Input");
+        
+        JPanel panelCCandPC = new JPanel();   
+        panelCCandPC.setBackground(Color.white);
+        panelCCandPC.add(pc.getGUI());
+        panelCCandPC.add(cc.getGUI());
+        
         
         // add all components to the frame
         f.add(ir.getGUI());
-        f.add(pc.getGUI());
-        f.add(cc.getGUI());
+        f.add(panelCCandPC);
         f.add(r0.getGUI());
         f.add(r1.getGUI());
         f.add(r2.getGUI());
