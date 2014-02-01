@@ -39,6 +39,9 @@ public class ControlUnit implements IClockCycle {
     // Effective Address   ENGINEER Console: Used to hold EA temporarily in microcycles
     private Unit effectiveAddress;
     
+    // Engineer: Internal flag to signal that a blocking operation occurred (memory read) forcing a clock cycle
+    private boolean blocked = false;
+    
     // used to control the instruction cycle
     private int state;
     private static final int STATE_NONE=0;
@@ -92,7 +95,18 @@ public class ControlUnit implements IClockCycle {
     @Override
     public void clockCycle(){
         try {
-            this.instructionCycle();        
+            // Used to run microcycles without causing a full clock cycle
+            boolean runningMicroCycles=true;
+            do {
+              System.out.println("Micro!");
+              this.instructionCycle();
+              
+              if(this.blocked == true){
+                  // A microcycle signaled it is blocking.
+                  runningMicroCycles=false;
+                  this.blocked=false;
+              }
+            } while(runningMicroCycles);                              
         } catch(Exception e){
             System.out.println("Error: "+e);
             System.exit(1); //@TODO: Signal an error
@@ -138,7 +152,8 @@ public class ControlUnit implements IClockCycle {
                 Unit pc = this.getPC();
                 System.out.println("-- PC: "+pc);
                 this.memory.setMAR(pc);
-                this.microState=1;                
+                this.microState=1;  
+                this.signalBlockingMicroFunction();
                 break;         
                 
                 // unwritten step: clock cycle causes memory to pull PC
@@ -175,6 +190,10 @@ public class ControlUnit implements IClockCycle {
 
         }    
 
+    }
+    
+    private void signalBlockingMicroFunction(){
+        this.blocked=true;
     }
     
     /**
@@ -349,7 +368,8 @@ public class ControlUnit implements IClockCycle {
             case 1:
                 // Micro-6: MAR <- EA
                 System.out.println("Micro-6: MAR <- EA");
-                memory.setMAR(this.effectiveAddress);      
+                memory.setMAR(this.effectiveAddress);  
+                this.signalBlockingMicroFunction();
                 break;
             case 2:
                 // Micro-7: MBR <- M(MAR)
@@ -398,6 +418,7 @@ public class ControlUnit implements IClockCycle {
               System.out.println("Micro-7: MBR <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
               memory.setMBR(this.gpRegisters[RFI]);
+              this.signalBlockingMicroFunction();
             break;
                 
             case 2:   
@@ -429,7 +450,8 @@ public class ControlUnit implements IClockCycle {
             case 1:
                 // Micro-6: MAR <- EA
                 System.out.println("Micro-6: MAR <- EA");
-                memory.setMAR(this.effectiveAddress);      
+                memory.setMAR(this.effectiveAddress);    
+                this.signalBlockingMicroFunction();
                 break;
                 
             case 2:
@@ -471,6 +493,7 @@ public class ControlUnit implements IClockCycle {
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR<-EA");
               memory.setMAR(this.effectiveAddress);
+              this.signalBlockingMicroFunction();
             break;
                 
             case 2:
@@ -510,6 +533,7 @@ public class ControlUnit implements IClockCycle {
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR <- EA");
               memory.setMAR(this.effectiveAddress);
+              this.signalBlockingMicroFunction();
             break;
                 
             case 2:
