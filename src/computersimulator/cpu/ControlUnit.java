@@ -34,9 +34,7 @@ public class ControlUnit implements IClockCycle {
     private Unit[] xRegisters = new Unit[4];
     
     //R1…R3	20 bits General Purpose Registers (GPRs) – each 20 bits in length
-    private Word[] gpRegisters = new Word[4];
-    
-    private HashMap<String, Unit> indexRegisterDecoded;
+    private Word[] gpRegisters = new Word[4];    
     
     // Effective Address   ENGINEER Console: Used to hold EA temporarily in microcycles
     private Unit effectiveAddress;
