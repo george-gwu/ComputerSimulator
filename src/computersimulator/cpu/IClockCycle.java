@@ -14,6 +14,7 @@ public interface IClockCycle {
      * clockCycleComplete (@TODO: TBD).  If a micro instruction is blocking,
      * that is it requires a clock cycle to finish, then it can call this 
      * function sooner to end the control flow and jump to the next cycle. 
+     * @throws java.lang.Exception
      * @TODO: Is that part necessary?
      */
     public void clockCycle() throws Exception;
