@@ -37,7 +37,10 @@ public class MemoryControlUnit implements IClockCycle {
         memory = new Word[MemoryControlUnit.BANK_SIZE][MemoryControlUnit.BANK_CELLS];     
         initializeMemoryToZero(); // Upon powering up, set all elements of memory to zero
         
-        resetRegisters();
+        memoryAddressRegister = new Unit(13);
+        memoryBufferRegister = new Word();
+        
+        resetState();
     }
     
     /**
@@ -113,12 +116,6 @@ public class MemoryControlUnit implements IClockCycle {
         return this.memoryBufferRegister;
     }
     
-    /**
-     * Clear MBR (for fetch operation)
-     */
-    public void clearMBR(){
-        this.memoryBufferRegister=null;
-    }
     
     /**
      * Set the Memory Access Register (used in get/store)
@@ -245,16 +242,6 @@ public class MemoryControlUnit implements IClockCycle {
             //@TODO: Handle bad address (virtual memory?)
             System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
         }                
-    }
-    
-    
-    /**
-     * Reset registers to null
-     */    
-    private void resetRegisters(){        
-        this.memoryAddressRegister = null;
-        this.memoryBufferRegister = null;
-        this.resetState();
     }
     
     /**

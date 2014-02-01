@@ -1,13 +1,13 @@
 package computersimulator.gui;
 
+import computersimulator.components.Unit;
 import computersimulator.cpu.Computer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,12 +15,12 @@ import javax.swing.JPanel;
 
 /**
  * OperatorConsole should include:
- * Display for all registers
- * Display for machine status and condition registers
- *      Displays:
- *          * Current Memory Address
- *          * Various Registers (as mentioned above)
- *          * Sense Switches (?) to inform the program  (relates to I/O). One DEVID accesses one sense switch.
+ Display mainWindowor all registers
+ Display mainWindowor machine status and condition registers
+      Displays:
+          * Current Memory Address
+          * Various Registers (as mentioned above)
+          * Sense Switches (?) to inmainWindoworm the program  (relates to I/O). One DEVID accesses one sense switch.
  * An IPL button (to start the simulation)
  * Switches (simulated as buttons) to load data into registers, select displays, and initiate certain conditions in the machine.
  * 
@@ -32,89 +32,72 @@ import javax.swing.JPanel;
 public class OperatorConsole implements Runnable {
     
     private Computer computer;
-    private List<DataDisplayComposite> displayComponents;         // list for storing components
+
+    // HashMap of Visual Components
+    private HashMap<String,DataDisplayComposite> displayComponents;
     
-    // declare components
-    private DataDisplayComposite ir;
-    private DataDisplayComposite cc;
-    private DataDisplayComposite pc;
-    private DataDisplayComposite r0;
-    private DataDisplayComposite r1;
-    private DataDisplayComposite r2;
-    private DataDisplayComposite r3;
-    private DataDisplayComposite mdr;
-    private DataDisplayComposite mar;
-    private DataDisplayComposite x0;
-    private DataDisplayComposite x1;
-    private DataDisplayComposite x2;
+    // Data Entry Widget
     private DataEntryComposite input;
+    
+    private JFrame mainWindow;
     
     public void setComputer(Computer computer){
         this.computer = computer;
     }
     
+    
+    public void createComponent(Unit src, String name, boolean edit){    
+        DataDisplayComposite widget = new DataDisplayComposite(src, name, edit);        
+        this.displayComponents.put(name,widget);
+        mainWindow.add(widget.getGUI());
+    }
+    
     @Override
-    public void run() {
+    public void run() {       
+        displayComponents = new HashMap<>();
         
         // Create the window
-        JFrame f =  new JFrame("Group 3 Computer Simulator: Operator Console");
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainWindow =  new JFrame("Group 3 Computer Simulator: Operator Console");
+        mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // create panel to hold all components
         JPanel labelHolder = new JPanel();
-        
-        // maintain the lists of all components
-        displayComponents = new ArrayList<DataDisplayComposite>();
-        
+                
         // create title
         JLabel title = new JLabel("Operator Console");
         Font font = new Font("Verdana", Font.BOLD, 14);
         title.setFont(font);
         title.setForeground(Color.BLACK);
         labelHolder.add(title);
-        f.add(labelHolder);
+        mainWindow.add(labelHolder);
         
-        // create grid layout - each component/register will be placed as a seperate line
+        // create grid layout - each component/register will be placed as a separate line
         GridLayout layout = new GridLayout(15, 1, 15, 5);
         //layout.setVgap(1);
-        f.setLayout(layout);
-         
-      
-        // Create simulator components and initialize the initial state 
-        // create IR
-        ir = new DataDisplayComposite(19, "IR");
-        cc = new DataDisplayComposite(4, "CC", false);
-        pc = new DataDisplayComposite(9, "PC");
-        r0 = new DataDisplayComposite(19, "R0");
-        r1 = new DataDisplayComposite(19, "R1");
-        r2 = new DataDisplayComposite(19, "R2");
-        r3 = new DataDisplayComposite(19, "R3");
-        mdr = new DataDisplayComposite(20, "MDR");
-        mar = new DataDisplayComposite(20, "MAR");
-        x0 = new DataDisplayComposite(20, "X0");
-        x1 = new DataDisplayComposite(20, "X1");
-        x2 = new DataDisplayComposite(20, "X2");
+        mainWindow.setLayout(layout);
+               
+        // Create simulator components and initialize the initial state         
+        createComponent(computer.getCpu().getALU().getConditionCode(),               "CC", false);
+        createComponent(computer.getCpu().getControlUnit().getProgramCounter(),      "PC", true);
+        
+        createComponent(computer.getCpu().getControlUnit().getGpRegisters()[0],      "R0", true);
+        createComponent(computer.getCpu().getControlUnit().getGpRegisters()[1],      "R1", true);
+        createComponent(computer.getCpu().getControlUnit().getGpRegisters()[2],      "R2", true);
+        createComponent(computer.getCpu().getControlUnit().getGpRegisters()[3],      "R3", true);
+        
+        createComponent(computer.getCpu().getControlUnit().getIndexRegisters()[0],   "X1", true);
+        createComponent(computer.getCpu().getControlUnit().getIndexRegisters()[1],   "X2", true);
+        createComponent(computer.getCpu().getControlUnit().getIndexRegisters()[2],   "X3", true);
+        
+        createComponent(computer.getMemory().getMAR(), "MAR", true);
+        createComponent(computer.getMemory().getMBR(), "MBR", true);
+                        
+        createComponent(computer.getCpu().getControlUnit().getInstructionRegister(), "IR", true);
+        
+        
+                       
         input = new DataEntryComposite(20, "Input");
-        
-        JPanel panelCCandPC = new JPanel();   
-        panelCCandPC.setBackground(Color.white);
-        panelCCandPC.add(pc.getGUI());
-        panelCCandPC.add(cc.getGUI());
-        
-        
-        // add all components to the frame
-        f.add(ir.getGUI());
-        f.add(panelCCandPC);
-        f.add(r0.getGUI());
-        f.add(r1.getGUI());
-        f.add(r2.getGUI());
-        f.add(r3.getGUI());
-        f.add(mdr.getGUI());
-        f.add(mar.getGUI());
-        f.add(x0.getGUI());
-        f.add(x1.getGUI());
-        f.add(x2.getGUI());
-        f.add(input.getGUI());
+        mainWindow.add(input.getGUI());
          
         // create button panel with all buttons
         JPanel buttonPanel = new JPanel();   
@@ -134,9 +117,9 @@ public class OperatorConsole implements Runnable {
         buttonPanel.add(reset);
         
         // add button panel to frame
-        f.add(buttonPanel);
+        mainWindow.add(buttonPanel);
         
-        // add listeners
+        // add listener
        
         // start
         start.addActionListener(new ActionListener() {
@@ -150,7 +133,7 @@ public class OperatorConsole implements Runnable {
         deposit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               pc.setDataDisplayComposite("101010111");
+//               pc.setDataDisplayComposite("101010111");
             }
         });
         
@@ -158,11 +141,12 @@ public class OperatorConsole implements Runnable {
         reset.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    pc.setDataDisplayComposite("000000000");
+//                    pc.setDataDisplayComposite("000000000");
                 }
         });
         
-        f.pack();
-        f.setVisible(true);
+        mainWindow.pack();
+        mainWindow.setVisible(true);
     }
+     
 }

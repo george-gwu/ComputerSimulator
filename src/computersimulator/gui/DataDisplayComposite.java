@@ -1,5 +1,6 @@
 package computersimulator.gui;
 
+import computersimulator.components.Unit;
 import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
@@ -14,54 +15,37 @@ import javax.swing.border.Border;
  * @author pawel
  */
 public class DataDisplayComposite {
+    private Unit source;
     private JPanel p;
     private JLabel [] labels;
-    private JCheckBox checkBox;   
-    private JLabel componentName;
+    private JCheckBox checkBox;  
     private final Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
-    private int size;
     
     /**
      * Constructor
-     * @param size number of labels
+     * @param src Source element
      * @param name composite name
+     * @param edit
      */
-    public DataDisplayComposite(int size, String name) {
-        this.size = size;                
-        createDataDisplayComposite(name);        
-    }    
- 
-    /**
-     * Constructor
-     * @param size number of labels
-     * @param name composite name
-     */
-    public DataDisplayComposite(int size, String name, boolean edit) {
-        this.size = size;                
-        createDataDisplayComposite(name,edit);        
-    }
-    
-    /**
-     * Create Data Display Component with n labels
-     * @return returns labels
-     */
-    private JLabel[] createDataDisplayComposite(String name, boolean edit) {    
-        labels = new JLabel[size];
+    public DataDisplayComposite(Unit src, String name, boolean edit){
+        this.source = src;
         
         p = new JPanel();
         p.setBackground(Color.WHITE);
         
-        if(edit){
-            // checkbox       
+        if(edit){ // checkbox for use with Deposit            
             checkBox = new JCheckBox();
             p.add(checkBox);
             p.add(new JLabel(" ")); // add empty placeholder between checkbox and labels
         }
         
-        // componenent name
-        componentName = new JLabel(name);
-    
-        p.add(componentName);
+        // component name
+        p.add(new JLabel(name));    
+        
+        int size = this.source.getSize();
+        
+        // Labels Used For Binary Display
+        labels = new JLabel[size];
         for (int i = 0; i < size; i++) {
             labels[i] = new JLabel();
             labels[i].setBorder(border);
@@ -69,10 +53,11 @@ public class DataDisplayComposite {
             labels[i].setOpaque(true);
             labels[i].setPreferredSize(new Dimension(15, 15));
             p.add(labels[i]);
-        }
-
-        return labels;
+        }        
+        
     }
+ 
+
     
     /**
      * Set status based on instruction passed 
@@ -96,33 +81,9 @@ public class DataDisplayComposite {
     }
 
     /**
-     * Create Data Display Component with n labels
-     * @return returns labels
-     */
-    private JLabel[] createDataDisplayComposite(String name) {
-        return createDataDisplayComposite(name, true);
-    }
-     
-    /**
      * @return panel instance
      */ 
     public JComponent getGUI() {
         return p;
-    }
-    
-    /**
-     * Get the size of the component
-     * @return size of the component
-     */
-    public int getSize() {
-        return size;
-    }
-    
-    /**
-     * Set the size of the component
-     * @param size 
-     */
-    public void setSize(int size) {
-        this.size = size;
-    }
+    }    
 }

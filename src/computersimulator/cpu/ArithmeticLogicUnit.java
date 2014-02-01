@@ -15,7 +15,10 @@ public class ArithmeticLogicUnit implements IClockCycle {
         this.conditionCode = new Unit(4);   // @TODO: GT, EQ, LT ?
         
     }
-    
+   
+    public Unit getConditionCode() {
+        return conditionCode;
+    }    
     
     /**
      * Clock cycle. This is the main function which causes the ALU to do work.

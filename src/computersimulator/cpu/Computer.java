@@ -49,7 +49,31 @@ public class Computer implements IClockCycle {
             this.cpu.clockCycle();
             this.memory.clockCycle();
             this.io.clockCycle();                
-    }             
+    }
+
+    /**
+     *
+     * @return CPU
+     */
+    public CentralProcessingUnit getCpu() {
+        return cpu;
+    }
+
+    /**
+     *
+     * @return Memory Instance
+     */
+    public MemoryControlUnit getMemory() {
+        return memory;
+    }
+
+    /**
+     *
+     * @return IO instance
+     */
+    public InputOutputController getIO() {
+        return io;
+    }    
     
     
     /*****

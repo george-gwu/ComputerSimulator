@@ -88,10 +88,32 @@ public class ControlUnit implements IClockCycle {
         
         for(int x=0;x<4;x++){
             this.gpRegisters[x] = new Word();
-        }
-                  
-        
+        }                         
     }
+    
+    public Unit getProgramCounter() {
+        return programCounter;
+    }
+
+    public Word getInstructionRegister() {
+        return instructionRegister;
+    }
+
+    public Word getMachineStatusRegister() {
+        return machineStatusRegister;
+    }
+
+    public Unit getMachineFaultRegister() {
+        return machineFaultRegister;
+    }
+
+    public Unit[] getIndexRegisters() {
+        return indexRegisters;
+    }
+
+    public Word[] getGpRegisters() {
+        return gpRegisters;
+    }    
     
     /**
      * Clock cycle. This is the main function which causes the ControlUnit to do work.
