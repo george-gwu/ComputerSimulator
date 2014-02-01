@@ -19,6 +19,7 @@ public class DataEntryComposite {
     /**
      * Constructor
      * @param size number of entries
+     * @param name Name of Field
      */
     public DataEntryComposite(int size, String name) {
         this.size = size;
@@ -30,7 +31,7 @@ public class DataEntryComposite {
      * @param size  number of entries
      * @return returns entries
      */
-    public JCheckBox[] createDataEntryComposite(int size, String name) {
+    private JCheckBox[] createDataEntryComposite(int size, String name) {
         entries = new JCheckBox[size];
         p = new JPanel();           
         p.setBackground(Color.LIGHT_GRAY);

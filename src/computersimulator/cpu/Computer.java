@@ -24,19 +24,22 @@ public class Computer implements IClockCycle {
         cpu = new CentralProcessingUnit(memory); // contains ALU,  ControlUnit      
         io = new InputOutputController();
             
-//        boolean running = true; // @TODO hook this to IPL button
-//        
-//        do {
-//            try {
-//                this.clockCycle();
-//            } catch(HaltSystemException eHalt){
-//                System.out.println("System HALT.");
-//                running=false;
-//            } catch(Exception e){
-//                System.out.println("Error: "+ e);
-//            }
-//        } while(running==true);
-//        
+        boolean running = true; // @TODO hook this to IPL button
+        
+        this.memory.engineerSetMemoryLocation(new Unit(13, 15), Word.WordFromBinaryString("000010 11 00 1 0 00110100"));
+        cpu.getControlUnit().setPC(new Unit(13,15));
+            
+        do {
+            try {
+                this.clockCycle();
+            } catch(HaltSystemException eHalt){
+                System.out.println("System HALT.");
+                running=false;
+            } catch(Exception e){
+                System.out.println("Error: "+ e);
+            }
+        } while(running==true);
+        
     }   
     
     /**
