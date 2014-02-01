@@ -33,8 +33,8 @@ public class ControlUnit implements IClockCycle {
     //X1…X3	13 bits	Index Register: contains a 13-bit base address that supports base register addressing of memory.
     private Unit[] xRegisters = new Unit[4];
     
-    //X1…X3	13 bits	Index Register: contains a 13-bit base address that supports base register addressing of memory.
-    private Unit[] gprRegisters = new Unit[4];
+    //R1…R3	20 bits General Purpose Registers (GPRs) – each 20 bits in length
+    private Word[] gpRegisters = new Word[4];
     
     private HashMap<String, Unit> indexRegisterDecoded;
     
@@ -81,6 +81,7 @@ public class ControlUnit implements IClockCycle {
         
         for(int x=0;x<4;x++){
             this.xRegisters[x] = new Unit(13);
+            this.gpRegisters[x] = new Word();
         }
                   
         
@@ -362,7 +363,7 @@ public class ControlUnit implements IClockCycle {
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
                 int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
-                this.xRegisters[RFI] = this.memory.getMBR();
+                this.gpRegisters[RFI] = this.memory.getMBR();
 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 System.out.println("COMPLETED INSTRUCTION: LDR - rfi["+RFI+"] is now: "+ this.memory.getMBR());
@@ -398,7 +399,7 @@ public class ControlUnit implements IClockCycle {
               // Micro-7: MBR <- RF(RFI)
               System.out.println("Micro-7: MBR <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
-              memory.setMBR(this.xRegisters[RFI]);
+              memory.setMBR(this.gpRegisters[RFI]);
             break;
                 
             case 2:   
