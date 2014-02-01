@@ -1,6 +1,8 @@
 package computersimulator.gui;
 
+import computersimulator.components.HaltSystemException;
 import computersimulator.components.Unit;
+import computersimulator.components.Word;
 import computersimulator.cpu.Computer;
 import java.awt.Color;
 import java.awt.Font;
@@ -8,8 +10,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,8 +51,8 @@ public class OperatorConsole implements Runnable {
     }
     
     
-    public void createComponent(Unit src, String name, boolean edit){    
-        DataDisplayComposite widget = new DataDisplayComposite(src, name, edit);        
+    public void createComponent(String name, boolean edit) throws Exception {    
+        DataDisplayComposite widget = new DataDisplayComposite(this.computer, name, edit);        
         this.displayComponents.put(name,widget);
         mainWindow.add(widget.getGUI());
     }
@@ -79,25 +82,27 @@ public class OperatorConsole implements Runnable {
         mainWindow.setLayout(layout);
                
         // Create simulator components and initialize the initial state         
-        
-        createComponent(computer.getCpu().getControlUnit().getGpRegisters()[0],      "R0", true);
-        createComponent(computer.getCpu().getControlUnit().getGpRegisters()[1],      "R1", true);
-        createComponent(computer.getCpu().getControlUnit().getGpRegisters()[2],      "R2", true);
-        createComponent(computer.getCpu().getControlUnit().getGpRegisters()[3],      "R3", true);
-        
-        createComponent(computer.getCpu().getControlUnit().getIndexRegisters()[0],   "X1", true);
-        createComponent(computer.getCpu().getControlUnit().getIndexRegisters()[1],   "X2", true);
-        createComponent(computer.getCpu().getControlUnit().getIndexRegisters()[2],   "X3", true);
-        
-        createComponent(computer.getMemory().getMAR(), "MAR", true);
-        createComponent(computer.getMemory().getMBR(), "MBR", true);
-        
-        createComponent(computer.getCpu().getControlUnit().getProgramCounter(),      "PC", true);
-        createComponent(computer.getCpu().getALU().getConditionCode(),               "CC", false);
-                        
-        createComponent(computer.getCpu().getControlUnit().getInstructionRegister(), "IR", true);
-        
-        
+        try {
+            createComponent("R0", true);
+            createComponent("R1", true);
+            createComponent("R2", true);
+            createComponent("R3", true);
+
+            createComponent("X1", true);
+            createComponent("X2", true);
+            createComponent("X3", true);
+            
+            createComponent("MAR", true);
+            createComponent("MBR", true);
+            
+            createComponent("PC", true);
+            createComponent("CC", false);
+            
+            createComponent("IR", true);
+            
+        } catch(Exception err){
+            System.out.println("Error: "+err);
+        }                    
                        
         input = new DataEntryComposite(20, "Input");
         mainWindow.add(input.getGUI());
@@ -122,11 +127,17 @@ public class OperatorConsole implements Runnable {
         
         // add listeners
        
+        final OperatorConsole opconsole = this;
+        
         // Start Button
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Selected state: " + input.getValueAsBinaryString());
+                try {                
+                    opconsole.updateDisplay();
+                } catch (Exception ex) {
+                    Logger.getLogger(OperatorConsole.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
        
@@ -136,6 +147,7 @@ public class OperatorConsole implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 
                 String valueToDeposit = input.getValueAsBinaryString();
+                Unit unitToDeposit = Unit.UnitFromBinaryString(valueToDeposit);
                 input.resetToZero();
                 
                  for(Map.Entry<String, DataDisplayComposite> el : displayComponents.entrySet()){
@@ -143,11 +155,32 @@ public class OperatorConsole implements Runnable {
                         
                         // If Widget is checked, it is receiving the deposit
                         if(widget.isChecked()){
-                            widget.getSource().setValueBinary(valueToDeposit);
+                            switch(widget.getName()){
+                                case "MAR": // 13-bit
+                                    Unit depositUnit = new Unit(13, unitToDeposit.getValue());
+                                    computer.getMemory().setMAR(depositUnit);
+                                    break;
+                                    
+                                case "MBR":
+                                    Word depositWord = new Word(unitToDeposit);
+                                    computer.getMemory().setMBR(depositWord);
+                                    break;
+                                
+                                default:
+                                    try {
+                                        widget.getSource().setValueBinary(valueToDeposit);
+                                    } catch (Exception ex) {
+                                        Logger.getLogger(OperatorConsole.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                            }
+                            
                             widget.uncheck();
-                            widget.updateDisplay();
-                        }                        
-                        
+                            try {
+                                widget.updateDisplay();
+                            } catch (Exception ex) {
+                                Logger.getLogger(OperatorConsole.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }                                                
                     }           
                 
                 System.out.println("Deposit Requested");
@@ -158,21 +191,29 @@ public class OperatorConsole implements Runnable {
         step.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("Step Requested");
-                    
-                    
+                    try {
+                        computer.clockCycle();
+                        opconsole.updateDisplay();
+                    } catch(HaltSystemException eHalt){
+                        System.out.println("System HALT.");
+                    } catch(Exception err){
+                        System.out.println("Error: "+ e);
+                    }
                 }
         });
         
-        
-        this.updateDisplay();
+        try {
+            this.updateDisplay();
+        } catch (Exception ex) {
+            Logger.getLogger(OperatorConsole.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         mainWindow.pack();
         mainWindow.setVisible(true);
     }
     
     
-    public void updateDisplay(){
+    public void updateDisplay() throws Exception{
         for(Map.Entry<String, DataDisplayComposite> el : displayComponents.entrySet()){
             DataDisplayComposite widget = el.getValue();
             widget.updateDisplay();

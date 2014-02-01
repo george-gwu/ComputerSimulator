@@ -1,6 +1,7 @@
 package computersimulator.gui;
 
 import computersimulator.components.Unit;
+import computersimulator.cpu.Computer;
 import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
@@ -8,18 +9,18 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
 
 /**
  *
  * @author pawel
  */
 public class DataDisplayComposite {
-    private Unit source;
+    private Computer computer;
     private JPanel p;
     private JLabel [] bits;
     private JCheckBox checkBox;  
     private String name;
+
     
     /**
      * Constructor
@@ -27,9 +28,11 @@ public class DataDisplayComposite {
      * @param name composite name
      * @param edit
      */
-    public DataDisplayComposite(Unit src, String name, boolean edit){
-        this.source = src;
+    public DataDisplayComposite(Computer computer, String name, boolean edit) throws Exception {
         this.name = name;
+        this.computer = computer;
+                
+        int size = computer.getComponentValueByName(name).getSize();
         
         p = new JPanel();
         p.setBackground(Color.WHITE);
@@ -43,9 +46,9 @@ public class DataDisplayComposite {
         // component name
         p.add(new JLabel(name));    
         
-        // Labels used for Dispaly of Bits
-        bits = new JLabel[this.source.getSize()];
-        for (int i = 0; i < this.source.getSize(); i++) {
+        // Labels used for Display of Bits
+        bits = new JLabel[size];
+        for (int i = 0; i < size; i++) {
             bits[i] = new JLabel();
             bits[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
             bits[i].setBackground(Color.gray);
@@ -55,8 +58,8 @@ public class DataDisplayComposite {
         }                
     }
     
-    public void updateDisplay(){
-        Integer[] data = this.source.getBinaryArray();
+    public void updateDisplay() throws Exception{
+        Integer[] data = this.getSource().getBinaryArray();
         
         for(int i = 0; i<data.length; i++){
             bits[i].setBackground((data[i]==1) ? Color.red : Color.gray);
@@ -81,9 +84,10 @@ public class DataDisplayComposite {
     public String getName() {
         return name;
     }
+    
 
-    public Unit getSource() {
-        return source;
+    public Unit getSource() throws Exception {
+        return this.computer.getComponentValueByName(this.name);
     }
     
     

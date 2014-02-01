@@ -11,35 +11,12 @@ public class Computer implements IClockCycle {
     
     private CentralProcessingUnit cpu;
     private MemoryControlUnit memory;
-    private InputOutputController io;
-    
-    // Used to pause until GUI button press between instructions
-    private boolean stepInstruction = false;
-    
-    // Used to pause until GUI button press
-    private boolean stepMicro = false;
+    private InputOutputController io;   
 
     public Computer() {        
         memory = new MemoryControlUnit();  
         cpu = new CentralProcessingUnit(memory); // contains ALU,  ControlUnit      
         io = new InputOutputController();
-            
-        boolean running = true; // @TODO hook this to IPL button
-        
-        this.memory.engineerSetMemoryLocation(new Unit(13, 15), Word.WordFromBinaryString("000010 11 00 1 0 00110100"));
-        cpu.getControlUnit().setPC(new Unit(13,15));
-            
-        do {
-            try {
-                this.clockCycle();
-            } catch(HaltSystemException eHalt){
-                System.out.println("System HALT.");
-                running=false;
-            } catch(Exception e){
-                System.out.println("Error: "+ e);
-            }
-        } while(running==true);
-        
     }   
     
     /**
@@ -76,14 +53,66 @@ public class Computer implements IClockCycle {
      */
     public InputOutputController getIO() {
         return io;
-    }    
+    }
+
+    /**
+     * Since each Register contains a reference to a particular unit/word, 
+     * we can't maintain that reference and instead must look it up every time.
+     * @param name Name of Register/Variable
+     */
+    public Unit getComponentValueByName(String name) throws Exception{
+        switch(name){
+            case "R0":
+                return this.getCpu().getControlUnit().getGpRegisters()[0];
+            case "R1":
+                return this.getCpu().getControlUnit().getGpRegisters()[1];
+            case "R2":
+                return this.getCpu().getControlUnit().getGpRegisters()[2];                
+            case "R3":
+                return this.getCpu().getControlUnit().getGpRegisters()[3];                
+            case "X1":
+                return this.getCpu().getControlUnit().getIndexRegisters()[0];
+            case "X2":
+                return this.getCpu().getControlUnit().getIndexRegisters()[1];
+            case "X3":
+                return this.getCpu().getControlUnit().getIndexRegisters()[2];
+            case "MAR":
+                return this.getMemory().getMAR();
+            case "MBR":
+                return this.getMemory().getMBR();
+            case "PC":
+                return this.getCpu().getControlUnit().getProgramCounter();
+            case "CC":
+                return this.getCpu().getALU().getConditionCode();
+            case "IR":
+                return this.getCpu().getControlUnit().getInstructionRegister();
+            default:
+                throw new Exception("Uknown Component");
+               
+        }                  
+    }
     
     
     /*****
      * 
 // M(15) <- STR, 3, 0, 52, I
         this.memory.engineerSetMemoryLocation(new Unit(13, 15), Word.WordFromBinaryString("000010 11 00 1 0 00110100"));
+                    
+        boolean running = true; // @TODO hook this to IPL button
         
+        this.memory.engineerSetMemoryLocation(new Unit(13, 15), Word.WordFromBinaryString("000010 11 00 1 0 00110100"));
+        cpu.getControlUnit().setPC(new Unit(13,15));
+            
+        do {
+            try {
+                this.clockCycle();
+            } catch(HaltSystemException eHalt){
+                System.out.println("System HALT.");
+                running=false;
+            } catch(Exception e){
+                System.out.println("Error: "+ e);
+            }
+        } while(running==true);
 
 //        LDR r, x, address [,I]	
 //        which says “load R3 from address 52 indirect with no indexing”  
