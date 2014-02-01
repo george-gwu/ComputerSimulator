@@ -3,6 +3,7 @@ package computersimulator.gui;
 import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,6 +16,7 @@ import javax.swing.border.Border;
 public class DataDisplayComposite {
     private JPanel p;
     private JLabel [] labels;
+    private JCheckBox checkBox;   
     private JLabel componentName;
     private final Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
     private int size;
@@ -53,10 +55,18 @@ public class DataDisplayComposite {
      */
     public JLabel[] createDataDisplayComposite(int size, String name) {
         labels = new JLabel[size];
+        
         p = new JPanel();
         p.setBackground(Color.WHITE);
-        componentName = new JLabel(name);
         
+        // checkbox
+        checkBox = new JCheckBox();
+        p.add(checkBox);
+        p.add(new JLabel(" ")); // add empty placeholder between checkbox and labels
+        
+        // componenent name
+        componentName = new JLabel(name);
+    
         p.add(componentName);
         for (int i = 0; i < size; i++) {
             labels[i] = new JLabel();
