@@ -31,7 +31,7 @@ public class ControlUnit implements IClockCycle {
     private Unit machineFaultRegister;
     
     //X1…X3	13 bits	Index Register: contains a 13-bit base address that supports base register addressing of memory.
-    private Unit[] xRegisters = new Unit[4];
+    private Unit[] indexRegisters = new Unit[3];
     
     //R1…R3	20 bits General Purpose Registers (GPRs) – each 20 bits in length
     private Word[] gpRegisters = new Word[4];    
@@ -80,8 +80,11 @@ public class ControlUnit implements IClockCycle {
         this.state = ControlUnit.STATE_NONE;
         this.memory = mem;
         
+        for(int x=0;x<3;x++){
+            this.indexRegisters[x] = new Unit(13);
+        }        
+        
         for(int x=0;x<4;x++){
-            this.xRegisters[x] = new Unit(13);
             this.gpRegisters[x] = new Word();
         }
                   
@@ -464,7 +467,7 @@ public class ControlUnit implements IClockCycle {
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
                 int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-                this.xRegisters[RFI] = this.memory.getMBR();
+                this.indexRegisters[RFI] = this.memory.getMBR();
 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 System.out.println("COMPLETED INSTRUCTION: LDA - rfi["+RFI+"] is now: "+ this.memory.getMBR());
@@ -505,7 +508,7 @@ public class ControlUnit implements IClockCycle {
             case 3:
               // Micro 8: c(XFI) <- MBR
               int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
-              this.xRegisters[XFI] = this.memory.getMBR();  
+              this.indexRegisters[XFI] = this.memory.getMBR();  
               
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               System.out.println("COMPLETED INSTRUCTION: LDX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
@@ -540,7 +543,7 @@ public class ControlUnit implements IClockCycle {
               // Micro 7: MBR <- c(XFI)
               System.out.println("Micro 7: MBR <- c(XFI)");
               int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
-              memory.setMBR(this.xRegisters[XFI]);
+              memory.setMBR(this.indexRegisters[XFI]);
             break;
                 
             case 3:
