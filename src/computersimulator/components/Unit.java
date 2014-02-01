@@ -212,7 +212,15 @@ public class Unit {
             result.append(el);
         }
         return result.toString();
-    }          
+    }
+
+    /**
+     * Accepts a binary string and loads it into the Unit
+     * @param binary
+     */
+    public void setValueBinary(String binary){
+          this.setValue(Integer.parseInt(binary, 2));        
+    }
     
     @Override
     public String toString() {

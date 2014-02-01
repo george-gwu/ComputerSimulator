@@ -19,8 +19,7 @@ public class DataDisplayComposite {
     private JPanel p;
     private JLabel [] bits;
     private JCheckBox checkBox;  
-    private final Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
-    private int i;
+    private String name;
     
     /**
      * Constructor
@@ -30,13 +29,14 @@ public class DataDisplayComposite {
      */
     public DataDisplayComposite(Unit src, String name, boolean edit){
         this.source = src;
+        this.name = name;
         
         p = new JPanel();
         p.setBackground(Color.WHITE);
         
-        if(edit){ // checkbox for use with Deposit            
-            checkBox = new JCheckBox();
-            p.add(checkBox);
+        this.checkBox = new JCheckBox();
+        if(edit){ // checkbox for use with Deposit, only visible if edited                        
+            p.add(this.checkBox);
             p.add(new JLabel(" ")); // add empty placeholder between checkbox and bits
         }
         
@@ -47,7 +47,7 @@ public class DataDisplayComposite {
         bits = new JLabel[this.source.getSize()];
         for (int i = 0; i < this.source.getSize(); i++) {
             bits[i] = new JLabel();
-            bits[i].setBorder(border);
+            bits[i].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
             bits[i].setBackground(Color.gray);
             bits[i].setOpaque(true);
             bits[i].setPreferredSize(new Dimension(15, 15));
@@ -62,6 +62,33 @@ public class DataDisplayComposite {
             bits[i].setBackground((data[i]==1) ? Color.red : Color.gray);
         }
     }   
+    
+    public boolean isChecked(){
+        return this.checkBox.isSelected();
+    }
+    
+    
+    public void uncheck(){
+        this.checkBox.setSelected(false);
+    }
+    
+    public void check(){
+        this.checkBox.setSelected(true);
+    }
+    
+    
+
+    public String getName() {
+        return name;
+    }
+
+    public Unit getSource() {
+        return source;
+    }
+    
+    
+    
+    
 
     /**
      * @return panel instance

@@ -8,6 +8,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -77,8 +79,6 @@ public class OperatorConsole implements Runnable {
         mainWindow.setLayout(layout);
                
         // Create simulator components and initialize the initial state         
-        createComponent(computer.getCpu().getALU().getConditionCode(),               "CC", false);
-        createComponent(computer.getCpu().getControlUnit().getProgramCounter(),      "PC", true);
         
         createComponent(computer.getCpu().getControlUnit().getGpRegisters()[0],      "R0", true);
         createComponent(computer.getCpu().getControlUnit().getGpRegisters()[1],      "R1", true);
@@ -91,6 +91,9 @@ public class OperatorConsole implements Runnable {
         
         createComponent(computer.getMemory().getMAR(), "MAR", true);
         createComponent(computer.getMemory().getMBR(), "MBR", true);
+        
+        createComponent(computer.getCpu().getControlUnit().getProgramCounter(),      "PC", true);
+        createComponent(computer.getCpu().getALU().getConditionCode(),               "CC", false);
                         
         createComponent(computer.getCpu().getControlUnit().getInstructionRegister(), "IR", true);
         
@@ -102,30 +105,28 @@ public class OperatorConsole implements Runnable {
         // create button panel with all buttons
         JPanel buttonPanel = new JPanel();   
         // create buttons
-        JButton start = new JButton("Start");
-        JButton load = new JButton("Load");
+        JButton start = new JButton("IPL");
+        //JButton load = new JButton("Load");
         JButton deposit = new JButton("Deposit");
         JButton step = new JButton("Step");
-        JButton stop = new JButton("Stop");
-        JButton reset = new JButton("Reset");
+        //JButton stop = new JButton("Stop");
 
         buttonPanel.add(start);
-        buttonPanel.add(load);
+        //buttonPanel.add(load);
         buttonPanel.add(deposit);
         buttonPanel.add(step);
-        buttonPanel.add(stop);
-        buttonPanel.add(reset);
-        
+        //buttonPanel.add(stop);
+
         // add button panel to frame
         mainWindow.add(buttonPanel);
         
-        // add listener
+        // add listeners
        
-        // start
+        // Start Button
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Selected state: " + input.getDataEntryComposite());
+                System.out.println("Selected state: " + input.getValueAsBinaryString());
             }
         });
        
@@ -133,17 +134,37 @@ public class OperatorConsole implements Runnable {
         deposit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//               pc.setDataDisplayComposite("101010111");
+                
+                String valueToDeposit = input.getValueAsBinaryString();
+                input.resetToZero();
+                
+                 for(Map.Entry<String, DataDisplayComposite> el : displayComponents.entrySet()){
+                        DataDisplayComposite widget = el.getValue();
+                        
+                        // If Widget is checked, it is receiving the deposit
+                        if(widget.isChecked()){
+                            widget.getSource().setValueBinary(valueToDeposit);
+                            widget.uncheck();
+                        }
+                        
+                        widget.updateDisplay();
+                    }           
+                
+                System.out.println("Deposit Requested");
             }
         });
         
-        // reset
-        reset.addActionListener(new ActionListener() {
+        // step
+        step.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    pc.setDataDisplayComposite("000000000");
+                    System.out.println("Step Requested");
+                    
+                    
                 }
         });
+        
+        
         
         mainWindow.pack();
         mainWindow.setVisible(true);

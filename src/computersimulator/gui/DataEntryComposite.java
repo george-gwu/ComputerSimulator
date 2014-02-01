@@ -12,13 +12,13 @@ import javax.swing.JPanel;
  */
 public class DataEntryComposite {
     private JPanel p;
-    private JCheckBox[] entries; 
+    private JCheckBox[] inputBits; 
     private JLabel componentName;
     private int size;
     
     /**
      * Constructor
-     * @param size number of entries
+     * @param size number of inputBits
      * @param name Name of Field
      */
     public DataEntryComposite(int size, String name) {
@@ -28,46 +28,47 @@ public class DataEntryComposite {
     
      /**
      * Create Data Entry Component with n elements
-     * @param size  number of entries
-     * @return returns entries
+     * @param size  number of inputBits
+     * @return returns inputBits
      */
-    private JCheckBox[] createDataEntryComposite(int size, String name) {
-        entries = new JCheckBox[size];
+    private JCheckBox[] createDataEntryComposite(int size, String name) {        
         p = new JPanel();           
         p.setBackground(Color.LIGHT_GRAY);
         
         componentName = new JLabel(name);
         p.add(componentName);
         
-        // create entries
+        // create inputBits
+        inputBits = new JCheckBox[size];
         for (int i = 0; i < size; i++) {
-            entries[i] = new JCheckBox("");
-            p.add(entries[i]);
+            inputBits[i] = new JCheckBox("");
+            p.add(inputBits[i]);
         }
         
-        return entries;
+        return inputBits;
     }
     
     /**
-     * Get status of entries
-     * @return the status of entries
+     * Get status of inputBits
+     * @return the status of inputBits
      */
-    public String getDataEntryComposite() {
-        if (entries == null) {
-            throw new RuntimeException("please make sure to initialize "
-                        + "labels");
-        }
+    public String getValueAsBinaryString() {  
+        StringBuilder code = new StringBuilder();
         
-        StringBuilder code = new StringBuilder("");
-        
-        for (int i = 0; i < entries.length; i++) {
-            if (entries[i].isSelected()) { 
+        for (JCheckBox inputBit : inputBits) {
+            if (inputBit.isSelected()) { 
                 code.append("1");
             } else { 
                 code.append("0");
             }
         }
         return new String(code);
+    }
+    
+    public void resetToZero(){
+         for (JCheckBox inputBit : inputBits) {
+             inputBit.setSelected(false);
+         }
     }
 
     /**
