@@ -33,6 +33,9 @@ public class ControlUnit implements IClockCycle {
     //X1…X3	13 bits	Index Register: contains a 13-bit base address that supports base register addressing of memory.
     private Unit[] xRegisters = new Unit[4];
     
+    //X1…X3	13 bits	Index Register: contains a 13-bit base address that supports base register addressing of memory.
+    private Unit[] gprRegisters = new Unit[4];
+    
     private HashMap<String, Unit> indexRegisterDecoded;
     
     // Effective Address   ENGINEER Console: Used to hold EA temporarily in microcycles
