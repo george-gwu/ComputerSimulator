@@ -52,10 +52,11 @@ public class ControlUnit implements IClockCycle {
     
     private static final int MICROSTATE_EXECUTE_COMPLETE=999;
     
-    
+    private static final int OPCODE_HLT=0;
     private static final int OPCODE_LDR=1;
     private static final int OPCODE_STR=2;
     private static final int OPCODE_LDA=3;
+    private static final int OPCODE_TRAP=30;
     private static final int OPCODE_LDX=41;
     private static final int OPCODE_STX=42;
     private static final int OPCODE_AMR=4;
@@ -214,6 +215,11 @@ public class ControlUnit implements IClockCycle {
             int opcode = this.instructionRegisterDecoded.get("opcode").getValue();
             System.out.println("--EXECUTING OPCODE: "+ opcode);
             switch(opcode){
+                case ControlUnit.OPCODE_HLT:
+                    this.executeOpcodeHLT();
+                    
+                    break;
+                    
                 case ControlUnit.OPCODE_LDR:        //DONE
                     this.executeOpcodeLDR();
 
@@ -467,7 +473,7 @@ public class ControlUnit implements IClockCycle {
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
                 int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-                this.indexRegisters[RFI] = this.memory.getMBR();
+                this.gpRegisters[RFI] = this.memory.getMBR();
 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 System.out.println("COMPLETED INSTRUCTION: LDA - rfi["+RFI+"] is now: "+ this.memory.getMBR());
@@ -506,8 +512,9 @@ public class ControlUnit implements IClockCycle {
             break;
 
             case 3:
-              // Micro 8: c(XFI) <- MBR
-              int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
+              // Micro 8: c(XFI) <- MBR              
+              // Maps XFI 1-3 to Array Index 0-2
+              int XFI = (int)(this.instructionRegisterDecoded.get("xfi").getValue()-1);
               this.indexRegisters[XFI] = this.memory.getMBR();  
               
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -542,7 +549,8 @@ public class ControlUnit implements IClockCycle {
             case 2:
               // Micro 7: MBR <- c(XFI)
               System.out.println("Micro 7: MBR <- c(XFI)");
-              int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
+              // Maps XFI 1-3 to Array Index 0-2
+              int XFI = (int)(this.instructionRegisterDecoded.get("xfi").getValue()-1);
               memory.setMBR(this.indexRegisters[XFI]);
             break;
                 
@@ -596,5 +604,13 @@ public class ControlUnit implements IClockCycle {
             
         }
     }
+    
+    
+    /**
+     * Stop the machine
+     */
+    private void executeOpcodeHLT() throws Exception {
+        throw new Exception("HALT!");
+    }    
     
 }
