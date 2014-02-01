@@ -65,7 +65,7 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_AIR=6;
     private static final int OPCODE_SIR=7;
     
-    // used to control micro step, defined per state
+    // Engineer: used to control micro step, defined per state
     private Integer microState = null;
     
     
@@ -274,7 +274,8 @@ public class ControlUnit implements IClockCycle {
             System.out.println("-- PC: "+this.getPC());
 
             this.microState = null;
-            this.state = ControlUnit.STATE_NONE;            
+            this.state = ControlUnit.STATE_NONE;       
+            this.signalBlockingMicroFunction();
         }        
     }
    
