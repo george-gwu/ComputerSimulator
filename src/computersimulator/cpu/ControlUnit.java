@@ -274,12 +274,12 @@ public class ControlUnit implements IClockCycle {
     
     private Unit calculateEffectiveAddress(HashMap<String,Unit> irDecoded){
      
-        if(irDecoded.get("xfiI").getValue()==0 && irDecoded.get("rfiI").getValue()==0){                        
+        if(irDecoded.get("xfi").getValue()==0 && irDecoded.get("rfi").getValue()==0){                        
             //EA <- ADDR
             System.out.println("Absolute/Direct:" + irDecoded.get("address"));
             return irDecoded.get("address");            
-        } else if(irDecoded.get("index").getValue()==0 && irDecoded.get("xfiI").getValue()>=1 && irDecoded.get("xfiI").getValue()<=3){
-            int contentsOfX = irDecoded.get("xfiI").getValue();
+        } else if(irDecoded.get("index").getValue()==0 && irDecoded.get("xfi").getValue()>=1 && irDecoded.get("xfi").getValue()<=3){
+            int contentsOfX = irDecoded.get("xfi").getValue();
             Unit addr = irDecoded.get("address");
             Word contentsOfAddr = this.memory.engineerFetchByMemoryLocation(addr);            
             Unit ret = new Unit(13, (contentsOfX + contentsOfAddr.getValue()));
@@ -288,7 +288,7 @@ public class ControlUnit implements IClockCycle {
             System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+contentsOfAddr.getValue()+"): "+ret);
             return ret;            
             
-        } else if(irDecoded.get("index").getValue()==1 && irDecoded.get("xfiI").getValue()==0){
+        } else if(irDecoded.get("index").getValue()==1 && irDecoded.get("xfi").getValue()==0){
             Unit addr = irDecoded.get("address");
             Word contentsOfAddr = this.memory.engineerFetchByMemoryLocation(addr);
             Word contentsOfContents = this.memory.engineerFetchByMemoryLocation(contentsOfAddr);
@@ -298,8 +298,8 @@ public class ControlUnit implements IClockCycle {
             System.out.println("Indexed - c(c(ADDR)) =  c(c("+addr.getValue()+")) = c("+contentsOfAddr.getValue()+") = "+ret);
             return ret;                                    
             
-        } else if(irDecoded.get("index").getValue()==1 && irDecoded.get("xfiI").getValue()>=1 && irDecoded.get("xfiI").getValue()<=3){
-            int contentsOfX = irDecoded.get("xfiI").getValue();
+        } else if(irDecoded.get("index").getValue()==1 && irDecoded.get("xfi").getValue()>=1 && irDecoded.get("xfi").getValue()<=3){
+            int contentsOfX = irDecoded.get("xfi").getValue();
             Unit addr = irDecoded.get("address");
             Word contentsOfAddr = this.memory.engineerFetchByMemoryLocation(addr);
             
@@ -326,8 +326,8 @@ public class ControlUnit implements IClockCycle {
        HashMap<String,Unit> decoded = new HashMap();
        
        decoded.put("opcode",  IR.decomposeByOffset(0, 5  ));
-       decoded.put("rfiI",    IR.decomposeByOffset(6, 7  ));
-       decoded.put("xfiI",    IR.decomposeByOffset(8, 9  ));
+       decoded.put("rfi",    IR.decomposeByOffset(6, 7  ));
+       decoded.put("xfi",    IR.decomposeByOffset(8, 9  ));
        decoded.put("index",   IR.decomposeByOffset(10    ));
        decoded.put("trace",   IR.decomposeByOffset(11    ));
        decoded.put("address", IR.decomposeByOffset(12, 19));
@@ -380,7 +380,7 @@ public class ControlUnit implements IClockCycle {
             case 3:
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
-                int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
+                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
                 this.gpRegisters[RFI] = this.memory.getMBR();
 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -416,7 +416,7 @@ public class ControlUnit implements IClockCycle {
               
               // Micro-7: MBR <- RF(RFI)
               System.out.println("Micro-7: MBR <- RF(RFI)");
-              int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
+              int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
               memory.setMBR(this.gpRegisters[RFI]);
               this.signalBlockingMicroFunction();
             break;
@@ -463,7 +463,7 @@ public class ControlUnit implements IClockCycle {
             case 3:
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
-                int RFI = this.instructionRegisterDecoded.get("rfiI").getValue();
+                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
                 this.xRegisters[RFI] = this.memory.getMBR();
 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -504,7 +504,7 @@ public class ControlUnit implements IClockCycle {
 
             case 3:
               // Micro 8: c(XFI) <- MBR
-              int XFI = this.instructionRegisterDecoded.get("xfiI").getValue();
+              int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
               this.xRegisters[XFI] = this.memory.getMBR();  
               
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -539,7 +539,7 @@ public class ControlUnit implements IClockCycle {
             case 2:
               // Micro 7: MBR <- c(XFI)
               System.out.println("Micro 7: MBR <- c(XFI)");
-              int XFI = this.instructionRegisterDecoded.get("xfiI").getValue();
+              int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
               memory.setMBR(this.xRegisters[XFI]);
             break;
                 
