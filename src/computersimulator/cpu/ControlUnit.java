@@ -201,15 +201,21 @@ public class ControlUnit implements IClockCycle {
      */
     private void decodeInstructionRegister(){        
          switch(this.microState){            
-            case 0:
-                // Micro-4: Decode IR
+            case 0: // Micro-4: Decode IR
                 System.out.println("Micro-4: Decode IR");
                 this.instructionRegisterDecoded = this.decodeInstructionRegister(this.getIR());     
                 System.out.println("-- IR Decoded: "+this.instructionRegisterDecoded);
+                this.microState++;
                 
+                break;
+                
+            case 1: // Micro-5: Compute EA                                
+                System.out.println("Micro-5: Compute EA    ");
+                this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
+                System.out.println("-- Loading Effective Address: "+this.effectiveAddress);                            
+                   
                 this.microState=null;
                 this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;
-                
                 break;
 
         }    
@@ -388,26 +394,20 @@ public class ControlUnit implements IClockCycle {
      */
     private void executeOpcodeLDR(){
         switch(this.microState){            
+
             case 0:
-                // Micro-5: Compute EA                                
-                System.out.println("Micro-5: Compute EA    ");
-                this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-                System.out.println("-- Loading Effective Address: "+this.effectiveAddress);                            
-                break;
-                
-            case 1:
                 // Micro-6: MAR <- EA
                 System.out.println("Micro-6: MAR <- EA");
                 memory.setMAR(this.effectiveAddress);  
                 this.signalBlockingMicroFunction();
                 break;
-            case 2:
+            case 1:
                 // Micro-7: MBR <- M(MAR)
                 System.out.println("Micro-7: MBR <- M(MAR)");
                 // do nothing, done by memory
                 break;
 
-            case 3:
+            case 2:
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
                 int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
@@ -432,14 +432,8 @@ public class ControlUnit implements IClockCycle {
      */
     private void executeOpcodeSTR() {
         switch(this.microState){    
-            case 0:
-              // Micro-5: Compute EA                                
-              System.out.println("Micro-5: Compute EA    ");
-              this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-              System.out.println("-- Loading Effective Address: "+this.effectiveAddress);              
-            break;
             
-            case 1:
+            case 0:
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR <- EA");
               memory.setMAR(this.effectiveAddress);         
@@ -451,7 +445,7 @@ public class ControlUnit implements IClockCycle {
               this.signalBlockingMicroFunction();
             break;
                 
-            case 2:   
+            case 1:   
               System.out.println("Micro-8: M(MAR) <- MBR");
               // do nothing, done by memory in this clock cycle    
               
@@ -470,27 +464,21 @@ public class ControlUnit implements IClockCycle {
      */
     private void executeOpcodeLDA() {
         switch(this.microState){
-            case 0:
-              // Micro-5: Compute EA                                
-              System.out.println("Micro-5: Compute EA    ");
-              this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-              System.out.println("-- Loading Effective Address: "+this.effectiveAddress);              
-            break;
                 
-            case 1:
+            case 0:
                 // Micro-6: MAR <- EA
                 System.out.println("Micro-6: MAR <- EA");
                 memory.setMAR(this.effectiveAddress);    
                 this.signalBlockingMicroFunction();
                 break;
                 
-            case 2:
+            case 1:
                 // Micro-7: MBR <- M(MAR)
                 System.out.println("Micro-7: MBR <- M(MAR)");
                 // do nothing, done by memory
             break;
                 
-            case 3:
+            case 2:
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
                 int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
@@ -511,28 +499,21 @@ public class ControlUnit implements IClockCycle {
      * Execute Load Index Register from Memory
      */
     private void executeOpcodeLDX() {
-        switch(this.microState){
+        switch(this.microState){            
             case 0:
-              // Micro-5: Compute EA                                
-              System.out.println("Micro-5: Compute EA    ");
-              this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-              System.out.println("-- Loading Effective Address: "+this.effectiveAddress);              
-            break;
-            
-            case 1:
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR<-EA");
               memory.setMAR(this.effectiveAddress);
               this.signalBlockingMicroFunction();
             break;
                 
-            case 2:
+            case 1:
               // Micro-7: MBR <- M(MAR)
               System.out.println("Micro-7: MBR <- M(MAR)");
               // do nothing, done by memory
             break;
 
-            case 3:
+            case 2:
               // Micro 8: c(XFI) <- MBR              
               // Maps XFI 1-3 to Array Index 0-2
               int XFI = (int)(this.instructionRegisterDecoded.get("xfi").getValue()-1);
@@ -554,20 +535,13 @@ public class ControlUnit implements IClockCycle {
     private void executeOpcodeSTX() {
         switch(this.microState){
             case 0:
-              // Micro-5: Compute EA                                
-              System.out.println("Micro-5: Compute EA    ");
-              this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-              System.out.println("-- Loading Effective Address: "+this.effectiveAddress);              
-            break;
-            
-            case 1:
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR <- EA");
               memory.setMAR(this.effectiveAddress);
               this.signalBlockingMicroFunction();
             break;
                 
-            case 2:
+            case 1:
               // Micro 7: MBR <- c(XFI)
               System.out.println("Micro 7: MBR <- c(XFI)");
               // Maps XFI 1-3 to Array Index 0-2
@@ -575,7 +549,7 @@ public class ControlUnit implements IClockCycle {
               memory.setMBR(this.indexRegisters[XFI]);
             break;
                 
-            case 3:
+            case 2:
               // Micro 8: M(MAR) <- MBR
               System.out.println("Micro 8: M(MAR) <- MBR");
               // do nothing, done by memory
