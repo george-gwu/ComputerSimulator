@@ -60,7 +60,7 @@ public class Computer implements IClockCycle {
      * we can't maintain that reference and instead must look it up every time.
      * @param name Name of Register/Variable
      */
-    public Unit getComponentValueByName(String name) throws Exception{
+    public Unit getComponentValueByName(String name){
         switch(name){
             case "R0":
                 return this.getCpu().getControlUnit().getGpRegisters()[0];
@@ -87,10 +87,62 @@ public class Computer implements IClockCycle {
             case "IR":
                 return this.getCpu().getControlUnit().getInstructionRegister();
             default:
-                throw new Exception("Uknown Component");
+                return new Unit(13,0);
                
         }                  
     }
+    
+    /**
+     * Since each Register contains a reference to a particular unit/word, 
+     * we can't maintain that reference and instead must look it up every time.
+     * @param name Name of Register/Variable
+     * @param deposit Unit to Deposit
+     */
+    public void setComponentValueByName(String name, Unit deposit){
+        
+        switch(name){
+            case "R0":
+                this.getCpu().getControlUnit().getGpRegisters()[0].setValue(deposit.getValue());
+                break;
+            case "R1":
+                this.getCpu().getControlUnit().getGpRegisters()[1].setValue(deposit.getValue());
+                break;
+            case "R2":
+                this.getCpu().getControlUnit().getGpRegisters()[2].setValue(deposit.getValue());                
+                break;
+            case "R3":
+                this.getCpu().getControlUnit().getGpRegisters()[3].setValue(deposit.getValue());                
+                break;
+            case "X1":
+                this.getCpu().getControlUnit().getIndexRegisters()[0].setValue(deposit.getValue());
+                break;
+            case "X2":
+                this.getCpu().getControlUnit().getIndexRegisters()[1].setValue(deposit.getValue());
+                break;
+            case "X3":
+                this.getCpu().getControlUnit().getIndexRegisters()[2].setValue(deposit.getValue());
+                break;
+            case "MAR":
+                Unit depositUnit = new Unit(13, deposit.getValue());
+                this.getMemory().setMAR(depositUnit);
+                break;
+            case "MBR":
+                Word depositWord = new Word(deposit);
+                this.getMemory().setMBR(depositWord);
+                break;
+            case "PC":
+                this.getCpu().getControlUnit().getProgramCounter().setValue(deposit.getValue());
+                break;
+            case "CC":
+                this.getCpu().getALU().getConditionCode();
+                break;
+            case "IR":                
+                this.getCpu().getControlUnit().getInstructionRegister().setValue(deposit.getValue());
+                break;
+
+               
+        }                  
+    }    
     
     
     /*****

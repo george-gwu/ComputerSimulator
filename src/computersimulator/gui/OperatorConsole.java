@@ -155,31 +155,10 @@ public class OperatorConsole implements Runnable {
                         
                         // If Widget is checked, it is receiving the deposit
                         if(widget.isChecked()){
-                            switch(widget.getName()){
-                                case "MAR": // 13-bit
-                                    Unit depositUnit = new Unit(13, unitToDeposit.getValue());
-                                    computer.getMemory().setMAR(depositUnit);
-                                    break;
-                                    
-                                case "MBR":
-                                    Word depositWord = new Word(unitToDeposit);
-                                    computer.getMemory().setMBR(depositWord);
-                                    break;
-                                
-                                default:
-                                    try {
-                                        widget.getSource().setValueBinary(valueToDeposit);
-                                    } catch (Exception ex) {
-                                        Logger.getLogger(OperatorConsole.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
-                            }
+                            computer.setComponentValueByName(widget.getName(), unitToDeposit);                            
                             
                             widget.uncheck();
-                            try {
-                                widget.updateDisplay();
-                            } catch (Exception ex) {
-                                Logger.getLogger(OperatorConsole.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+                            widget.updateDisplay();
                         }                                                
                     }           
                 
@@ -213,7 +192,7 @@ public class OperatorConsole implements Runnable {
     }
     
     
-    public void updateDisplay() throws Exception{
+    public void updateDisplay() {
         for(Map.Entry<String, DataDisplayComposite> el : displayComponents.entrySet()){
             DataDisplayComposite widget = el.getValue();
             widget.updateDisplay();

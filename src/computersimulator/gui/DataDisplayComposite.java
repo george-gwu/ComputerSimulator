@@ -24,11 +24,11 @@ public class DataDisplayComposite {
     
     /**
      * Constructor
-     * @param src Source element
+     * @param computer Used for lookups
      * @param name composite name
      * @param edit
      */
-    public DataDisplayComposite(Computer computer, String name, boolean edit) throws Exception {
+    public DataDisplayComposite(Computer computer, String name, boolean edit) {
         this.name = name;
         this.computer = computer;
                 
@@ -58,7 +58,7 @@ public class DataDisplayComposite {
         }                
     }
     
-    public void updateDisplay() throws Exception{
+    public void updateDisplay(){
         Integer[] data = this.getSource().getBinaryArray();
         
         for(int i = 0; i<data.length; i++){
@@ -86,7 +86,7 @@ public class DataDisplayComposite {
     }
     
 
-    public Unit getSource() throws Exception {
+    public Unit getSource() {
         return this.computer.getComponentValueByName(this.name);
     }
     
