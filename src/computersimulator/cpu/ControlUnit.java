@@ -124,7 +124,7 @@ public class ControlUnit implements IClockCycle {
     public void clockCycle() throws Exception {
         // Used to run microcycles without causing a full clock cycle
         boolean runningMicroCycles=true;
-        do {
+        //do {
           System.out.println("Micro!");
           
           this.instructionCycle();
@@ -134,7 +134,7 @@ public class ControlUnit implements IClockCycle {
               runningMicroCycles=false;
               this.blocked=false;
           }
-        } while(runningMicroCycles);                              
+        //} while(runningMicroCycles);                              
         
     }  
     

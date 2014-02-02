@@ -1,8 +1,6 @@
 package computersimulator.gui;
 
-import computersimulator.components.HaltSystemException;
-import computersimulator.components.Unit;
-import computersimulator.components.Word;
+import computersimulator.components.*;
 import computersimulator.cpu.Computer;
 import java.awt.Color;
 import java.awt.Font;
@@ -11,8 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -133,11 +129,7 @@ public class OperatorConsole implements Runnable {
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {                
-                    opconsole.updateDisplay();
-                } catch (Exception ex) {
-                    Logger.getLogger(OperatorConsole.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                opconsole.updateDisplay();
             }
         });
        
@@ -181,11 +173,8 @@ public class OperatorConsole implements Runnable {
                 }
         });
         
-        try {
-            this.updateDisplay();
-        } catch (Exception ex) {
-            Logger.getLogger(OperatorConsole.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+        this.updateDisplay();
         
         mainWindow.pack();
         mainWindow.setVisible(true);
