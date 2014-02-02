@@ -37,12 +37,24 @@ public class ControlUnit implements IClockCycle {
     //R1…R3	20 bits General Purpose Registers (GPRs) – each 20 bits in length
     private Word[] gpRegisters = new Word[4];    
     
+    
+    /**************************************
+     * All the variables below are internal and used to maintain state of the control unit
+     *************************************/
+    
     // Effective Address   ENGINEER Console: Used to hold EA temporarily in microcycles
     private Unit effectiveAddress;
     
     // Engineer: Internal flag to signal that a blocking operation occurred (memory read) forcing a clock cycle
     private boolean blocked = false;
     
+    // used to control state of EA
+    private int eaState;
+    private static final int EA_DIRECT=0;
+    private static final int EA_REGISTER_INDIRECT=1;
+    private static final int EA_INDEXED=2;
+    private static final int EA_INDEXED_OFFSET=3;
+     
     // used to control the instruction cycle
     private int state;
     private static final int STATE_NONE=0;
@@ -67,8 +79,7 @@ public class ControlUnit implements IClockCycle {
     
     // Engineer: used to control micro step, defined per state
     private Integer microState = null;
-    
-    
+        
     // memory reference
     private MemoryControlUnit memory;
 
@@ -138,12 +149,11 @@ public class ControlUnit implements IClockCycle {
         
     }  
     
+    /**       
+    * These fundamental steps are repeated over and over until we reach the 
+    * last instruction in the program, typically something called HALT, STOP, or QUIT. 
+    */      
     private void instructionCycle() throws Exception {
-        /**       
-        * These fundamental steps are repeated over and over until we reach the 
-        * last instruction in the program, typically something called HALT, STOP, or QUIT. 
-        */        
-        
         if(microState==null){
             microState=0;
         }
@@ -200,26 +210,100 @@ public class ControlUnit implements IClockCycle {
      * decode instruction (i.e., determine what is to be done)
      */
     private void decodeInstructionRegister(){        
-         switch(this.microState){            
-            case 0: // Micro-4: Decode IR
-                System.out.println("Micro-4: Decode IR");
-                this.instructionRegisterDecoded = this.decodeInstructionRegister(this.getIR());     
-                System.out.println("-- IR Decoded: "+this.instructionRegisterDecoded);
-                this.microState++;
-                
-                break;
-                
-            case 1: // Micro-5: Compute EA                                
-                System.out.println("Micro-5: Compute EA    ");
-                this.effectiveAddress = this.calculateEffectiveAddress(this.instructionRegisterDecoded);                
-                System.out.println("-- Loading Effective Address: "+this.effectiveAddress);                            
-                   
+        if(this.microState == 0){// Micro-4: Decode IR
+            this.effectiveAddress=null;
+            System.out.println("Micro-4: Decode IR");
+            this.instructionRegisterDecoded = this.decodeInstructionRegister(this.getIR());     
+            System.out.println("-- IR Decoded: "+this.instructionRegisterDecoded);
+                        
+            int opcode = this.instructionRegisterDecoded.get("opcode").getValue();            
+            if(opcode == ControlUnit.OPCODE_AIR || opcode ==ControlUnit.OPCODE_SIR){
+                // These instructions don't require EA calculation. Skip ahead.
                 this.microState=null;
-                this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;
-                break;
-
-        }    
-
+                this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;            
+            } else { // Every other instruction does. We'll progress through eaState and microState now.
+                if(this.instructionRegisterDecoded.get("xfi").getValue()==0 && this.instructionRegisterDecoded.get("rfi").getValue()==0){                        
+                    this.eaState = ControlUnit.EA_DIRECT;
+                } else if(this.instructionRegisterDecoded.get("index").getValue()==0 && this.instructionRegisterDecoded.get("xfi").getValue()>=1 && this.instructionRegisterDecoded.get("xfi").getValue()<=3){
+                    this.eaState = ControlUnit.EA_REGISTER_INDIRECT;                    
+                } else if(this.instructionRegisterDecoded.get("index").getValue()==1 && this.instructionRegisterDecoded.get("xfi").getValue()==0){
+                    this.eaState = ControlUnit.EA_INDEXED;
+                } else if(this.instructionRegisterDecoded.get("index").getValue()==1 && this.instructionRegisterDecoded.get("xfi").getValue()>=1 && this.instructionRegisterDecoded.get("xfi").getValue()<=3){
+                    this.eaState = ControlUnit.EA_INDEXED_OFFSET;
+                }                                
+                this.microState++;
+            }         
+        } else { //microState >= 1 & we're computing EA
+            System.out.println("Micro-5."+this.microState+": Compute Effective Address (Type: "+this.eaState+")");            
+            switch(this.eaState){
+                case ControlUnit.EA_DIRECT: //EA <- ADDR                    
+                    System.out.println("Absolute/Direct:" + this.instructionRegisterDecoded.get("address"));
+                    this.effectiveAddress = this.instructionRegisterDecoded.get("address");                    
+                    break;
+                case ControlUnit.EA_REGISTER_INDIRECT: //EA <- c(Xi) + c(ADDR)
+                    switch(this.microState){
+                        case 1:
+                            Unit addr = this.instructionRegisterDecoded.get("address");
+                            this.memory.setMAR(addr);                            
+                            this.microState++;
+                            break;
+                        case 2:
+                            int contentsOfX = this.instructionRegisterDecoded.get("xfi").getValue();
+                            Word contentsOfAddr = this.memory.getMBR();
+                            this.effectiveAddress = new Unit(13, (contentsOfX + contentsOfAddr.getValue()));
+                            System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+contentsOfAddr.getValue()+"): "+this.effectiveAddress);
+                            break;                            
+                    }                           
+                    break;
+                case ControlUnit.EA_INDEXED: //EA <- c(c(ADDR))                         
+                    switch(this.microState){
+                        case 1: // Set ADDR onto MAR
+                            Unit addr = this.instructionRegisterDecoded.get("address");
+                            this.memory.setMAR(addr);                            
+                            this.microState++;
+                            break;
+                        case 2: // c(ADDR) from MBR, set to MAR
+                            Word contentsOfAddr = this.memory.getMBR();
+                            this.memory.setMAR(new Unit(13, contentsOfAddr.getValue()));
+                            this.microState++;
+                            break;
+                        case 3: // c(c(ADDR)) from MBR
+                            Word contentsOfContents = this.memory.getMBR();
+                            this.effectiveAddress =  new Unit(13, (contentsOfContents.getValue()));
+                            System.out.println("Indexed - c(c(ADDR)) =  c(c("+this.instructionRegisterDecoded.get("address").getValue()+")) = "+this.effectiveAddress);                            
+                            break;
+                    }                           
+                    break;                    
+                case ControlUnit.EA_INDEXED_OFFSET: //EA <- c(c(Xi) + c(ADDR))
+                    switch(this.microState){
+                        case 1:
+                            Unit addr = this.instructionRegisterDecoded.get("address");
+                            this.memory.setMAR(addr);                            
+                            this.microState++;
+                            break;
+                        case 2: // c(ADDR) from MBR, get X, add X + C(ADDR) to MAR
+                            Word contentsOfAddr = this.memory.getMBR();
+                            int contentsOfX = this.instructionRegisterDecoded.get("xfi").getValue();                            
+                            Unit location = new Unit(13, (contentsOfX + contentsOfAddr.getValue()));
+                            this.memory.setMAR(location);
+                            this.microState++;    
+                            break;
+                        case 3:
+                            Word contentsOfLocation = this.memory.getMBR();
+                            this.effectiveAddress = new Unit(13, contentsOfLocation.getValue());
+                            System.out.println("Indexed + Offset --> "+this.effectiveAddress);                                
+                            break;
+                    }                      
+                    break;
+                default:
+                    // Unhandled address mode
+            }            
+            if(this.effectiveAddress != null){ // EA Calculated. Completed!
+                System.out.println("-- Effective Address Calculated: "+this.effectiveAddress);                     
+                this.microState=null;
+                this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;                    
+            }
+        }
     }
     
     private void signalBlockingMicroFunction(){
@@ -308,51 +392,6 @@ public class ControlUnit implements IClockCycle {
     }
    
     
-    private Unit calculateEffectiveAddress(HashMap<String,Unit> irDecoded){
-     
-        if(irDecoded.get("xfi").getValue()==0 && irDecoded.get("rfi").getValue()==0){                        
-            //EA <- ADDR
-            System.out.println("Absolute/Direct:" + irDecoded.get("address"));
-            return irDecoded.get("address");            
-        } else if(irDecoded.get("index").getValue()==0 && irDecoded.get("xfi").getValue()>=1 && irDecoded.get("xfi").getValue()<=3){
-            int contentsOfX = irDecoded.get("xfi").getValue();
-            Unit addr = irDecoded.get("address");
-            Word contentsOfAddr = this.memory.engineerFetchByMemoryLocation(addr);            
-            Unit ret = new Unit(13, (contentsOfX + contentsOfAddr.getValue()));
-            
-            //EA <- c(Xi) + c(ADDR)
-            System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+contentsOfAddr.getValue()+"): "+ret);
-            return ret;            
-            
-        } else if(irDecoded.get("index").getValue()==1 && irDecoded.get("xfi").getValue()==0){
-            Unit addr = irDecoded.get("address");
-            Word contentsOfAddr = this.memory.engineerFetchByMemoryLocation(addr);
-            Word contentsOfContents = this.memory.engineerFetchByMemoryLocation(contentsOfAddr);
-            Unit ret = new Unit(13, (contentsOfContents.getValue()));
-            
-            //EA <- c(c(ADDR))     
-            System.out.println("Indexed - c(c(ADDR)) =  c(c("+addr.getValue()+")) = c("+contentsOfAddr.getValue()+") = "+ret);
-            return ret;                                    
-            
-        } else if(irDecoded.get("index").getValue()==1 && irDecoded.get("xfi").getValue()>=1 && irDecoded.get("xfi").getValue()<=3){
-            int contentsOfX = irDecoded.get("xfi").getValue();
-            Unit addr = irDecoded.get("address");
-            Word contentsOfAddr = this.memory.engineerFetchByMemoryLocation(addr);
-            
-            Unit location = new Unit(13, (contentsOfX + contentsOfAddr.getValue()));
-            Word contentsOfLocation = this.memory.engineerFetchByMemoryLocation(location);
-            
-            Unit ret = new Unit(13, contentsOfLocation.getValue());
-            System.out.println("Indexed + Offset ("+contentsOfX+" + "+contentsOfAddr.getValue()+"): "+ret);    
-            //EA <- c(c(Xi) + c(ADDR))
-            return ret;
-            
-        } else { // shouldn't end up here, but this should cause a machine fault
-            System.out.println("Error");
-            return new Unit(13,1);
-        }        
-    }
-
     /**
      *
      * @param IR Instruction Register 

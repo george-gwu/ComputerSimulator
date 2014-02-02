@@ -112,7 +112,7 @@ public class OperatorConsole implements Runnable {
         JButton step = new JButton("Step");
         //JButton stop = new JButton("Stop");
 
-        buttonPanel.add(start);
+       // buttonPanel.add(start);
         //buttonPanel.add(load);
         buttonPanel.add(deposit);
         buttonPanel.add(step);
