@@ -59,6 +59,7 @@ public class Computer implements IClockCycle {
      * Since each Register contains a reference to a particular unit/word, 
      * we can't maintain that reference and instead must look it up every time.
      * @param name Name of Register/Variable
+     * @return Unit value
      */
     public Unit getComponentValueByName(String name){
         switch(name){

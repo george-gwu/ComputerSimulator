@@ -187,6 +187,11 @@ public class MemoryControlUnit implements IClockCycle {
         return result;
     }
     
+    /**
+     * Engineering console function to read directly from memory
+     * @param address
+     * @return Word memory value
+     */
     public Word engineerFetchByMemoryLocation(Unit address){
         // Decode the Address
         int bankIndex = (int)Math.floor((address.getValue() / MemoryControlUnit.BANK_SIZE));
@@ -194,7 +199,12 @@ public class MemoryControlUnit implements IClockCycle {
         
         return new Word(this.memory[bankIndex][cellIndex]);
     }
-    
+
+    /**
+     * Engineering console function to write directly to memory
+     * @param address
+     * @param value
+     */
     public void engineerSetMemoryLocation(Unit address, Word value){
          // Decode the Address
         int bankIndex = (int)Math.floor((address.getValue() / MemoryControlUnit.BANK_SIZE));
@@ -237,7 +247,7 @@ public class MemoryControlUnit implements IClockCycle {
 
             //Copy the value from MDR to Memory                
             this.memory[addr[0]][addr[1]] = new Word(this.memoryBufferRegister);
-            System.out.println("-- Set MAR("+this.memoryAddressRegister.getValue()+"): "+this.memoryBufferRegister);
+            System.out.println("-- Memory Set - MAR("+this.memoryAddressRegister.getValue()+") to "+this.memoryBufferRegister);
         } catch(Exception e){
             //@TODO: Handle bad address (virtual memory?)
             System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
@@ -253,7 +263,6 @@ public class MemoryControlUnit implements IClockCycle {
 
     /**
      * Initialize memory banks to zero filled words. 
-     * NOTE: Final because it is called in the constructor.
      */   
     private void initializeMemoryToZero(){
         for (Word[] bank : this.memory) {
