@@ -208,6 +208,7 @@ public class ControlUnit implements IClockCycle {
     
     /**
      * decode instruction (i.e., determine what is to be done)
+     * also calculates effective address if instruction requires it
      */
     private void decodeInstructionRegister(){        
         if(this.microState == 0){// Micro-4: Decode IR
@@ -326,54 +327,35 @@ public class ControlUnit implements IClockCycle {
             System.out.println("--EXECUTING OPCODE: "+ opcode);
             switch(opcode){
                 case ControlUnit.OPCODE_HLT:
-                    this.executeOpcodeHLT();
-                    
-                    break;
-                    
+                    this.executeOpcodeHLT();                    
+                    break;                    
                 case ControlUnit.OPCODE_LDR:        //DONE
                     this.executeOpcodeLDR();
-
                     break;
                 case ControlUnit.OPCODE_STR:        //DONE
                     this.executeOpcodeSTR();
-
                     break;
-                    
                 case ControlUnit.OPCODE_LDA:        //DONE
                     this.executeOpcodeLDA();
-
                     break;    
-                    
                 case ControlUnit.OPCODE_LDX:        //DONE
                     this.executeOpcodeLDX();
-
                     break;
-                
                 case ControlUnit.OPCODE_STX:        //DONE
                     this.executeOpcodeSTX();
-
                     break;
-                    
                 case ControlUnit.OPCODE_AMR:
                     this.executeOpcodeAMR();
-
                     break;
-                    
                 case ControlUnit.OPCODE_SMR:
                     this.executeOpcodeSMR();
-
                     break;
-                    
                 case ControlUnit.OPCODE_AIR:
                     this.executeOpcodeAIR();
-
                     break;
-                    
                 case ControlUnit.OPCODE_SIR:
                     this.executeOpcodeSIR();
-
                     break;
-                        
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
