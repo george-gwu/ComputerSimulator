@@ -124,6 +124,22 @@ public class ControlUnit implements IClockCycle {
 
     public Word[] getGpRegisters() {
         return gpRegisters;
+    }        
+
+    public Unit getPC() {
+        return this.programCounter;
+    }
+
+    public void setPC(Unit programCounter) {
+        this.programCounter = programCounter;
+    }
+
+    public Word getIR() {
+        return instructionRegister;
+    }
+
+    public void setIR(Word instructionRegister) {
+        this.instructionRegister = instructionRegister;
     }    
     
     /**
@@ -148,6 +164,13 @@ public class ControlUnit implements IClockCycle {
         //} while(runningMicroCycles);                              
         
     }  
+    
+    /**
+     * Used internally to signal that a microcycle needs a full clock cycle
+     */
+    private void signalBlockingMicroFunction(){
+        this.blocked=true;
+    }    
     
     /**       
     * These fundamental steps are repeated over and over until we reach the 
@@ -205,6 +228,24 @@ public class ControlUnit implements IClockCycle {
                 break;
         }
     }
+    
+    /**
+     *
+     * @param IR Instruction Register 
+     * @return HashMap of IR
+     */
+    private HashMap<String,Unit> decodeInstructionRegister(Word IR){
+       HashMap<String,Unit> decoded = new HashMap();
+       
+       decoded.put("opcode",  IR.decomposeByOffset(0, 5  ));
+       decoded.put("rfi",    IR.decomposeByOffset(6, 7  ));
+       decoded.put("xfi",    IR.decomposeByOffset(8, 9  ));
+       decoded.put("index",   IR.decomposeByOffset(10    ));
+       decoded.put("trace",   IR.decomposeByOffset(11    ));
+       decoded.put("address", IR.decomposeByOffset(12, 19));
+       
+       return decoded;
+   }      
     
     /**
      * decode instruction (i.e., determine what is to be done)
@@ -307,10 +348,6 @@ public class ControlUnit implements IClockCycle {
         }
     }
     
-    private void signalBlockingMicroFunction(){
-        this.blocked=true;
-    }
-    
     /**
      * execute instruction by issuing the appropriate command to the ALU, memory, and the I/O controllers
      * Each instruction will receive the microstate at 0 and is responsible for taking action.
@@ -374,39 +411,7 @@ public class ControlUnit implements IClockCycle {
     }
    
     
-    /**
-     *
-     * @param IR Instruction Register 
-     * @return HashMap of IR
-     */
-    private HashMap<String,Unit> decodeInstructionRegister(Word IR){
-       HashMap<String,Unit> decoded = new HashMap();
-       
-       decoded.put("opcode",  IR.decomposeByOffset(0, 5  ));
-       decoded.put("rfi",    IR.decomposeByOffset(6, 7  ));
-       decoded.put("xfi",    IR.decomposeByOffset(8, 9  ));
-       decoded.put("index",   IR.decomposeByOffset(10    ));
-       decoded.put("trace",   IR.decomposeByOffset(11    ));
-       decoded.put("address", IR.decomposeByOffset(12, 19));
-       
-       return decoded;
-   }   
-    
-    public Unit getPC() {
-        return this.programCounter;
-    }
-
-    public void setPC(Unit programCounter) {
-        this.programCounter = programCounter;
-    }
-
-    public Word getIR() {
-        return instructionRegister;
-    }
-
-    public void setIR(Word instructionRegister) {
-        this.instructionRegister = instructionRegister;
-    }
+     
 
     /***************** OPCODE IMPLEMENTATIONS BELOW ******************/
     
