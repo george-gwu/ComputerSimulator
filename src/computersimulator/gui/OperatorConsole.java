@@ -107,13 +107,13 @@ public class OperatorConsole implements Runnable {
         JPanel buttonPanel = new JPanel();   
         // create buttons
         JButton start = new JButton("IPL");
-        //JButton load = new JButton("Load");
+        JButton load = new JButton("Load");
         JButton deposit = new JButton("Deposit");
         JButton step = new JButton("Step");
         //JButton stop = new JButton("Stop");
 
        // buttonPanel.add(start);
-        //buttonPanel.add(load);
+        buttonPanel.add(load);
         buttonPanel.add(deposit);
         buttonPanel.add(step);
         //buttonPanel.add(stop);
@@ -147,16 +147,37 @@ public class OperatorConsole implements Runnable {
                         
                         // If Widget is checked, it is receiving the deposit
                         if(widget.isChecked()){
-                            computer.setComponentValueByName(widget.getName(), unitToDeposit);                            
-                            
+                            computer.setComponentValueByName(widget.getName(), unitToDeposit);                                                        
+                            System.out.println("Deposit "+unitToDeposit.getValue()+" to "+ widget.getName());
                             widget.uncheck();
                             widget.updateDisplay();
                         }                                                
-                    }           
-                
-                System.out.println("Deposit Requested");
+                    }                                           
             }
         });
+        
+        // load
+        load.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                input.resetToZero();
+                
+                String loadStr = "";
+                for(Map.Entry<String, DataDisplayComposite> el : displayComponents.entrySet()){
+                    DataDisplayComposite widget = el.getValue();
+                       
+                    // If Widget is checked, it is receiving the deposit
+                    if(widget.isChecked()){
+                        loadStr = widget.getSource().getBinaryString();                            
+                        widget.uncheck();
+                    }                                                
+                }           
+                input.setFromBinaryString(loadStr);
+                
+                System.out.println("Load Requested: "+loadStr);
+            }
+        });        
         
         // step
         step.addActionListener(new ActionListener() {

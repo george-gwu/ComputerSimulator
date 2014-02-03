@@ -65,6 +65,22 @@ public class DataEntryComposite {
         return new String(code);
     }
     
+    /**
+     * Update input to bin input
+     * @param bin Binary String
+     */
+    public void setFromBinaryString(String bin) {    
+        String binaryStr = bin;
+        // Pad left with zeros
+        while(binaryStr.length() < inputBits.length){
+            binaryStr = "0" + binaryStr;
+        }
+        for(int i =0; i<binaryStr.length(); i++){
+            char c = binaryStr.charAt(i);
+            inputBits[i].setSelected(c=='1');
+        }
+    }
+    
     public void resetToZero(){
          for (JCheckBox inputBit : inputBits) {
              inputBit.setSelected(false);
