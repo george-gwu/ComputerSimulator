@@ -9,24 +9,64 @@ import computersimulator.components.Unit;
  */
 public class ArithmeticLogicUnit implements IClockCycle {
     
-    //CC	4 bits	Condition Code: set when arithmetic/logical operations are executed; it has four 1-bit elements: overflow, underflow, division by zero, equal-or-not. They may be referenced as cc(1), cc(2), cc(3), cc(4). Or by the names OVERFLOW, UNDERFLOW, DIVZERO, EQUALORNOT
+    //CC	4 bits	Condition Code: set when arithmetic/logical operations are executed; 
+    //          it has four 1-bit elements: overflow, underflow, division by zero, equal-or-not. 
+    //          OVERFLOW[0], UNDERFLOW[1], DIVZERO[2], EQUALORNOT[3]
     private Unit conditionCode;
+    
+    private final static int CONDITION_REGISTER_OVERFLOW = 0;
+    private final static int CONDITION_REGISTER_UNDERFLOW = 1;
+    private final static int CONDITION_REGISTER_DIVZERO = 2;
+    private final static int CONDITION_REGISTER_EQUALORNOT = 3;
 
     public ArithmeticLogicUnit() {
-        this.conditionCode = new Unit(4);   // @TODO: GT, EQ, LT ?
-        
+        this.conditionCode = new Unit(4);   // @TODO: GT, EQ, LT ?        
     }
    
     public Unit getConditionCode() {
         return conditionCode;
     }    
     
+    /**
+     * Set a Condition Flag
+     * Usage:  this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+     * @param ConditionRegister (see static variables)
+     */
+    private void setCondition(int ConditionRegister){
+        Integer[] raw = this.conditionCode.getBinaryArray();
+        raw[ConditionRegister] = 1;
+        
+        StringBuilder result = new StringBuilder();
+        for (Integer el : raw) {
+            result.append(el);
+        }
+        this.conditionCode.setValueBinary(result.toString());        
+    }
+    
+    /**
+     * Unset a Condition Flag
+     * Usage:  this.unsetCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+     * @param ConditionRegister (see static variables)
+     */
+    private void unsetCondition(int ConditionRegister){
+        Integer[] raw = this.conditionCode.getBinaryArray();
+        raw[ConditionRegister] = 0;
+        
+        StringBuilder result = new StringBuilder();
+        for (Integer el : raw) {
+            result.append(el);
+        }
+        this.conditionCode.setValueBinary(result.toString());         
+    }
+    
     
     /**
      * Clock cycle. This is the main function which causes the ALU to do work.
      *  This serves as a publicly accessible method, but delegates to other methods.
      */
+    @Override
     public void clockCycle(){
+        
     }  
     
     /**
