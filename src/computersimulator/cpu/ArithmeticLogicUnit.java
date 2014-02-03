@@ -78,7 +78,6 @@ public class ArithmeticLogicUnit implements IClockCycle {
     
     /**
      * Perform subtract operation implements twos complement math. 
-     * Convert this and addee to binary, run twos complement addition, then add
      * @param operand1
      * @param operand2 
      * 
@@ -93,8 +92,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
             op2Binary[i] = 1 - op2Binary[i];
         }
 
-        String op1Str = intArrayToString(op1Binary);				// convert to string format
-        String op2Str = intArrayToString(op2Binary);
+        String op1Str = Unit.IntArrayToBinaryString(op1Binary);				// convert to string format
+        String op2Str = Unit.IntArrayToBinaryString(op2Binary);
 
         // add 1 bit
         String oneBitStr = createOneBitString(op2Binary.length - 1);            // create 1 bit string 
@@ -111,13 +110,19 @@ public class ArithmeticLogicUnit implements IClockCycle {
         return combined;                                                        // return result
     }
     
+    /**
+     * Perform addition operation implements twos complement math. 
+     * @param operand1
+     * @param operand2 
+     * 
+     */    
     public int add(Unit operand1, Unit operand2){
         int combined = 0;
         Integer[] op1Binary = operand1.getBinaryArray();
         Integer[] op2Binary = operand2.getBinaryArray();
         
-        String op1Str = intArrayToString(op1Binary);				// convert to string format
-        String op2Str = intArrayToString(op2Binary);
+        String op1Str = Unit.IntArrayToBinaryString(op1Binary);				// convert to string format
+        String op2Str = Unit.IntArrayToBinaryString(op2Binary);
         
         String finalResultStr = addBinary(op1Str, op2Str);                      // add operands
         
@@ -150,21 +155,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
         }
         return dec;
     }
-    
-
-    /**
-     * Convert an array of ints to String
-     *
-     * @param a
-     * @return
-     */
-    private String intArrayToString(Integer[] a) {
-        String s = "";
-        for (int i = 0; i < a.length; i++) {
-            s = s + a[i];
-        }
-        return s;
-    }
+      
 
     /**
      * Create 1 bit format: ie. 000000001
