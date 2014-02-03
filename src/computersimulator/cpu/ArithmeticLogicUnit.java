@@ -59,6 +59,13 @@ public class ArithmeticLogicUnit implements IClockCycle {
         this.conditionCode.setValueBinary(result.toString());         
     }
     
+    /**
+     * Clear any previously set condition codes
+     */
+    private void clearConditions(){
+        this.conditionCode.setValueBinary("0000");
+    }
+    
     
     /**
      * Clock cycle. This is the main function which causes the ALU to do work.
