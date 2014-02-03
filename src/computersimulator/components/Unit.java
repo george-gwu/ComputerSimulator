@@ -205,9 +205,13 @@ public class Unit {
      *
      * @return Binary representation as a String
      */
-    public String getBinaryString(){
-        StringBuilder result = new StringBuilder();
+    public String getBinaryString(){        
         Integer[] arr = getBinaryArray();
+        return Unit.IntArrayToBinaryString(arr);                
+    }
+    
+    public static String IntArrayToBinaryString(Integer [] arr){
+        StringBuilder result = new StringBuilder() ;
         for (Integer el : arr) {
             result.append(el);
         }
