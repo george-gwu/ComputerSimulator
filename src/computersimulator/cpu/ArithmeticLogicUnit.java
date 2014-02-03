@@ -79,59 +79,48 @@ public class ArithmeticLogicUnit implements IClockCycle {
     /**
      * Perform subtract operation implements twos complement math. 
      * @param operand1
-     * @param operand2 
-     * 
-     * tested for negative numbers 
+     * @param operand2
+     * @return results
      */
-    public int subtract(Unit operand1, Unit operand2) {
-        int combined = 0;
-        Integer[] op1Binary = operand1.getBinaryArray();
+    public Unit subtract(Unit operand1, Unit operand2) {        
         Integer[] op2Binary = operand2.getBinaryArray();
-
         for (int i = 0; i < op2Binary.length; i++) {                            // invert bits
             op2Binary[i] = 1 - op2Binary[i];
         }
 
-        String op1Str = Unit.IntArrayToBinaryString(op1Binary);				// convert to string format
+        String op1Str = operand1.getBinaryString();
         String op2Str = Unit.IntArrayToBinaryString(op2Binary);
 
-        // add 1 bit
+        // add 1 bit to operand 2 to make it negative
         String oneBitStr = createOneBitString(op2Binary.length - 1);            // create 1 bit string 
-        String oper2withOneBit = addBinary(op2Str, oneBitStr);			// add one bit to operand2 (this will create negative number)
+        String negativeOperand2 = addBinary(op2Str, oneBitStr);			// add one bit to operand2 (this will create negative number)
 
         // Perform addition (which is really subtraction since operand2 is negative)
-        String finalResultStr = addBinary(oper2withOneBit, op1Str);             // add operands
+        String finalResultStr = addBinary(negativeOperand2, op1Str);             // add operands
 
-        if (finalResultStr.length() >= operand2.getSize()) {                    // this is to return the right range of binary string 
-            combined = bTD(finalResultStr.substring(finalResultStr.length() - operand2.getSize()));        
-        } else {
-            combined = bTD(finalResultStr); 
-        }
-        return combined;                                                        // return result
+        int results = bTD(finalResultStr);        
+        int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
+                
+        return new Unit(size, results);        
     }
     
     /**
      * Perform addition operation implements twos complement math. 
      * @param operand1
      * @param operand2 
+     * @return  results
      * 
      */    
-    public int add(Unit operand1, Unit operand2){
-        int combined = 0;
-        Integer[] op1Binary = operand1.getBinaryArray();
-        Integer[] op2Binary = operand2.getBinaryArray();
-        
-        String op1Str = Unit.IntArrayToBinaryString(op1Binary);				// convert to string format
-        String op2Str = Unit.IntArrayToBinaryString(op2Binary);
+    public Unit add(Unit operand1, Unit operand2){
+        String op1Str = operand1.getBinaryString();
+        String op2Str = operand2.getBinaryString();
         
         String finalResultStr = addBinary(op1Str, op2Str);                      // add operands
         
-        if (finalResultStr.length() >= operand2.getSize()) {                    // this is to return the right range of binary string 
-            combined = bTD(finalResultStr.substring(finalResultStr.length() - operand2.getSize()));        
-        } else {
-            combined = bTD(finalResultStr); 
-        }
-        return combined;
+        int results = bTD(finalResultStr);        
+        int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
+                
+        return new Unit(size, results);
     }
 
     /**
