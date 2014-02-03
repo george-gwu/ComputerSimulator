@@ -53,7 +53,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
         String oper2withOneBit = addBinary(op2Str, oneBitStr);			// add one bit to operand2 (this will create negative number)
 
         // Perform addition (which is really subtraction since operand2 is negative)
-        String finalResultStr = addBinary(oper2withOneBit, op1Str);             // add 1 bit to operand2
+        String finalResultStr = addBinary(oper2withOneBit, op1Str);             // add operands
 
         if (finalResultStr.length() >= operand2.getSize()) {                    // this is to return the right range of binary string 
             combined = bTD(finalResultStr.substring(finalResultStr.length() - operand2.getSize()));        
@@ -71,7 +71,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
         String op1Str = intArrayToString(op1Binary);				// convert to string format
         String op2Str = intArrayToString(op2Binary);
         
-        String finalResultStr = addBinary(op1Str, op2Str);                      // add 2 operands
+        String finalResultStr = addBinary(op1Str, op2Str);                      // add operands
         
         if (finalResultStr.length() >= operand2.getSize()) {                    // this is to return the right range of binary string 
             combined = bTD(finalResultStr.substring(finalResultStr.length() - operand2.getSize()));        
