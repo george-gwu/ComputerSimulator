@@ -100,6 +100,10 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
         int results = bTD(finalResultStr);        
         int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
+        
+        if (finalResultStr.length() > size) {                                   // check if overflow occurred
+            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+        }
                 
         return new Unit(size, results);        
     }
@@ -119,6 +123,10 @@ public class ArithmeticLogicUnit implements IClockCycle {
         
         int results = bTD(finalResultStr);        
         int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
+        
+        if (finalResultStr.length() > size) {                                   // check if overflow occurred
+            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+        }
                 
         return new Unit(size, results);
     }
