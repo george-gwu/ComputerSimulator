@@ -21,6 +21,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
         return conditionCode;
     }    
     
+    
     /**
      * Clock cycle. This is the main function which causes the ALU to do work.
      *  This serves as a publicly accessible method, but delegates to other methods.
@@ -87,7 +88,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @param bin
      * @return
      */
-    public int bTD(String bin) {
+    private int bTD(String bin) {
         int dec = 0;
         for (int i = bin.length() - 1, j = 0; i >= 0; i--, j++) {
             String curr = bin.charAt(i) + "";
@@ -103,22 +104,6 @@ public class ArithmeticLogicUnit implements IClockCycle {
         return dec;
     }
     
-    /**
-     * Binary do decimal - used for additions
-     *
-     * @param bin
-     * @return
-     */
-    public int bTD2(String bin) {
-        int dec = 0;
-        for (int i = bin.length() - 1, j = 0; i >= 0; i--, j++) {
-            String curr = bin.charAt(i) + "";
-
-            dec = (int) (dec + Integer.parseInt(curr) * Math.pow(2, j));
-
-        }
-        return dec;
-    }
 
     /**
      * Convert an array of ints to String
@@ -126,7 +111,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @param a
      * @return
      */
-    public String intArrayToString(Integer[] a) {
+    private String intArrayToString(Integer[] a) {
         String s = "";
         for (int i = 0; i < a.length; i++) {
             s = s + a[i];
@@ -140,7 +125,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @param size
      * @return
      */
-    public String createOneBitString(int size) {
+    private String createOneBitString(int size) {
         String str = "";
         for (int i = 0; i < size; i++) {
             str += "0";
@@ -160,7 +145,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @param b
      * @return
      */
-    public String addBinary(String a, String b) {
+    private String addBinary(String a, String b) {
         if (b.indexOf('1') == -1) {
             return a.indexOf('1') == -1 ? a : a.substring(a.indexOf('1'));
         }
