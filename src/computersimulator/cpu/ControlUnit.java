@@ -398,8 +398,8 @@ public class ControlUnit implements IClockCycle {
             }            
             this.microState++; 
         } else { // MICROSTATE_EXECUTE_COMPLETE
-            // Micro-N: c(pc) + 1 -> PC  --- Increment PC
-            System.out.println("Micro-Final: c(pc) + 1 -> PC (Increment PC)");
+            // Micro-N: c(PC) + 1 -> PC  --- Increment PC
+            System.out.println("Micro-Final: c(PC) + 1 -> PC (Increment PC)");
 
             this.getPC().add(new Unit(13, 1));
             System.out.println("-- PC: "+this.getPC());
@@ -427,6 +427,7 @@ public class ControlUnit implements IClockCycle {
                 memory.setMAR(this.effectiveAddress);  
                 this.signalBlockingMicroFunction();
                 break;
+                
             case 1:
                 // Micro-7: MBR <- M(MAR)
                 System.out.println("Micro-7: MBR <- M(MAR)");
@@ -596,6 +597,49 @@ public class ControlUnit implements IClockCycle {
     private void executeOpcodeAMR() {
         switch(this.microState){
             
+            case 0:
+              // Micro-6: MAR <- EA
+              System.out.println("Micro-6: MAR <- EA");
+              memory.setMAR(this.effectiveAddress);
+              this.signalBlockingMicroFunction();
+            break;
+                
+            case 1:
+              // Micro-7: MBR <- M(MAR)
+              System.out.println("Micro-7: MBR <- M(MAR)");
+              // do nothing, done by memory
+            break;
+                
+            case 3:
+              // Micro-8: OP1 <- MBR
+              
+            break;
+                
+            case 4:
+              // Micro-9: OP2 <- RF(RFI)
+                
+            break;
+                
+            case 5:
+              // Micro-10: CTRL <- OPCODE
+                
+            break;
+                
+            case 6:
+              // Micro-11: RES <- c(OP1) + c(OP2)
+                
+            break;
+                
+            case 7:
+              // Micro-12: RF(RFI) <- RES
+                
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+              System.out.println("COMPLETED INSTRUCTION: AMR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                
+              //Signal Completion
+              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+            break;          
         }
     }
     
@@ -605,6 +649,49 @@ public class ControlUnit implements IClockCycle {
     private void executeOpcodeSMR() {
         switch(this.microState){
             
+            case 0:
+              // Micro-6: MAR <- EA
+              System.out.println("Micro-6: MAR <- EA");
+              memory.setMAR(this.effectiveAddress);
+              this.signalBlockingMicroFunction();
+            break;
+                
+            case 1:
+              // Micro-7: MBR <- M(MAR)
+              System.out.println("Micro-7: MBR <- M(MAR)");
+              // do nothing, done by memory
+            break;
+                
+            case 3:
+              // Micro-8: OP1 <- MBR
+              
+            break;
+                
+            case 4:
+              // Micro-9: OP2 <- RF(RFI)
+                
+            break;
+                
+            case 5:
+              // Micro-10: CTRL <- OPCODE
+                
+            break;
+                
+            case 6:
+              // Micro-11: RES <- c(OP1) - c(OP2)
+                
+            break;
+                
+            case 7:
+              // Micro-12: RF(RFI) <- RES
+                
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+              System.out.println("COMPLETED INSTRUCTION: SMR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                
+              //Signal Completion
+              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+            break;          
         }
     }
     
