@@ -82,8 +82,15 @@ public class ControlUnit implements IClockCycle {
         
     // memory reference
     private MemoryControlUnit memory;
-
     
+    // ALU Reference
+    private ArithmeticLogicUnit alu;
+    
+    // OP1 and OP2 for ALU operations
+    private Unit OP1, OP2;
+    
+    // RES to store the result of ALU operations
+    private Unit RES;
     
     public ControlUnit(MemoryControlUnit mem) {
         this.instructionRegister = new Word();
@@ -381,10 +388,10 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_STX:        //DONE
                     this.executeOpcodeSTX();
                     break;
-                case ControlUnit.OPCODE_AMR:
+                case ControlUnit.OPCODE_AMR:        //PARTIALLY DONE
                     this.executeOpcodeAMR();
                     break;
-                case ControlUnit.OPCODE_SMR:
+                case ControlUnit.OPCODE_SMR:        //PARTIALLY DONE
                     this.executeOpcodeSMR();
                     break;
                 case ControlUnit.OPCODE_AIR:
@@ -612,27 +619,33 @@ public class ControlUnit implements IClockCycle {
                 
             case 3:
               // Micro-8: OP1 <- MBR
-              
+              System.out.println("Micro-8: OP1 <- MBR");
+              OP1 = this.memory.getMBR();
             break;
                 
             case 4:
               // Micro-9: OP2 <- RF(RFI)
-                
+              System.out.println("Micro-9: OP2 <- RF(RFI)");
+              int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              OP2 = this.gpRegisters[RFI];
             break;
                 
             case 5:
               // Micro-10: CTRL <- OPCODE
-                
+              System.out.println("Micro-10: CTRL <- OPCODE");  
             break;
                 
             case 6:
               // Micro-11: RES <- c(OP1) + c(OP2)
-                
+              System.out.println("Micro-11: RES <- c(OP1) + c(OP2)");
+              RES = alu.add(OP1, OP2);
             break;
                 
             case 7:
               // Micro-12: RF(RFI) <- RES
-                
+              RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              this.gpRegisters[RFI] = (Word)RES;
+              System.out.println("Micro-12: RF(RFI) <- RES");  
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               System.out.println("COMPLETED INSTRUCTION: AMR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -664,12 +677,15 @@ public class ControlUnit implements IClockCycle {
                 
             case 3:
               // Micro-8: OP1 <- MBR
-              
+              System.out.println("Micro-8: OP1 <- MBR");
+              OP1 = this.memory.getMBR();
             break;
                 
             case 4:
               // Micro-9: OP2 <- RF(RFI)
-                
+              System.out.println("Micro-9: OP2 <- RF(RFI)");
+              int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              OP2 = this.gpRegisters[RFI];
             break;
                 
             case 5:
@@ -679,12 +695,13 @@ public class ControlUnit implements IClockCycle {
                 
             case 6:
               // Micro-11: RES <- c(OP1) - c(OP2)
-                
+              RES = alu.subtract(OP1, OP2);  
             break;
                 
             case 7:
               // Micro-12: RF(RFI) <- RES
-                
+              RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              this.gpRegisters[RFI] = (Word)RES;  
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               System.out.println("COMPLETED INSTRUCTION: SMR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
