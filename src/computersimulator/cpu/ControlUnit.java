@@ -643,9 +643,9 @@ public class ControlUnit implements IClockCycle {
                 
             case 7:
               // Micro-12: RF(RFI) <- RES
+              System.out.println("Micro-12: RF(RFI) <- RES");
               RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              this.gpRegisters[RFI] = (Word)RES;
-              System.out.println("Micro-12: RF(RFI) <- RES");  
+              this.gpRegisters[RFI] = (Word)RES;  
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               System.out.println("COMPLETED INSTRUCTION: AMR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -690,7 +690,7 @@ public class ControlUnit implements IClockCycle {
                 
             case 5:
               // Micro-10: CTRL <- OPCODE
-                
+              System.out.println("Micro-10: CTRL <- OPCODE");  
             break;
                 
             case 6:
@@ -700,6 +700,7 @@ public class ControlUnit implements IClockCycle {
                 
             case 7:
               // Micro-12: RF(RFI) <- RES
+              System.out.println("Micro-12: RF(RFI) <- RES");
               RFI = this.instructionRegisterDecoded.get("rfi").getValue();
               this.gpRegisters[RFI] = (Word)RES;  
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
