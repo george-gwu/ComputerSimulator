@@ -77,19 +77,19 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * Used internally on the clock cycle when start computation is set.
      */
     private void compute(){
+        this.clearConditions();
         switch(this.control){
             case ArithmeticLogicUnit.CONTROL_ADD:
-                this.result = this.add(operand1, operand2);
+                this.setResult(this.add(operand1, operand2));
                 break;
             case ArithmeticLogicUnit.CONTROL_SUBTRACT:
-                this.result = this.subtract(operand1, operand2);
+                this.setResult(this.subtract(operand1, operand2));                
                 break;
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
-                //@TODO Handle error
+                //@TODO Handle error.
                 break;
-        }
-        
+        }                
         this.state = ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED;
     }
         
