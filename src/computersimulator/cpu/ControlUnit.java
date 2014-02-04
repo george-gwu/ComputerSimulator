@@ -732,7 +732,7 @@ public class ControlUnit implements IClockCycle {
             break;
                         
             case 1:
-                // Micro-7: OP2 <- Immed (EA)
+                // Micro-7: OP2 <- Immed   (Immed is stored in ADDR)
                 System.out.println("Micro-7: OP2 <- Immed");
                 alu.setOperand2(this.instructionRegisterDecoded.get("address"));
             break;
@@ -740,7 +740,7 @@ public class ControlUnit implements IClockCycle {
             case 2:
                 // Micro-8: CTRL <- OPCODE
                 System.out.println("Micro-8: CTRL <- OPCODE");  
-                alu.setControl(ArithmeticLogicUnit.CONTROL_SUBTRACT);
+                alu.setControl(ArithmeticLogicUnit.CONTROL_ADD);
                 alu.signalReadyToStartComputation();
             break;
                 
@@ -779,7 +779,7 @@ public class ControlUnit implements IClockCycle {
             break;
                         
             case 1:
-                // Micro-7: OP2 <- Immed (EA)
+                // Micro-7: OP2 <- Immed  (Immed is stored in ADDR)
                 System.out.println("Micro-7: OP2 <- Immed");
                 alu.setOperand2(this.instructionRegisterDecoded.get("address"));
             break;
