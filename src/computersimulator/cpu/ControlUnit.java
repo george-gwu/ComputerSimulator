@@ -718,7 +718,11 @@ public class ControlUnit implements IClockCycle {
                         
             case 1:
 <<<<<<< HEAD
+<<<<<<< HEAD
                 // Micro-7: OP2 <- Immed 
+=======
+                // Micro-7: OP2 <- Immed   (Immed is stored in ADDR)
+>>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
 =======
                 // Micro-7: OP2 <- Immed   (Immed is stored in ADDR)
 >>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
@@ -769,7 +773,11 @@ public class ControlUnit implements IClockCycle {
                         
             case 1:
 <<<<<<< HEAD
+<<<<<<< HEAD
                 // Micro-7: OP2 <- Immed 
+=======
+                // Micro-7: OP2 <- Immed  (Immed is stored in ADDR)
+>>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
 =======
                 // Micro-7: OP2 <- Immed  (Immed is stored in ADDR)
 >>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
