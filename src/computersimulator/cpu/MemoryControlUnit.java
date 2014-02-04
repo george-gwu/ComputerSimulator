@@ -173,8 +173,10 @@ public class MemoryControlUnit implements IClockCycle {
         int address = this.memoryAddressRegister.getValue();
                 
         // Decode the Address in MAR
-        int bankIndex = (int)Math.floor((address/ MemoryControlUnit.BANK_SIZE));
-        int cellIndex = address % MemoryControlUnit.BANK_CELLS;
+        int cellIndex = address % MemoryControlUnit.BANK_CELLS;      
+        int bankIndex = (int)Math.floor(((address-cellIndex) / MemoryControlUnit.BANK_SIZE));
+        
+        System.out.println("Calculated Memory Address: "+address+" as Bank: "+bankIndex+", Cell: "+cellIndex+")");
         
         if(bankIndex > MemoryControlUnit.BANK_SIZE){
             throw new Exception("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
@@ -193,10 +195,13 @@ public class MemoryControlUnit implements IClockCycle {
      */
     public Word engineerFetchByMemoryLocation(Unit address){
         // Decode the Address
-        int bankIndex = (int)Math.floor((address.getValue() / MemoryControlUnit.BANK_SIZE));
-        int cellIndex = address.getValue() % MemoryControlUnit.BANK_CELLS;        
+        int cellIndex = address.getValue() % MemoryControlUnit.BANK_CELLS;      
+        int bankIndex = (int)Math.floor(((address.getValue()-cellIndex) / MemoryControlUnit.BANK_SIZE));    
         
-        return new Word(this.memory[bankIndex][cellIndex]);
+        Word value = new Word(this.memory[bankIndex][cellIndex]);
+        System.out.println("ENGINEER: Fetch Addr: "+address.getValue()+"  ("+bankIndex+"/"+cellIndex+") ---  Value: "+value);
+        
+        return value;
     }
 
     /**
@@ -205,9 +210,10 @@ public class MemoryControlUnit implements IClockCycle {
      * @param value
      */
     public void engineerSetMemoryLocation(Unit address, Word value){
-         // Decode the Address
-        int bankIndex = (int)Math.floor((address.getValue() / MemoryControlUnit.BANK_SIZE));
-        int cellIndex = address.getValue() % MemoryControlUnit.BANK_CELLS;        
+         // Decode the Address        
+        int cellIndex = address.getValue() % MemoryControlUnit.BANK_CELLS;      
+        int bankIndex = (int)Math.floor(((address.getValue()-cellIndex) / MemoryControlUnit.BANK_SIZE));
+        System.out.println("ENGINEER: Set Addr: "+address.getValue()+"  ("+bankIndex+"/"+cellIndex+") to  Value: "+value);
         
         this.memory[bankIndex][cellIndex] = value;
     }
