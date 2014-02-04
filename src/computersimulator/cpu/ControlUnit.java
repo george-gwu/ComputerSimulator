@@ -290,22 +290,17 @@ public class ControlUnit implements IClockCycle {
                     System.out.println("Absolute/Direct:" + this.instructionRegisterDecoded.get("address"));
                     this.effectiveAddress = this.instructionRegisterDecoded.get("address");                    
                     break;
-                case ControlUnit.EA_REGISTER_INDIRECT: //EA <- c(Xi) + c(ADDR)
+                case ControlUnit.EA_REGISTER_INDIRECT: //EA <- c(Xi) + ADDR
                     switch(this.microState){
                         case 1:
-                            Unit addr = this.instructionRegisterDecoded.get("address");
-                            this.memory.setMAR(addr);                            
-                            this.microState++;
-                            break;
-                        case 2:
+                            Unit addr = this.instructionRegisterDecoded.get("address");                          
                             int contentsOfX = this.instructionRegisterDecoded.get("xfi").getValue();
-                            Word contentsOfAddr = this.memory.getMBR();
-                            this.effectiveAddress = new Unit(13, (contentsOfX + contentsOfAddr.getValue()));
-                            System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+contentsOfAddr.getValue()+"): "+this.effectiveAddress);
+                            this.effectiveAddress = new Unit(13, (contentsOfX + addr.getValue()));
+                            System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+addr.getValue()+"): "+this.effectiveAddress);
                             break;                            
                     }                           
                     break;
-                case ControlUnit.EA_INDEXED: //EA <- c(c(ADDR))                         
+                case ControlUnit.EA_INDEXED: //EA <- c(ADDR)                         
                     switch(this.microState){
                         case 1: // Set ADDR onto MAR
                             Unit addr = this.instructionRegisterDecoded.get("address");
@@ -314,31 +309,21 @@ public class ControlUnit implements IClockCycle {
                             break;
                         case 2: // c(ADDR) from MBR, set to MAR
                             Word contentsOfAddr = this.memory.getMBR();
-                            this.memory.setMAR(new Unit(13, contentsOfAddr.getValue()));
-                            this.microState++;
-                            break;
-                        case 3: // c(c(ADDR)) from MBR
-                            Word contentsOfContents = this.memory.getMBR();
-                            this.effectiveAddress =  new Unit(13, (contentsOfContents.getValue()));
-                            System.out.println("Indexed - c(c(ADDR)) =  c(c("+this.instructionRegisterDecoded.get("address").getValue()+")) = "+this.effectiveAddress);                            
+                            this.effectiveAddress =  new Unit(13, (contentsOfAddr.getValue()));
+                            System.out.println("Indexed - c(ADDR) =  c("+this.instructionRegisterDecoded.get("address").getValue()+") = "+this.effectiveAddress);                            
                             break;
                     }                           
                     break;                    
-                case ControlUnit.EA_INDEXED_OFFSET: //EA <- c(c(Xi) + c(ADDR))
+                case ControlUnit.EA_INDEXED_OFFSET: //EA <- c(c(Xi) + ADDR)
                     switch(this.microState){
                         case 1:
                             Unit addr = this.instructionRegisterDecoded.get("address");
-                            this.memory.setMAR(addr);                            
-                            this.microState++;
-                            break;
-                        case 2: // c(ADDR) from MBR, get X, add X + C(ADDR) to MAR
-                            Word contentsOfAddr = this.memory.getMBR();
                             int contentsOfX = this.instructionRegisterDecoded.get("xfi").getValue();                            
-                            Unit location = new Unit(13, (contentsOfX + contentsOfAddr.getValue()));
+                            Unit location = new Unit(13, (contentsOfX + addr.getValue()));
                             this.memory.setMAR(location);
                             this.microState++;    
                             break;
-                        case 3:
+                        case 2:
                             Word contentsOfLocation = this.memory.getMBR();
                             this.effectiveAddress = new Unit(13, contentsOfLocation.getValue());
                             System.out.println("Indexed + Offset --> "+this.effectiveAddress);                                
@@ -732,7 +717,11 @@ public class ControlUnit implements IClockCycle {
             break;
                         
             case 1:
-                // Micro-7: OP2 <- Immed (EA)
+<<<<<<< HEAD
+                // Micro-7: OP2 <- Immed 
+=======
+                // Micro-7: OP2 <- Immed   (Immed is stored in ADDR)
+>>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
                 System.out.println("Micro-7: OP2 <- Immed");
                 alu.setOperand2(this.instructionRegisterDecoded.get("address"));
             break;
@@ -740,7 +729,7 @@ public class ControlUnit implements IClockCycle {
             case 2:
                 // Micro-8: CTRL <- OPCODE
                 System.out.println("Micro-8: CTRL <- OPCODE");  
-                alu.setControl(ArithmeticLogicUnit.CONTROL_SUBTRACT);
+                alu.setControl(ArithmeticLogicUnit.CONTROL_ADD);
                 alu.signalReadyToStartComputation();
             break;
                 
@@ -779,7 +768,11 @@ public class ControlUnit implements IClockCycle {
             break;
                         
             case 1:
-                // Micro-7: OP2 <- Immed (EA)
+<<<<<<< HEAD
+                // Micro-7: OP2 <- Immed 
+=======
+                // Micro-7: OP2 <- Immed  (Immed is stored in ADDR)
+>>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
                 System.out.println("Micro-7: OP2 <- Immed");
                 alu.setOperand2(this.instructionRegisterDecoded.get("address"));
             break;
