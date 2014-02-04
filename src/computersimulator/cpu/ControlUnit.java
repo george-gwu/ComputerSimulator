@@ -129,10 +129,34 @@ public class ControlUnit implements IClockCycle {
     public Unit[] getIndexRegisters() {
         return indexRegisters;
     }
+     /**
+     *Use for initialize IX
+     * @param IXid IndexRegisters Id(1~3)
+     * @param IndexRegister initial data
+     */
+    public void setIndexRegisters(int IXid,Unit IndexRegister)
+    {
+        if(IXid<4&&IXid>0)
+        {
+            this.indexRegisters[IXid-1]=IndexRegister;
+        }
+    }
 
     public Word[] getGpRegisters() {
         return gpRegisters;
-    }        
+    }  
+     /**
+     *Use for initialize GpR
+     * @param GpRID GpRegistersId(0~3)
+     * @param GpRegister initial data
+     */
+    public void setGpRegisters(int GpRID,Word GpRegister)
+    {
+        if(GpRID<4&&GpRID>=0)
+        {
+            this.gpRegisters[GpRID]=GpRegister;
+        }
+    }
 
     public Unit getPC() {
         return this.programCounter;
@@ -294,7 +318,7 @@ public class ControlUnit implements IClockCycle {
                     switch(this.microState){
                         case 1:
                             Unit addr = this.instructionRegisterDecoded.get("address");                          
-                            int contentsOfX = this.instructionRegisterDecoded.get("xfi").getValue();
+                            int contentsOfX = this.indexRegisters[this.instructionRegisterDecoded.get("xfi").getValue()-1].getValue();   //read Xi here
                             this.effectiveAddress = new Unit(13, (contentsOfX + addr.getValue()));
                             System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+addr.getValue()+"): "+this.effectiveAddress);
                             break;                            
@@ -318,7 +342,7 @@ public class ControlUnit implements IClockCycle {
                     switch(this.microState){
                         case 1:
                             Unit addr = this.instructionRegisterDecoded.get("address");
-                            int contentsOfX = this.instructionRegisterDecoded.get("xfi").getValue();                            
+                            int contentsOfX = this.indexRegisters[this.instructionRegisterDecoded.get("xfi").getValue()-1].getValue();    //read Xi here                        
                             Unit location = new Unit(13, (contentsOfX + addr.getValue()));
                             this.memory.setMAR(location);
                             this.microState++;    
@@ -717,15 +741,9 @@ public class ControlUnit implements IClockCycle {
             break;
                         
             case 1:
-<<<<<<< HEAD
-<<<<<<< HEAD
-                // Micro-7: OP2 <- Immed 
-=======
+
                 // Micro-7: OP2 <- Immed   (Immed is stored in ADDR)
->>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
-=======
-                // Micro-7: OP2 <- Immed   (Immed is stored in ADDR)
->>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
+
                 System.out.println("Micro-7: OP2 <- Immed");
                 alu.setOperand2(this.instructionRegisterDecoded.get("address"));
             break;
@@ -772,15 +790,9 @@ public class ControlUnit implements IClockCycle {
             break;
                         
             case 1:
-<<<<<<< HEAD
-<<<<<<< HEAD
-                // Micro-7: OP2 <- Immed 
-=======
+
                 // Micro-7: OP2 <- Immed  (Immed is stored in ADDR)
->>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
-=======
-                // Micro-7: OP2 <- Immed  (Immed is stored in ADDR)
->>>>>>> f35c82ab78af777e3b61df389ec5b57f6287bd2c
+
                 System.out.println("Micro-7: OP2 <- Immed");
                 alu.setOperand2(this.instructionRegisterDecoded.get("address"));
             break;

@@ -22,6 +22,9 @@ public class Computer implements IClockCycle {
         // @TODO Remove this after Phase 1
         this.memory.engineerSetMemoryLocation(new Unit(13, 52), new Word(100));
         this.memory.engineerSetMemoryLocation(new Unit(13, 100), new Word(1023));
+       this.memory.engineerSetMemoryLocation(new Unit(13, 152), new Word(255));
+       this.memory.engineerSetMemoryLocation(new Unit(13, 255), new Word(768));
+        this.cpu.getControlUnit().setIndexRegisters(1, new Unit(13,100));
         this.cpu.getControlUnit().setPC(new Unit(13, 1)); // Start at 1
         //@TODO: Note for TESTING.. Make sure to set MAR FIRST, then MBR. (otherwise Fetch)
         
