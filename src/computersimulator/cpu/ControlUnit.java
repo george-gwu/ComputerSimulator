@@ -395,10 +395,10 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_SMR:        //DONE
                     this.executeOpcodeSMR();
                     break;
-                case ControlUnit.OPCODE_AIR:
+                case ControlUnit.OPCODE_AIR:        //DONE, READY FOR REVIEW
                     this.executeOpcodeAIR();
                     break;
-                case ControlUnit.OPCODE_SIR:
+                case ControlUnit.OPCODE_SIR:        //DONE, READY FOR REVIEW
                     this.executeOpcodeSIR();
                     break;
                 default: // Unhandle opcode. Crash!
@@ -724,7 +724,45 @@ public class ControlUnit implements IClockCycle {
      */
     private void executeOpcodeAIR() {
         switch(this.microState){
-            
+            case 0:
+                // Micro-6: OP1 <- RF(RFI)
+                System.out.println("Micro-6: OP1 <- RF(RFI)");
+                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+                alu.setOperand1(this.gpRegisters[RFI]);
+            break;
+                        
+            case 1:
+                // Micro-7: OP2 <- Immed (EA)
+                System.out.println("Micro-7: OP2 <- Immed (EA)");
+                alu.setOperand2(this.effectiveAddress);
+            break;
+                
+            case 2:
+                // Micro-8: CTRL <- OPCODE
+                System.out.println("Micro-8: CTRL <- OPCODE");  
+                alu.setControl(ArithmeticLogicUnit.CONTROL_SUBTRACT);
+                alu.signalReadyToStartComputation();
+            break;
+                
+            case 3:
+                // Micro-9: RES <- c(OP1) + c(OP2)
+                System.out.println("Micro-9: RES <- c(OP1) + c(OP2)");
+                // Do nothing. (occurs automatically one clock cycle after signaled ready to compute)
+            break;
+                
+            case 4:
+                // Micro-10: RF(RFI) <- RES
+                System.out.println("Micro-10: RF(RFI) <- RES");
+                RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              
+                this.gpRegisters[RFI] = new Word(alu.getResult());  
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: AIR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+                
+                //Signal Completion
+                this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+            break;          
         }
     }
     
@@ -733,11 +771,48 @@ public class ControlUnit implements IClockCycle {
      */
     private void executeOpcodeSIR() {
         switch(this.microState){
-            
+            case 0:
+                // Micro-6: OP1 <- RF(RFI)
+                System.out.println("Micro-6: OP1 <- RF(RFI)");
+                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+                alu.setOperand1(this.gpRegisters[RFI]);
+            break;
+                        
+            case 1:
+                // Micro-7: OP2 <- Immed (EA)
+                System.out.println("Micro-7: OP2 <- Immed (EA)");
+                alu.setOperand2(this.effectiveAddress);
+            break;
+                
+            case 2:
+                // Micro-8: CTRL <- OPCODE
+                System.out.println("Micro-8: CTRL <- OPCODE");  
+                alu.setControl(ArithmeticLogicUnit.CONTROL_SUBTRACT);
+                alu.signalReadyToStartComputation();
+            break;
+                
+            case 3:
+                // Micro-9: RES <- c(OP1) - c(OP2)
+                System.out.println("Micro-9: RES <- c(OP1) - c(OP2)");
+                // Do nothing. (occurs automatically one clock cycle after signaled ready to compute)
+            break;
+                
+            case 4:
+                // Micro-10: RF(RFI) <- RES
+                System.out.println("Micro-10: RF(RFI) <- RES");
+                RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              
+                this.gpRegisters[RFI] = new Word(alu.getResult());  
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: SIR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+                
+                //Signal Completion
+                this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+            break;          
         }
     }
-    
-    
+        
     /**
      * Stop the machine
      */
