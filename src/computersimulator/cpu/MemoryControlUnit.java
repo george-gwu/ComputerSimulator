@@ -116,7 +116,6 @@ public class MemoryControlUnit implements IClockCycle {
         return this.memoryBufferRegister;
     }
     
-    
     /**
      * Set the Memory Access Register (used in get/store)
      * @param addressUnit The address to get/store

@@ -733,8 +733,8 @@ public class ControlUnit implements IClockCycle {
                         
             case 1:
                 // Micro-7: OP2 <- Immed (EA)
-                System.out.println("Micro-7: OP2 <- Immed (EA)");
-                alu.setOperand2(this.effectiveAddress);
+                System.out.println("Micro-7: OP2 <- Immed");
+                alu.setOperand2(this.instructionRegisterDecoded.get("address"));
             break;
                 
             case 2:
@@ -780,8 +780,8 @@ public class ControlUnit implements IClockCycle {
                         
             case 1:
                 // Micro-7: OP2 <- Immed (EA)
-                System.out.println("Micro-7: OP2 <- Immed (EA)");
-                alu.setOperand2(this.effectiveAddress);
+                System.out.println("Micro-7: OP2 <- Immed");
+                alu.setOperand2(this.instructionRegisterDecoded.get("address"));
             break;
                 
             case 2:
