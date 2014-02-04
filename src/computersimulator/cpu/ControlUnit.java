@@ -159,8 +159,8 @@ public class ControlUnit implements IClockCycle {
     public void clockCycle() throws Exception {
         // Used to run microcycles without causing a full clock cycle
         boolean runningMicroCycles=true;
-        //do {
-          System.out.println("Micro!");
+        //do {  // @TODO: Turned off until we're running a program (part 2)
+        //  System.out.println("Micro!");
           
           this.instructionCycle();
 

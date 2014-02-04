@@ -25,10 +25,14 @@ public class Computer implements IClockCycle {
      */
     @Override
     public final void clockCycle() throws Exception{
-            System.out.println("-------- CLOCK CYCLE --------");
-            this.cpu.clockCycle();
-            this.memory.clockCycle();
-            this.io.clockCycle();                
+        //System.out.println("-------- CLOCK CYCLE --------"); 
+        /** @TODO: Turned off this message until part 2, we're running more 
+        * clock cycles than necessary in part 1 because we not actually running 
+        * a program yet. **/
+
+        this.cpu.clockCycle();
+        this.memory.clockCycle();
+        this.io.clockCycle();                
     }
 
     /**
