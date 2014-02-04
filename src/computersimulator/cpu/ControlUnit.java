@@ -389,10 +389,10 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_STX:        //DONE
                     this.executeOpcodeSTX();
                     break;
-                case ControlUnit.OPCODE_AMR:        //PARTIALLY DONE
+                case ControlUnit.OPCODE_AMR:        //DONE
                     this.executeOpcodeAMR();
                     break;
-                case ControlUnit.OPCODE_SMR:        //PARTIALLY DONE
+                case ControlUnit.OPCODE_SMR:        //DONE
                     this.executeOpcodeSMR();
                     break;
                 case ControlUnit.OPCODE_AIR:
