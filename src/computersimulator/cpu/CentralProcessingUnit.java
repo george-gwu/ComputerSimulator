@@ -13,9 +13,10 @@ public class CentralProcessingUnit implements IClockCycle {
 
     public CentralProcessingUnit(MemoryControlUnit mem) {        
         this.memory = mem;
-        
-        controlUnit = new ControlUnit(this.memory);   
         alu = new ArithmeticLogicUnit();
+        
+        controlUnit = new ControlUnit(this.memory, this.alu);   
+        
         
     }
     

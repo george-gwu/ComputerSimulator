@@ -92,13 +92,14 @@ public class ControlUnit implements IClockCycle {
     // RES to store the result of ALU operations
     private Unit RES;
     
-    public ControlUnit(MemoryControlUnit mem) {
+    public ControlUnit(MemoryControlUnit mem, ArithmeticLogicUnit aluRef) {
         this.instructionRegister = new Word();
         this.programCounter = new Unit(13);
         this.machineStatusRegister = new Word();
         this.machineFaultRegister = new Unit(4);
         this.state = ControlUnit.STATE_NONE;
         this.memory = mem;
+        this.alu=aluRef;
         
         for(int x=0;x<3;x++){
             this.indexRegisters[x] = new Unit(13);
@@ -617,37 +618,39 @@ public class ControlUnit implements IClockCycle {
               // do nothing, done by memory
             break;
                 
-            case 3:
+            case 2:
               // Micro-8: OP1 <- MBR
               System.out.println("Micro-8: OP1 <- MBR");
-              OP1 = this.memory.getMBR();
+              alu.setOperand1(this.memory.getMBR());  // This might be possible to run in cycle 1
             break;
                 
-            case 4:
+            case 3:
               // Micro-9: OP2 <- RF(RFI)
               System.out.println("Micro-9: OP2 <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              OP2 = this.gpRegisters[RFI];
+              alu.setOperand2(this.gpRegisters[RFI]);
+            break;
+                
+            case 4:
+              // Micro-10: CTRL <- OPCODE
+              System.out.println("Micro-10: CTRL <- OPCODE");  
+              alu.setControl(ArithmeticLogicUnit.CONTROL_ADD); // @TODO: Should this come from IR somehow?
+              alu.signalReadyToStartComputation();
             break;
                 
             case 5:
-              // Micro-10: CTRL <- OPCODE
-              System.out.println("Micro-10: CTRL <- OPCODE");  
+              // Micro-11: RES <- c(OP1) + c(OP2)
+              System.out.println("Micro-11: RES <- c(OP1) + c(OP2)");
+              // Do nothing. (occurs automatically one clock cycle after signaled ready to compute)
             break;
                 
             case 6:
-              // Micro-11: RES <- c(OP1) + c(OP2)
-              System.out.println("Micro-11: RES <- c(OP1) + c(OP2)");
-              RES = alu.add(OP1, OP2);
-            break;
-                
-            case 7:
               // Micro-12: RF(RFI) <- RES
               System.out.println("Micro-12: RF(RFI) <- RES");
               RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              this.gpRegisters[RFI] = (Word)RES;  
+              this.gpRegisters[RFI] = new Word(alu.getResult());  
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: AMR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+              System.out.println("COMPLETED INSTRUCTION: AMR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 
               //Signal Completion
@@ -678,34 +681,37 @@ public class ControlUnit implements IClockCycle {
             case 3:
               // Micro-8: OP1 <- MBR
               System.out.println("Micro-8: OP1 <- MBR");
-              OP1 = this.memory.getMBR();
+              alu.setOperand1(this.memory.getMBR());
             break;
                 
             case 4:
               // Micro-9: OP2 <- RF(RFI)
               System.out.println("Micro-9: OP2 <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              OP2 = this.gpRegisters[RFI];
+              alu.setOperand2(this.gpRegisters[RFI]);
             break;
                 
             case 5:
               // Micro-10: CTRL <- OPCODE
               System.out.println("Micro-10: CTRL <- OPCODE");  
+              alu.setControl(ArithmeticLogicUnit.CONTROL_SUBTRACT); // @TODO: Should this come from IR somehow?
+              alu.signalReadyToStartComputation();
             break;
                 
             case 6:
               // Micro-11: RES <- c(OP1) - c(OP2)
-              RES = alu.subtract(OP1, OP2);  
+              // Do nothing. (occurs automatically one clock cycle after signaled ready to compute)
             break;
                 
             case 7:
               // Micro-12: RF(RFI) <- RES
               System.out.println("Micro-12: RF(RFI) <- RES");
               RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              this.gpRegisters[RFI] = (Word)RES;  
+              
+              this.gpRegisters[RFI] = new Word(alu.getResult());  
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: SMR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
-              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+              System.out.println("COMPLETED INSTRUCTION: SMR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
+              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
               //Signal Completion
               this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;

@@ -18,10 +18,121 @@ public class ArithmeticLogicUnit implements IClockCycle {
     private final static int CONDITION_REGISTER_UNDERFLOW = 1;
     private final static int CONDITION_REGISTER_DIVZERO = 2;
     private final static int CONDITION_REGISTER_EQUALORNOT = 3;
+    
+    // OP1 - Unit - Up to 20 Bits
+    private Unit operand1;
+    
+    // OP2 - Unit - Up to 20 Bits
+    private Unit operand2;
+    
+    //CTRL - Unit - ? Bits      // @TODO Verify states are correct. I used placeholders 0,1,2.
+    private int control;
+    public final static int CONTROL_NONE=0;
+    public final static int CONTROL_ADD=1;
+    public final static int CONTROL_SUBTRACT=2;
+    
+    // RES - Unit - Up to 20 Bits
+    private Unit result;
+    
+    private int state;
+    private final static int STATE_NONE = 0;
+    private final static int STATE_START_COMPUTATION = 1;
+    private final static int STATE_COMPUTATION_FINISHED = 2;
+    
+    
 
     public ArithmeticLogicUnit() {
         this.conditionCode = new Unit(4);   // @TODO: GT, EQ, LT ?        
     }
+    
+   
+    /**
+     * Clock cycle. This is the main function which causes the ALU to do work.
+     *  This serves as a publicly accessible method, but delegates to other methods.
+     */
+    @Override
+    public void clockCycle(){
+        switch(this.state){
+            case ArithmeticLogicUnit.STATE_START_COMPUTATION:
+                this.compute();
+                break;
+            case ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED:                
+            case ArithmeticLogicUnit.STATE_NONE:
+            default:
+                break;
+                
+                
+        }
+        
+    }
+
+    /**
+     * This is used by the ControlUnit to tell ALU all parameters are set.
+     */
+    public void signalReadyToStartComputation(){
+        this.state = ArithmeticLogicUnit.STATE_START_COMPUTATION;
+    }
+    
+    /** 
+     * Used internally on the clock cycle when start computation is set.
+     */
+    private void compute(){
+        switch(this.control){
+            case ArithmeticLogicUnit.CONTROL_ADD:
+                this.result = this.add(operand1, operand2);
+                break;
+            case ArithmeticLogicUnit.CONTROL_SUBTRACT:
+                this.result = this.subtract(operand1, operand2);
+                break;
+            case ArithmeticLogicUnit.CONTROL_NONE:
+            default:
+                //@TODO Handle error
+                break;
+        }
+        
+        this.state = ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED;
+    }
+        
+
+    
+    
+    public Unit getOperand1() {
+        return operand1;
+    }
+
+    public void setOperand1(Unit operand1) {
+        this.operand1 = operand1;
+    }
+
+    public Unit getOperand2() {
+        return operand2;
+    }
+
+    public void setOperand2(Unit operand2) {
+        this.operand2 = operand2;
+    }
+
+    public int getControl() {
+        return control;
+    }
+
+    public void setControl(int controlState) {
+        this.control = controlState;
+    }
+
+    public Unit getResult() {
+        if(this.state == ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED){
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    private void setResult(Unit result) {
+        this.result = result;
+    }
+    
+        
    
     public Unit getConditionCode() {
         return conditionCode;
@@ -66,23 +177,14 @@ public class ArithmeticLogicUnit implements IClockCycle {
         this.conditionCode.setValueBinary("0000");
     }
     
-    
-    /**
-     * Clock cycle. This is the main function which causes the ALU to do work.
-     *  This serves as a publicly accessible method, but delegates to other methods.
-     */
-    @Override
-    public void clockCycle(){
-        
-    }  
-    
+ 
     /**
      * Perform subtract operation implements twos complement math. 
      * @param operand1
      * @param operand2
      * @return results
      */
-    public Unit subtract(Unit operand1, Unit operand2) {        
+    private Unit subtract(Unit operand1, Unit operand2) {        
         Integer[] op2Binary = operand2.getBinaryArray();
         for (int i = 0; i < op2Binary.length; i++) {                            // invert bits
             op2Binary[i] = 1 - op2Binary[i];
@@ -115,7 +217,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @return  results
      * 
      */    
-    public Unit add(Unit operand1, Unit operand2){
+    private Unit add(Unit operand1, Unit operand2){
         String op1Str = operand1.getBinaryString();
         String op2Str = operand2.getBinaryString();
         
@@ -212,4 +314,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
         }
         return addBinary(sum, carry);
     }
+
+    
+    
+    
 }
