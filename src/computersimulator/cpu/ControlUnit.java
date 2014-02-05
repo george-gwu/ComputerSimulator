@@ -132,13 +132,25 @@ public class ControlUnit implements IClockCycle {
      /**
      *Use to set Index Register IX
      * @param ixid IndexRegisters Id(1~3)
-     * @param IndexRegister initial data
+     * @param IndexRegister data
      */
     public void setIndexRegister(int ixid,Unit IndexRegister)
     {
-        if(ixid<4&&ixid>0) // IX1-3, stored internally at 0-2
-        {
+        if(ixid<4&&ixid>0){ // IX1-3, stored internally at 0-2
             this.indexRegisters[ixid-1]=IndexRegister;
+        }
+    }
+    
+    /**
+     * Returns a translated index register value (1-3) becomes (0-2)
+     * @param ixid IndexRegisters Id(1~3)
+     * @return Unit value
+     */
+    public Unit getIndexRegister(int ixid){
+        if(ixid<4&&ixid>0){ // IX1-3, stored internally at 0-2
+            return this.indexRegisters[ixid-1];
+        } else {
+            return null;
         }
     }
 
@@ -317,8 +329,8 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.EA_REGISTER_INDIRECT: //EA <- c(Xi) + ADDR
                     switch(this.microState){
                         case 1:
-                            Unit addr = this.instructionRegisterDecoded.get("address");                          
-                            int contentsOfX = this.indexRegisters[this.instructionRegisterDecoded.get("xfi").getValue()-1].getValue();   //read Xi here
+                            Unit addr = this.instructionRegisterDecoded.get("address");  
+                            int contentsOfX = this.getIndexRegister(this.instructionRegisterDecoded.get("xfi").getValue()).getValue(); //read Xi here  
                             this.effectiveAddress = new Unit(13, (contentsOfX + addr.getValue()));
                             System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+addr.getValue()+"): "+this.effectiveAddress);
                             break;                            
@@ -342,7 +354,7 @@ public class ControlUnit implements IClockCycle {
                     switch(this.microState){
                         case 1:
                             Unit addr = this.instructionRegisterDecoded.get("address");
-                            int contentsOfX = this.indexRegisters[this.instructionRegisterDecoded.get("xfi").getValue()-1].getValue();    //read Xi here                        
+                            int contentsOfX = this.getIndexRegister(this.instructionRegisterDecoded.get("xfi").getValue()).getValue();    //read Xi here                        
                             Unit location = new Unit(13, (contentsOfX + addr.getValue()));
                             this.memory.setMAR(location);
                             this.microState++;    
@@ -559,9 +571,8 @@ public class ControlUnit implements IClockCycle {
 
             case 2:
               // Micro 8: c(XFI) <- MBR              
-              // Maps XFI 1-3 to Array Index 0-2
-              int XFI = (int)(this.instructionRegisterDecoded.get("xfi").getValue()-1);
-              this.indexRegisters[XFI] = this.memory.getMBR();  
+              int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
+              this.setIndexRegister(XFI, this.memory.getMBR());
               
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               System.out.println("COMPLETED INSTRUCTION: LDX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
@@ -588,9 +599,8 @@ public class ControlUnit implements IClockCycle {
             case 1:
               // Micro 7: MBR <- c(XFI)
               System.out.println("Micro 7: MBR <- c(XFI)");
-              // Maps XFI 1-3 to Array Index 0-2
-              int XFI = (int)(this.instructionRegisterDecoded.get("xfi").getValue()-1);
-              memory.setMBR(this.indexRegisters[XFI]);
+              int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
+              memory.setMBR(this.getIndexRegister(XFI));
             break;
                 
             case 2:
