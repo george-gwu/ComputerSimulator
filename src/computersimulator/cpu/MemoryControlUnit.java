@@ -8,8 +8,6 @@ import computersimulator.components.*;
  * In one cycle, it should accept an address from the MAR. It should then
  * accept a value in the MBR to be stored in memory on the next cycle or 
  * place a value in the MBR that is read from memory on the next cycle.
- * 
- * 
  */
 public class MemoryControlUnit implements IClockCycle {
     

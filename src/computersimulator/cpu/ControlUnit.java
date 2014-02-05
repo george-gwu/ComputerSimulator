@@ -1,19 +1,15 @@
 package computersimulator.cpu;
 
-import computersimulator.components.HaltSystemException;
-import computersimulator.components.Unit;
-import computersimulator.components.Word;
+import computersimulator.components.*;
 import java.util.HashMap;
 
 /**
  * It is the task of the control unit to fetch the next instruction from 
  *   memory to be executed, decode it (i.e., determine what is to be done), and 
- *   execute it by issuing the appropriate command to the ALU, memory , and the 
+ *   execute it by issuing the appropriate command to the ALU, memory, and the 
  *   I/O controllers.
  * 
  * @TODO We need some way to ensure that registers don't get converted to different size units. I accidentally cast PC to 4 and no error happened immediately.
- * 
- * @author george
  */
 public class ControlUnit implements IClockCycle {
 
@@ -430,7 +426,7 @@ public class ControlUnit implements IClockCycle {
             // Micro-N: c(PC) + 1 -> PC  --- Increment PC
             System.out.println("Micro-Final: c(PC) + 1 -> PC (Increment PC)");
 
-            this.getPC().add(new Unit(13, 1));
+            this.getProgramCounter().setValue(this.getProgramCounter().getValue() + 1); // @TODO: ALU?
             System.out.println("-- PC: "+this.getPC());
 
             this.microState = null;

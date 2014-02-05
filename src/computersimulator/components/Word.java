@@ -2,8 +2,8 @@
 package computersimulator.components;
 
 /**
- *
- * @author george
+ * This is a simple extension of Unit. A Word in our simulator is just a fixed
+ * 20-bit Unit. This allows for basic type checking while programming.
  */
 public class Word extends Unit {
     

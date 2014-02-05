@@ -7,7 +7,8 @@ import computersimulator.gui.OperatorConsole;
 
 /**
  * Computer Simulator Program - This controls the GUI and instantiates a 
- * Computer, which represents the main simulator.
+ * Computer, which represents the main simulator. 
+ * @TODO: It also contains a few debug conditions that are set to ease testing in Part 1.
  */
 public class ComputerSimulator {
     

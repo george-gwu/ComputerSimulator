@@ -1,8 +1,8 @@
 package computersimulator.cpu;
 
 /**
- *
- * @author george
+ * The CPU class primarily represents a placeholder for ALU and the ControlUnit.
+ * It also passes the reference to memory to symbolize that communication buffer.
  */
 public class CentralProcessingUnit implements IClockCycle {
     

@@ -16,18 +16,14 @@ import javax.swing.JPanel;
 
 /**
  * OperatorConsole should include:
- Display mainWindowor all registers
- Display mainWindowor machine status and condition registers
+ Display all registers
+ Display machine status and condition registers
       Displays:
           * Current Memory Address
           * Various Registers (as mentioned above)
           * Sense Switches (?) to inmainWindoworm the program  (relates to I/O). One DEVID accesses one sense switch.
- * An IPL button (to start the simulation)
- * Switches (simulated as buttons) to load data into registers, select displays, and initiate certain conditions in the machine.
- * 
- * 
- * @author george
- * @author pawel
+ * An IPL button (to start the simulation)  @TODO: IPL will be added once we're in part 2
+ * Switches (simulated as checkboxes) to load data into registers, select displays, and initiate certain conditions in the machine.
  */
 
 public class OperatorConsole implements Runnable {

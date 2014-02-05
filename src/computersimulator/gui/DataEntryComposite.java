@@ -7,10 +7,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- * Composite for entering data. The data will be passed by selecting corresponding
- * check boxes in panel
- * 
- * @author pawel
+ * GUI element for inputting data or receiving load data. Configurable in size
+ * for reuse.
  */
 public class DataEntryComposite {
     private JPanel p;

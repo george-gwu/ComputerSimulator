@@ -3,9 +3,10 @@ package computersimulator.cpu;
 import computersimulator.components.Unit;
 
 /**
- *
- * @author george
- * @author pawel
+ * This is the ALU class. It receives 3 inputs, processes them, and sets an 
+ * output and condition flags.  It operates on the clock cycle and requires one 
+ * clock cycle to process any inputs and set outputs.  All inputs are reset upon
+ * computation.
  */
 public class ArithmeticLogicUnit implements IClockCycle {
     

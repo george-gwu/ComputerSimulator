@@ -4,8 +4,13 @@ package computersimulator.cpu;
 import computersimulator.components.*;
 
 /**
- *
- * @author george
+ * Computer is the primary class used by the simulator. The core business logic
+ * lives inside the components of computer. The primary components are CPU, IO,
+ * and Memory.  The computer also is the primary controller of the clock cycle,
+ * but delegates to the primary components.  Also, because our primary data 
+ * type is an object, computer has one setter and getter for each register. This
+ * prevents us from accidentally operating on stale references that are no longer
+ * valid.
  */
 public class Computer implements IClockCycle {
     
@@ -144,63 +149,6 @@ public class Computer implements IClockCycle {
             case "IR":                
                 this.getCpu().getControlUnit().getInstructionRegister().setValue(deposit.getValue());
                 break;
-
-               
         }                  
-    }    
-    
-    
-    /*****
-     * 
-// M(15) <- STR, 3, 0, 52, I
-        this.memory.engineerSetMemoryLocation(new Unit(13, 15), Word.WordFromBinaryString("000010 11 00 1 0 00110100"));
-                    
-        boolean running = true; // @TODO hook this to IPL button
-        
-        this.memory.engineerSetMemoryLocation(new Unit(13, 15), Word.WordFromBinaryString("000010 11 00 1 0 00110100"));
-        cpu.getControlUnit().setPC(new Unit(13,15));
-            
-        do {
-            try {
-                this.clockCycle();
-            } catch(HaltSystemException eHalt){
-                System.out.println("System HALT.");
-                running=false;
-            } catch(Exception e){
-                System.out.println("Error: "+ e);
-            }
-        } while(running==true);
-
-//        LDR r, x, address [,I]	
-//        which says “load R3 from address 52 indirect with no indexing”  
-//        Let location 52 contain 100, and location 100 contain 1023
-//        The format in binary looks like this:
-//        000001 11 00 1 0 00110100
-        
-        // M(16) <- LDR, 3, 0, 52, I
-        this.memory.engineerSetMemoryLocation(new Unit(13, 16), Word.WordFromBinaryString("000001 11 00 1 0 00110100"));
-        
-//        LDA r, x, address[,I]
-//        which says "Load Register with Address"
-        // M(17) <- LDA, 3, 0, 52, I
-        this.memory.engineerSetMemoryLocation(new Unit(13, 17), Word.WordFromBinaryString("000011 11 00 1 0 00110100"));        
-        
-//        LDX x, address[,I]
-//        which says "Load Index Register from Memory"
-//        Let the memory location be 52.
-        // M(18) <- LDX, 3, 52, I
-        this.memory.engineerSetMemoryLocation(new Unit(13, 18), Word.WordFromBinaryString("101001 00 11 1 0 00110100"));
-               
-//        STX x, address[,I]
-//        which says "Store Index Register to Memory"
-//        Let the memory location be 52.
-
-        // M(19) <- STX, 3, 52, I
-        this.memory.engineerSetMemoryLocation(new Unit(13, 19), Word.WordFromBinaryString("101010 00 11 1 0 00110100"));
-        
-        // set PC to 15 for testing, this will increment until no more instructions exist, then crash
-        cpu.getControlUnit().setPC(new Unit(13,15));
-* 
-     */
-    
+    }             
 }

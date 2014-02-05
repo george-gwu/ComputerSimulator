@@ -3,13 +3,9 @@ package computersimulator.components;
 import java.util.Arrays;
 
 /**
- * I'm not sure if this is the best way to store a word, but I figure we should
- * build a primitive class and add methods to it. I'm trying to figure out how 
- * we can implement a 20-bit word size and handle overflow, etc.  My thought is
- * to use a 32-bit integer as the internal storage, but only expose 20 bits?
- * Any better ideas?
- * 
- * @author george
+ * A Unit is the primary component for data inside our Computer Simulator. It
+ * allows our computer to maintain N-bit data types. It also allows quick debugging
+ * and access to both base-10 and base-2 values.
  */
 public class Unit {
     
@@ -91,48 +87,7 @@ public class Unit {
             throw new java.lang.ArithmeticException("{"+value+"} Out Of Range: ["+this.MIN_VALUE+" through "+this.MAX_VALUE+"]"); 
             //@TODO: this is a great location to throw a special overflow exception which can be caught later
         }
-    }
-    
-    /**
-     *
-     * @param operand The Unit to add to this Unit. (ie. EAX = EAX + operand)
-     */
-    public void add(Unit operand){
-        // @TODO: This needs to implement twos complement math. 
-        // convert this and addee to binary, run twos complement addition, then add
-        // this should be modifying the return, which creates this:
-        // EAX = EAX + EBX(addee)
-        
-        //@TODO This also needs to handle type conversion ie. adding a 13 bit value to a 20 bit
-        //@TODO This also needs to be tested for negative numbers
-        
-                   
-        //@TODO This is the hack fix.. Convert this.       
-        int combined = (this.getValue() + operand.getValue());
-        this.setValue(combined);                
-    }
-    
-    /**
-     *
-     * @param operand The Unit to add to this Unit. (ie. EAX = EAX - operand)
-     */
-    public void subtract(Unit operand){
-        // @TODO: This needs to implement twos complement math. 
-        // convert this and addee to binary, run twos complement addition, then add
-        // this should be modifying the return, which creates this:
-        // EAX = EAX + EBX(addee)
-        
-        //@TODO This also needs to handle type conversion ie. adding a 13 bit value to a 20 bit
-        //@TODO This also needs to be tested for negative numbers
-        
-                   
-        //@TODO This is the hack fix.. Convert this.       
-        int combined = (this.getValue() - operand.getValue());
-        this.setValue(combined);                
-    }
-        
-    
-    
+    }        
 
     /**
      * This method is probably unused outside this class due to the Integer storage type (why it is private).

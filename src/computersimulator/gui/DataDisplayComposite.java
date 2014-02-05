@@ -11,9 +11,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- * Composite for displaying data
- * 
- * @author pawel
+ * Composite GUI Element for Displaying Data. This also contains an optional 
+ * input element that allows it to be a target of a deposit or load.  Each 
+ * DataDisplayComposite maintains a reference to computer for querying for the 
+ * most recent data.  Since this reference can become outdated, it must continually
+ * query for the latest.
  */
 public class DataDisplayComposite {
     private Computer computer;
