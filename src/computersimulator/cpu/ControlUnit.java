@@ -383,31 +383,31 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_HLT:
                     this.executeOpcodeHLT();                    
                     break;                    
-                case ControlUnit.OPCODE_LDR:        //DONE
+                case ControlUnit.OPCODE_LDR:
                     this.executeOpcodeLDR();
                     break;
-                case ControlUnit.OPCODE_STR:        //DONE
+                case ControlUnit.OPCODE_STR:
                     this.executeOpcodeSTR();
                     break;
-                case ControlUnit.OPCODE_LDA:        //DONE
+                case ControlUnit.OPCODE_LDA:
                     this.executeOpcodeLDA();
                     break;    
-                case ControlUnit.OPCODE_LDX:        //DONE
+                case ControlUnit.OPCODE_LDX:
                     this.executeOpcodeLDX();
                     break;
-                case ControlUnit.OPCODE_STX:        //DONE
+                case ControlUnit.OPCODE_STX:
                     this.executeOpcodeSTX();
                     break;
-                case ControlUnit.OPCODE_AMR:        //DONE
+                case ControlUnit.OPCODE_AMR:
                     this.executeOpcodeAMR();
                     break;
-                case ControlUnit.OPCODE_SMR:        //DONE
+                case ControlUnit.OPCODE_SMR:
                     this.executeOpcodeSMR();
                     break;
-                case ControlUnit.OPCODE_AIR:        //DONE, READY FOR REVIEW
+                case ControlUnit.OPCODE_AIR:
                     this.executeOpcodeAIR();
                     break;
-                case ControlUnit.OPCODE_SIR:        //DONE, READY FOR REVIEW
+                case ControlUnit.OPCODE_SIR:
                     this.executeOpcodeSIR();
                     break;
                 default: // Unhandle opcode. Crash!
