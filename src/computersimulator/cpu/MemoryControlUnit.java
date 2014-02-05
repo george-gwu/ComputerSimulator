@@ -5,9 +5,9 @@ import computersimulator.components.*;
 /**
  * MemoryControlUnit - MemoryControlUnit implements a single port memory. 
  * All memory elements need to be set to zero on power up.
- * In one cycle, it should accept an address from the MAR. It should then
- * accept a value in the MBR to be stored in memory on the next cycle or 
- * place a value in the MBR that is read from memory on the next cycle.
+ In one cycle, it should accept an addressRaw from the MAR. It should then
+ accept a value in the MBR to be stored in memory on the next cycle or 
+ place a value in the MBR that is read from memory on the next cycle.
  */
 public class MemoryControlUnit implements IClockCycle {
     
@@ -16,7 +16,7 @@ public class MemoryControlUnit implements IClockCycle {
     private final static int BANK_SIZE = 8;
     private final static int BANK_CELLS = 256;
     
-    // MAR	13 bits	Memory Address Register: holds the address of the word to be fetched from memory
+    // MAR	13 bits	Memory Address Register: holds the addressRaw of the word to be fetched from memory
     private Unit memoryAddressRegister;
     // MBR	20 bits	Memory Buffer Register: holds the word just fetched from or stored into memory
     private Word memoryBufferRegister;
@@ -116,7 +116,7 @@ public class MemoryControlUnit implements IClockCycle {
     
     /**
      * Set the Memory Access Register (used in get/store)
-     * @param addressUnit The address to get/store
+     * @param addressUnit The addressRaw to get/store
      * @return TRUE/FALSE if successful
      */    
     public boolean setMAR(Unit addressUnit){
@@ -162,24 +162,25 @@ public class MemoryControlUnit implements IClockCycle {
        
     
     /**
-     * Calculates relative address for memory location from MAR
+     * Calculates relative addressRaw for memory location from MAR
      * @TODO: 8191 words are addressable via MAR despite only 2048 exist. (see pg 16)... means we need virtual memory?
      * @return Array{bankIndex,cellIndex}
      */
-    private int[] calculateMemoryAddressFromMAR() throws Exception {
-        // Load the address in MAR
-        int address = this.memoryAddressRegister.getValue();
+    private int[] calculateActualMemoryLocation(Unit address) {
+        // Load the addressRaw in MAR
+        int addressRaw = address.getValue();
                 
-        // Decode the Address in MAR
-        int cellIndex = address % MemoryControlUnit.BANK_CELLS;      
-        int bankIndex = (int)Math.floor(((address-cellIndex) / MemoryControlUnit.BANK_SIZE));
+        // Decode the Address in MAR      
+        int bankIndex = (int)Math.floor((addressRaw / MemoryControlUnit.BANK_CELLS));
+        int cellIndex = addressRaw % (MemoryControlUnit.BANK_CELLS);
         
-        System.out.println("Calculated Memory Address: "+address+" as Bank: "+bankIndex+", Cell: "+cellIndex+")");
+        System.out.println("Calculated Memory Address: "+addressRaw+" as Bank: "+bankIndex+", Cell: "+cellIndex+")");
         
         if(bankIndex > MemoryControlUnit.BANK_SIZE){
-            throw new Exception("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
+            //throw new Exception("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
+            System.out.println("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
+            return null; //@TODO Switch back to exception
         }
-
         
         // Return the result index array
         int[] result = {bankIndex,cellIndex};        
@@ -193,8 +194,9 @@ public class MemoryControlUnit implements IClockCycle {
      */
     public Word engineerFetchByMemoryLocation(Unit address){
         // Decode the Address
-        int cellIndex = address.getValue() % MemoryControlUnit.BANK_CELLS;      
-        int bankIndex = (int)Math.floor(((address.getValue()-cellIndex) / MemoryControlUnit.BANK_SIZE));    
+        int[] addr = this.calculateActualMemoryLocation(address);             
+        int bankIndex = addr[0]; 
+        int cellIndex = addr[1]; 
         
         Word value = new Word(this.memory[bankIndex][cellIndex]);
         System.out.println("ENGINEER: Fetch Addr: "+address.getValue()+"  ("+bankIndex+"/"+cellIndex+") ---  Value: "+value);
@@ -208,9 +210,11 @@ public class MemoryControlUnit implements IClockCycle {
      * @param value
      */
     public void engineerSetMemoryLocation(Unit address, Word value){
-         // Decode the Address        
-        int cellIndex = address.getValue() % MemoryControlUnit.BANK_CELLS;      
-        int bankIndex = (int)Math.floor(((address.getValue()-cellIndex) / MemoryControlUnit.BANK_SIZE));
+         // Decode the Address                
+        int[] addr = this.calculateActualMemoryLocation(address);
+        int bankIndex = addr[0]; 
+        int cellIndex = addr[1];        
+        
         System.out.println("ENGINEER: Set Addr: "+address.getValue()+"  ("+bankIndex+"/"+cellIndex+") to  Value: "+value);
         
         this.memory[bankIndex][cellIndex] = value;
@@ -218,20 +222,22 @@ public class MemoryControlUnit implements IClockCycle {
     
     
     /**
-     * fetchAddressOperation - This fetches an address specified by MAR, and
-     * puts the contents of that memory location into MBR. 
+     * fetchAddressOperation - This fetches an addressRaw specified by MAR, and
+ puts the contents of that memory location into MBR. 
      * Private because it is called by clockCycle.
      */    
     private void fetchAddressOperation(){
         try {
             // Load and Decode the Address in MAR
-            int[] addr = this.calculateMemoryAddressFromMAR();
+            int[] addr = this.calculateActualMemoryLocation(this.memoryAddressRegister);
+            int bankIndex = addr[0]; 
+            int cellIndex = addr[1]; 
         
             // Copy the contents of that memory location into the MBR            
-            this.memoryBufferRegister = new Word(this.memory[addr[0]][addr[1]]);
+            this.memoryBufferRegister = new Word(this.memory[bankIndex][cellIndex]);
             System.out.println("-- Fetch MAR("+this.memoryAddressRegister.getValue()+"): "+this.memoryBufferRegister);
         } catch(Exception e){
-            //@TODO: Handle bad address (virtual memory?)
+            //@TODO: Handle bad addressRaw (virtual memory?)
             System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
         }
         
@@ -246,13 +252,15 @@ public class MemoryControlUnit implements IClockCycle {
     private void storeAddressInMemoryOperation(){   
         try {        
             // Load and Decode the Address in MAR
-            int[] addr = this.calculateMemoryAddressFromMAR();
+            int[] addr = this.calculateActualMemoryLocation(this.memoryAddressRegister);
+            int bankIndex = addr[0]; 
+            int cellIndex = addr[1];        
 
             //Copy the value from MDR to Memory                
-            this.memory[addr[0]][addr[1]] = new Word(this.memoryBufferRegister);
+            this.memory[bankIndex][cellIndex] = new Word(this.memoryBufferRegister);
             System.out.println("-- Memory Set - MAR("+this.memoryAddressRegister.getValue()+") to "+this.memoryBufferRegister);
         } catch(Exception e){
-            //@TODO: Handle bad address (virtual memory?)
+            //@TODO: Handle bad addressRaw (virtual memory?)
             System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
         }                
     }
