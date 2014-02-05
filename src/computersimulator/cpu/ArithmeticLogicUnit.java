@@ -35,6 +35,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
     private Unit result;
     
     private int state;
+
     private final static int STATE_NONE = 0;
     private final static int STATE_START_COMPUTATION = 1;
     private final static int STATE_COMPUTATION_FINISHED = 2;
@@ -70,7 +71,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * This is used by the ControlUnit to tell ALU all parameters are set.
      */
     public void signalReadyToStartComputation(){
-        this.state = ArithmeticLogicUnit.STATE_START_COMPUTATION;
+        this.setState(ArithmeticLogicUnit.STATE_START_COMPUTATION);
     }
     
     /** 
@@ -90,7 +91,11 @@ public class ArithmeticLogicUnit implements IClockCycle {
                 //@TODO Handle error.
                 break;
         }                
-        this.state = ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED;
+        // Reset inputs & set state to finished
+        this.setControl(ArithmeticLogicUnit.CONTROL_NONE);
+        this.setOperand1(null);
+        this.setOperand2(null);
+        this.setState(ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED);
     }
         
 
@@ -120,8 +125,16 @@ public class ArithmeticLogicUnit implements IClockCycle {
         this.control = controlState;
     }
 
+    public int getState() {
+        return state;
+    }
+
+    private void setState(int state) {
+        this.state = state;
+    }    
+
     public Unit getResult() {
-        if(this.state == ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED){
+        if(this.getState() == ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED){
             return result;
         } else {
             return null;
@@ -147,11 +160,11 @@ public class ArithmeticLogicUnit implements IClockCycle {
         Integer[] raw = this.conditionCode.getBinaryArray();
         raw[ConditionRegister] = 1;
         
-        StringBuilder result = new StringBuilder();
+        StringBuilder ret = new StringBuilder();
         for (Integer el : raw) {
-            result.append(el);
+            ret.append(el);
         }
-        this.conditionCode.setValueBinary(result.toString());        
+        this.conditionCode.setValueBinary(ret.toString());        
     }
     
     /**
@@ -163,11 +176,11 @@ public class ArithmeticLogicUnit implements IClockCycle {
         Integer[] raw = this.conditionCode.getBinaryArray();
         raw[ConditionRegister] = 0;
         
-        StringBuilder result = new StringBuilder();
+        StringBuilder ret = new StringBuilder();
         for (Integer el : raw) {
-            result.append(el);
+            ret.append(el);
         }
-        this.conditionCode.setValueBinary(result.toString());         
+        this.conditionCode.setValueBinary(ret.toString());         
     }
     
     /**
@@ -182,7 +195,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * Perform subtract operation implements twos complement math. 
      * @param operand1
      * @param operand2
-     * @return results
+     * @return rets
      */
     private Unit subtract(Unit operand1, Unit operand2) {        
         Integer[] op2Binary = operand2.getBinaryArray();
@@ -214,7 +227,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * Perform addition operation implements twos complement math. 
      * @param operand1
      * @param operand2 
-     * @return  results
+     * @return  rets
      * 
      */    
     private Unit add(Unit operand1, Unit operand2){
