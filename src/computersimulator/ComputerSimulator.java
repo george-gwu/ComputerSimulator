@@ -1,5 +1,6 @@
 package computersimulator;
 
+import computersimulator.components.*;
 import javax.swing.SwingUtilities;
 import computersimulator.cpu.Computer;
 import computersimulator.gui.OperatorConsole;
@@ -29,6 +30,19 @@ public class ComputerSimulator {
         
         OperatorConsole opconsole = new OperatorConsole();        
         opconsole.setComputer(computer); // pass computer instance into GUI
+        
+        
+     
+        /***** Testing Data *****/
+        // @TODO Remove this after Phase 1
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 52), new Word(100));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 100), new Word(1023));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 152), new Word(255));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 255), new Word(768));
+        computer.getCpu().getControlUnit().setIndexRegister(1, new Unit(13,100));
+        computer.getCpu().getControlUnit().setPC(new Unit(13, 1)); // Start at 1
+        //@TODO: Note for TESTING.. Make sure to set MAR FIRST, then MBR. (otherwise Fetch)
+                
         
         
         
