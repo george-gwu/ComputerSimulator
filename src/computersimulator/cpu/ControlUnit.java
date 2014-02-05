@@ -130,15 +130,15 @@ public class ControlUnit implements IClockCycle {
         return indexRegisters;
     }
      /**
-     *Use for initialize IX
-     * @param IXid IndexRegisters Id(1~3)
+     *Use to set Index Register IX
+     * @param ixid IndexRegisters Id(1~3)
      * @param IndexRegister initial data
      */
-    public void setIndexRegisters(int IXid,Unit IndexRegister)
+    public void setIndexRegister(int ixid,Unit IndexRegister)
     {
-        if(IXid<4&&IXid>0)
+        if(ixid<4&&ixid>0) // IX1-3, stored internally at 0-2
         {
-            this.indexRegisters[IXid-1]=IndexRegister;
+            this.indexRegisters[ixid-1]=IndexRegister;
         }
     }
 
@@ -146,15 +146,15 @@ public class ControlUnit implements IClockCycle {
         return gpRegisters;
     }  
      /**
-     *Use for initialize GpR
-     * @param GpRID GpRegistersId(0~3)
+     *Use to set General Purpose Register
+     * @param gprid GpRegistersId(0~3)
      * @param GpRegister initial data
      */
-    public void setGpRegisters(int GpRID,Word GpRegister)
+    public void setGpRegister(int gprid,Word GpRegister)
     {
-        if(GpRID<4&&GpRID>=0)
+        if(gprid<4&&gprid>=0) // GPR 0-3
         {
-            this.gpRegisters[GpRID]=GpRegister;
+            this.gpRegisters[gprid]=GpRegister;
         }
     }
 
@@ -182,7 +182,7 @@ public class ControlUnit implements IClockCycle {
     @Override
     public void clockCycle() throws Exception {
         // Used to run microcycles without causing a full clock cycle
-        boolean runningMicroCycles=true;
+        //boolean runningMicroCycles=true;
         //do {  // @TODO: Turned off until we're running a program (part 2)
         //  System.out.println("Micro!");
           
@@ -190,7 +190,7 @@ public class ControlUnit implements IClockCycle {
 
           if(this.blocked == true){
               // A microcycle signaled it is blocking.
-              runningMicroCycles=false;
+              //runningMicroCycles=false;
               this.blocked=false;
           }
         //} while(runningMicroCycles);                              
