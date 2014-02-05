@@ -2,8 +2,7 @@
 package computersimulator.components;
 
 /**
- *
- * @author george
+ * Special exception for handling a HALT opcode
  */
 public class HaltSystemException extends Exception {
 
