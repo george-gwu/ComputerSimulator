@@ -7,7 +7,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- *
+ * Composite for entering data. The data will be passed by selecting corresponding
+ * check boxes in panel
+ * 
  * @author pawel
  */
 public class DataEntryComposite {
@@ -81,6 +83,9 @@ public class DataEntryComposite {
         }
     }
     
+    /**
+     * Reset state of checkboxes
+     */
     public void resetToZero(){
          for (JCheckBox inputBit : inputBits) {
              inputBit.setSelected(false);

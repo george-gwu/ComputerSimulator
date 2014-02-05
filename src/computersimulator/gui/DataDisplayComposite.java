@@ -11,7 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- *
+ * Composite for displaying data
+ * 
  * @author pawel
  */
 public class DataDisplayComposite {
@@ -21,7 +22,6 @@ public class DataDisplayComposite {
     private JCheckBox checkBox;  
     private String name;
 
-    
     /**
      * Constructor
      * @param computer Used for lookups
@@ -58,6 +58,9 @@ public class DataDisplayComposite {
         }                
     }
     
+    /**
+     * Updates display
+     */
     public void updateDisplay(){
         Integer[] data = this.getSource().getBinaryArray();
         
@@ -66,34 +69,42 @@ public class DataDisplayComposite {
         }
     }   
     
+    /**
+     * @return state of checkbox
+     */
     public boolean isChecked(){
         return this.checkBox.isSelected();
     }
     
-    
+    /**
+     * Unselect check box
+     */
     public void uncheck(){
         this.checkBox.setSelected(false);
     }
     
+    /**
+     * Select check box 
+     */
     public void check(){
         this.checkBox.setSelected(true);
     }
     
-    
-
+    /**
+     * @return name
+     */
     public String getName() {
         return name;
     }
     
-
+    /**
+     * 
+     * @return source
+     */
     public Unit getSource() {
         return this.computer.getComponentValueByName(this.name);
     }
     
-    
-    
-    
-
     /**
      * @return panel instance
      */ 
