@@ -213,15 +213,18 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
         // Perform addition (which is really subtraction since operand2 is negative)
         String finalResultStr = addBinary(negativeOperand2, op1Str);             // add operands
-
-        int results = bTD(finalResultStr);        
+      
         int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
         
-        if (finalResultStr.length() > size) {                                   // check if overflow occurred
-            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
-        }
+        Unit resultTemporary = Unit.UnitFromBinaryString(finalResultStr);
+        Unit resultResized = new Unit(size, resultTemporary.getValue());        
+        
+        // @TODO: This overflow does NOT work. needs to check raw value.
+//        if (finalResultStr.length() > size) {                                   // check if overflow occurred
+//            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+//        }
                 
-        return new Unit(size, results);        
+        return resultResized;        
     }
     
     /**
@@ -236,39 +239,19 @@ public class ArithmeticLogicUnit implements IClockCycle {
         String op2Str = operand2.getBinaryString();
         
         String finalResultStr = addBinary(op1Str, op2Str);                      // add operands
-        
-        int results = bTD(finalResultStr);        
+              
         int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
         
-        if (finalResultStr.length() > size) {                                   // check if overflow occurred
-            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
-        }
+        Unit resultTemporary = Unit.UnitFromBinaryString(finalResultStr);
+        Unit resultResized = new Unit(size, resultTemporary.getValue());
+        
+        // @TODO: This overflow does NOT work. needs to check raw value.
+//        if (finalResultStr.length() > size) {                                   // check if overflow occurred
+//            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+//        }
                 
-        return new Unit(size, results);
-    }
-
-    /**
-     * Binary do decimal - used for subtractions 
-     *
-     * @param bin
-     * @return
-     */
-    private int bTD(String bin) {
-        int dec = 0;
-        for (int i = bin.length() - 1, j = 0; i >= 0; i--, j++) {
-            String curr = bin.charAt(i) + "";
-
-            // check for negative bit (left most position)
-            if (i == 0 && curr.equals("1")) {
-                dec = (int) (dec - (Integer.parseInt(curr) * Math.pow(2, j)));
-            } else {
-
-                dec = (int) (dec + Integer.parseInt(curr) * Math.pow(2, j));
-            }
-        }
-        return dec;
-    }
-      
+        return resultResized;
+    }      
 
     /**
      * Create 1 bit format: ie. 000000001

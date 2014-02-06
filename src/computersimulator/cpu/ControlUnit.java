@@ -740,18 +740,16 @@ public class ControlUnit implements IClockCycle {
     private void executeOpcodeAIR() {
         switch(this.microState){
             case 0:
-                // Micro-6: OP1 <- RF(RFI)
-                System.out.println("Micro-6: OP1 <- RF(RFI)");
-                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+                // Micro-6: OP1 <- RF(RFI)                
+                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();                
                 alu.setOperand1(this.gpRegisters[RFI]);
+                System.out.println("Micro-6: OP1 <- RF(RFI) - "+alu.getOperand1());
             break;
                         
             case 1:
-
-                // Micro-7: OP2 <- Immed   (Immed is stored in ADDR)
-
-                System.out.println("Micro-7: OP2 <- Immed");
+                // Micro-7: OP2 <- Immed   (Immed is stored in ADDR)                
                 alu.setOperand2(this.instructionRegisterDecoded.get("address"));
+                System.out.println("Micro-7: OP2 <- Immed - " + alu.getOperand2());
             break;
                 
             case 2:
@@ -769,7 +767,7 @@ public class ControlUnit implements IClockCycle {
                 
             case 4:
                 // Micro-10: RF(RFI) <- RES
-                System.out.println("Micro-10: RF(RFI) <- RES");
+                System.out.println("Micro-10: RF(RFI) <- RES - "+alu.getResult());
                 RFI = this.instructionRegisterDecoded.get("rfi").getValue();
               
                 this.gpRegisters[RFI] = new Word(alu.getResult());  
