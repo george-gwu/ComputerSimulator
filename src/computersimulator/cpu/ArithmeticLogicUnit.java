@@ -200,7 +200,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @param operand2
      * @return rets
      */
-    private Unit subtract(Unit operand1, Unit operand2) {        
+    public Unit subtract(Unit operand1, Unit operand2) {        
         Integer[] op2Binary = operand2.getBinaryArray();
         for (int i = 0; i < op2Binary.length; i++) {                            // invert bits
             op2Binary[i] = 1 - op2Binary[i];
@@ -236,7 +236,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @return  rets
      * 
      */    
-    private Unit add(Unit operand1, Unit operand2){
+    public Unit add(Unit operand1, Unit operand2){
         String op1Str = operand1.getBinaryString();
         String op2Str = operand2.getBinaryString();
         
