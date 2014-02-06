@@ -85,7 +85,9 @@ public class ArithmeticLogicUnit implements IClockCycle {
                 this.setResult(this.add(operand1, operand2));
                 break;
             case ArithmeticLogicUnit.CONTROL_SUBTRACT:
-                this.setResult(this.subtract(operand1, operand2));                
+                //this.setResult(this.subtract(operand1, operand2));                 
+                //@TODO: Hack fix. Subtract is broken
+                this.setResult(new Unit(operand1.getSize(), (operand1.getValue() - operand2.getValue())));
                 break;
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
