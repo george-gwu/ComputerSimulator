@@ -70,6 +70,8 @@ public class ArchitectureProg {
                 System.out.println("add operands: " + a.addBinary("10",  "0000010"));
                           
                 System.out.println("add operands: " + a.addBinary("10",  "10"));
+                
+                System.out.println("add operands: " + a.addBinary("111111111",  "111111111"));
 
 	}
 }
