@@ -33,7 +33,6 @@ public class ArchitectureProg {
 				carry = 1;
 			}
 		}
-		res = carry + res;
 		
 		return res;
 	}
