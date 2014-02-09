@@ -211,10 +211,10 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
         // add 1 bit to operand 2 to make it negative
         String oneBitStr = createOneBitString(op2Binary.length - 1);            // create 1 bit string 
-        String negativeOperand2 = addBinary(op2Str, oneBitStr);			// add one bit to operand2 (this will create negative number)
+        String negativeOperand2 = addBinaryOperands(op2Str, oneBitStr);		// add one bit to operand2 (this will create negative number)
 
         // Perform addition (which is really subtraction since operand2 is negative)
-        String finalResultStr = addBinary(negativeOperand2, op1Str);             // add operands
+        String finalResultStr = addBinaryOperands(negativeOperand2, op1Str);             // add operands
       
         int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
         
@@ -272,6 +272,49 @@ public class ArithmeticLogicUnit implements IClockCycle {
         }
         return str;
     }
+    
+    /**
+     * Add two binary numbers 
+     * 
+     * @param operand1
+     * @param operand2
+     * @return binary
+     */
+    private String addBinaryOperands(String operand1, String operand2) {
+        int carry = 0;
+        String res = "";        // result
+
+        // prepare operands: add leading zeros if needed
+        int diff = Math.abs(operand1.length() - operand2.length());
+        String zeros = "";
+        for (int i = 0; i < diff; i++) {
+            zeros += "0";
+        }
+        if (operand1.length() > operand2.length()) {
+            operand2 = zeros + operand2;
+        } else {
+            operand1 = zeros + operand1;
+        }
+
+        // perform addition on operands
+        for (int i = operand2.length() - 1; i >= 0; i--) {
+            int sum = Integer.parseInt((operand1.charAt(i) + "")) + Integer.parseInt((operand2.charAt(i) + "")) + carry;
+            carry = 0;              // reset carry
+            res = sum % 2 + res;
+
+            if (sum >= 2) {
+                carry = 1;
+            }
+        }
+
+        // check if overflow occurred
+        if (carry == 1) {
+            System.out.println("\n****overflow occured**** ");
+            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+        }
+        return res;
+    }
+
 
     /**
      * Add two binary numbers (in binary formats) Credit:
