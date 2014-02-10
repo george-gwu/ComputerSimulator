@@ -837,7 +837,7 @@ public class ControlUnit implements IClockCycle {
             this.nextProgramCounter = new Unit(13, this.instructionRegisterDecoded.get("address").getValue());
             System.out.println("Micro-6: PC <- ADDR - "+this.nextProgramCounter);
             this.signalMicroStateExecutionComplete();
-        } else {
+        } else { // else, ind==1
             switch(this.microState){
             case 0:
                 // MAR <- ADDR
