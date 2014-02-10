@@ -72,6 +72,7 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_SMR=5;
     private static final int OPCODE_AIR=6;
     private static final int OPCODE_SIR=7;
+    private static final int OPCODE_JMP=13;
     
     // Engineer: used to control micro step, defined per state
     private Integer microState = null;
@@ -82,11 +83,8 @@ public class ControlUnit implements IClockCycle {
     // ALU Reference
     private ArithmeticLogicUnit alu;
     
-    // OP1 and OP2 for ALU operations
-    private Unit OP1, OP2;
-    
-    // RES to store the result of ALU operations
-    private Unit RES;
+    // nextPC	13 bits	Next Program Counter: Interal Register Used to signal program counter was adjusted by instruction
+    private Unit nextProgramCounter;
     
     public ControlUnit(MemoryControlUnit mem, ArithmeticLogicUnit aluRef) {
         this.instructionRegister = new Word();
@@ -373,6 +371,10 @@ public class ControlUnit implements IClockCycle {
         }
     }
     
+    private void signalMicroStateExecutionComplete(){
+        this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+    }
+    
     /**
      * execute instruction by issuing the appropriate command to the ALU, memory, and the I/O controllers
      * Each instruction will receive the microstate at 0 and is responsible for taking action.
@@ -418,20 +420,27 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_SIR:
                     this.executeOpcodeSIR();
                     break;
+                case ControlUnit.OPCODE_JMP:
+                    this.executeOpcodeJMP();
+                    break;
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
             this.microState++; 
-        } else { // MICROSTATE_EXECUTE_COMPLETE
-            // Micro-N: c(PC) + 1 -> PC  --- Increment PC
-            System.out.println("Micro-Final: c(PC) + 1 -> PC (Increment PC)");
-
-            this.getProgramCounter().setValue(this.getProgramCounter().getValue() + 1); // @TODO: ALU?
+        } else { // MICROSTATE_EXECUTE_COMPLETE            
+            if(this.nextProgramCounter==null){
+                // Micro-N: c(PC) + 1 -> PC  --- Increment PC
+                System.out.println("Micro-Final: c(PC) + 1 -> PC (Increment PC)");
+                this.getProgramCounter().setValue(this.getProgramCounter().getValue() + 1); // @TODO: ALU?
+            } else { 
+                // Micro-N PC <- tempPC (internal to our simulator)
+                this.getProgramCounter().setValue(this.nextProgramCounter.getValue());
+            }
             System.out.println("-- PC: "+this.getPC());
-
+            this.state = ControlUnit.STATE_NONE;     
             this.microState = null;
-            this.state = ControlUnit.STATE_NONE;       
-            this.signalBlockingMicroFunction();
+            this.signalBlockingMicroFunction();            
+
         }        
     }
    
@@ -469,9 +478,7 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("COMPLETED INSTRUCTION: LDR - rfi["+RFI+"] is now: "+ this.memory.getMBR());
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 
-                //Signal completion
-                this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
-
+                this.signalMicroStateExecutionComplete();
                 break;            
             
         }
@@ -505,8 +512,7 @@ public class ControlUnit implements IClockCycle {
               System.out.println("COMPLETED INSTRUCTION: STR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               
-              //Signal Completion
-              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+              this.signalMicroStateExecutionComplete();
             break;
         }
     }
@@ -540,8 +546,7 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("COMPLETED INSTRUCTION: LDA - rfi["+RFI+"] is now: "+ this.memory.getMBR());
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 
-                //Signal completion
-                this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+                this.signalMicroStateExecutionComplete();
 
             break;            
         }
@@ -574,8 +579,7 @@ public class ControlUnit implements IClockCycle {
               System.out.println("COMPLETED INSTRUCTION: LDX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 
-              //Signal Completion
-              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+              this.signalMicroStateExecutionComplete();
             break;
         }
     }
@@ -608,8 +612,7 @@ public class ControlUnit implements IClockCycle {
               System.out.println("COMPLETED INSTRUCTION: STX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 
-              //Signal Completion
-              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+              this.signalMicroStateExecutionComplete();
             break;
         }
     }
@@ -668,8 +671,7 @@ public class ControlUnit implements IClockCycle {
               System.out.println("COMPLETED INSTRUCTION: AMR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 
-              //Signal Completion
-              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+              this.signalMicroStateExecutionComplete();
             break;          
         }
     }
@@ -728,8 +730,7 @@ public class ControlUnit implements IClockCycle {
               System.out.println("COMPLETED INSTRUCTION: SMR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
-              //Signal Completion
-              this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+              this.signalMicroStateExecutionComplete();
             break;          
         }
     }
@@ -775,8 +776,7 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("COMPLETED INSTRUCTION: AIR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
-                //Signal Completion
-                this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+                this.signalMicroStateExecutionComplete();
             break;          
         }
     }
@@ -822,11 +822,44 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("COMPLETED INSTRUCTION: SIR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
-                //Signal Completion
-                this.microState=ControlUnit.MICROSTATE_EXECUTE_COMPLETE;
+                this.signalMicroStateExecutionComplete();
             break;          
         }
+        
     }
+
+    /**
+     * Execute Unconditional Jump to Address
+     */
+    private void executeOpcodeJMP(){
+        if(this.instructionRegisterDecoded.get("index").getValue()==0){
+            //if(ind==0),  PC <- ADDR
+            this.nextProgramCounter = new Unit(13, this.instructionRegisterDecoded.get("address").getValue());
+            System.out.println("Micro-6: PC <- ADDR - "+this.nextProgramCounter);
+            this.signalMicroStateExecutionComplete();
+        } else {
+            switch(this.microState){
+            case 0:
+                // MAR <- ADDR
+                this.memory.setMAR(new Unit(13, this.instructionRegisterDecoded.get("address").getValue()));
+                System.out.println("Micro-6: MAR <- ADDR - "+this.memory.getMAR());
+                break;
+            case 1:
+                // MBR <- MEMORY(MAR)
+                System.out.println("Micro-7: MBR <- M(MAR)");
+                // do nothing, happens automatically
+                break;
+            case 2:
+                // PC <-- MBR
+                System.out.println("Micro-8: PC <- MBR - "+this.memory.getMBR());
+                this.nextProgramCounter = this.memory.getMBR();
+                this.signalMicroStateExecutionComplete();
+                break;                            
+            }
+            
+        }
+        
+    }    
         
     /**
      * Stop the machine
