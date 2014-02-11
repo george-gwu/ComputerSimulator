@@ -85,9 +85,10 @@ public class ArithmeticLogicUnit implements IClockCycle {
                 this.setResult(this.add(operand1, operand2));
                 break;
             case ArithmeticLogicUnit.CONTROL_SUBTRACT:
-                //this.setResult(this.subtract(operand1, operand2));                 
+                // attempt to fix subtract, ready to test
+                this.setResult(this.subtract(operand1, operand2));                 
                 //@TODO: Hack fix. Subtract is broken
-                this.setResult(new Unit(operand1.getSize(), (operand1.getValue() - operand2.getValue())));
+                //this.setResult(new Unit(operand1.getSize(), (operand1.getValue() - operand2.getValue())));
                 break;
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
@@ -201,31 +202,43 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @return rets
      */
     public Unit subtract(Unit operand1, Unit operand2) {        
-        Integer[] op2Binary = operand2.getBinaryArray();
-        for (int i = 0; i < op2Binary.length; i++) {                            // invert bits
+        String op1Str = operand1.getBinaryString();
+        String op2Str = operand2.getBinaryString();
+       
+        // prepare both operands
+        int diff = Math.abs(op1Str.length() - op2Str.length());
+        String zeros = "";
+        for (int i = 0; i < diff; i++) {
+            zeros += "0";
+        }
+        if (op1Str.length() > op2Str.length()) {
+            op2Str = zeros + op2Str;
+        } else {
+            op1Str = zeros + op1Str;
+        }
+         
+        // prepare to invert bits
+        Integer[] op2Binary = new Integer[op2Str.length()];
+        for (int i = 0; i < op2Binary.length; i ++) {
+            op2Binary[i] = Integer.parseInt(op2Str.charAt(i) + "");
+        }
+        for (int i = 0; i < op2Binary.length; i++) {                            
             op2Binary[i] = 1 - op2Binary[i];
         }
-
-        String op1Str = operand1.getBinaryString();
-        String op2Str = Unit.IntArrayToBinaryString(op2Binary);
-
+        op2Str = Unit.IntArrayToBinaryString(op2Binary);    // get inverted operand2
+        
         // add 1 bit to operand 2 to make it negative
-        String oneBitStr = createOneBitString(op2Binary.length - 1);            // create 1 bit string 
-        String negativeOperand2 = addBinaryOperands(op2Str, oneBitStr);		// add one bit to operand2 (this will create negative number)
-
-        // Perform addition (which is really subtraction since operand2 is negative)
-        String finalResultStr = addBinaryOperands(negativeOperand2, op1Str);             // add operands
-      
+        String oneBitStr = createOneBitString(op1Str.length() -1);              // create 1 bit string 
+        String negativeOperand2 = addBinaryOperands(op2Str, oneBitStr);		// add one bit to operand2 
+        
+        // Perform addition 
+        String finalResultStr = addBinaryOperands(negativeOperand2, op1Str);    // add operands
+        
         int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
         
         Unit resultTemporary = Unit.UnitFromBinaryString(finalResultStr);
         Unit resultResized = new Unit(size, resultTemporary.getValue());        
         
-        // @TODO: This overflow does NOT work. needs to check raw value.
-//        if (finalResultStr.length() > size) {                                   // check if overflow occurred
-//            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
-//        }
-                
         return resultResized;        
     }
     
@@ -240,26 +253,21 @@ public class ArithmeticLogicUnit implements IClockCycle {
         String op1Str = operand1.getBinaryString();
         String op2Str = operand2.getBinaryString();
         
-        String finalResultStr = addBinary(op1Str, op2Str);                      // add operands
+        String finalResultStr = addBinaryOperands(op1Str, op2Str);       // add operands
               
         int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
         
         Unit resultTemporary = Unit.UnitFromBinaryString(finalResultStr);
         Unit resultResized = new Unit(size, resultTemporary.getValue());
-        
-        // @TODO: This overflow does NOT work. needs to check raw value.
-//        if (finalResultStr.length() > size) {                                   // check if overflow occurred
-//            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
-//        }
-                
+          
         return resultResized;
     }      
 
     /**
-     * Create 1 bit format: ie. 000000001
+     * Create 1 bit
      *
      * @param size
-     * @return
+     * @return 1 bit binary string
      */
     private String createOneBitString(int size) {
         String str = "";
@@ -309,7 +317,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
         // check if overflow occurred
         if (carry == 1) {
-            System.out.println("\n****overflow occured**** ");
+            System.out.println("****overflow occured**** ");
             this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
         }
         return res;
@@ -317,6 +325,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
 
     /**
+     * TODO: to be removed
      * Add two binary numbers (in binary formats) Credit:
      * http://tianrunhe.wordpress.com/2012/07/08/sum-of-two-binary-strings-add-binary/
      *
@@ -356,8 +365,4 @@ public class ArithmeticLogicUnit implements IClockCycle {
         }
         return addBinary(sum, carry);
     }
-
-    
-    
-    
 }
