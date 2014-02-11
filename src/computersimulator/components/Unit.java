@@ -28,15 +28,10 @@ public class Unit {
         }
         this.size = Size;
         
-        // Calculate 0xn for MIN_VALUE
-        char[] zeros = new char[Size];
-        Arrays.fill(zeros, '0');
-        this.MIN_VALUE = Integer.parseInt(new String(zeros),2);
-        
-        // Calculate 1xn for MAX_VALUE
-        char[] ones = new char[Size];
-        Arrays.fill(ones, '1');
-        this.MAX_VALUE = Integer.parseInt(new String(ones),2);        
+        // MAX VALUE = ((2xy(n-1))-1)      
+        this.MAX_VALUE = (int)(Math.pow(2, (this.size-1))-1);
+        // MIN VALUE = -((2xy(n-1))-1)
+        this.MIN_VALUE = -(this.MAX_VALUE);
         
         this.setValue(Value);
     }
@@ -64,7 +59,7 @@ public class Unit {
         // original size
         int size = binary.length();
         
-        // sign extend to use Long class for conversion to int (Java Integer class is unsigned)
+        // sign extend to use Long class for conversion to signed int (Java Integer class is unsigned)
         while(binary.length() < 32){
             binary = binary.substring(0,1) + binary;
         }        
