@@ -185,9 +185,13 @@ public class Unit {
     public void setValueBinary(String binary){
         if(binary.length()==this.size){
             this.data = binary;
+        } else if(binary.length() < this.size){
+            do { // extend sign until bitsize matches
+                binary = binary.substring(0,1) + binary;
+            } while(binary.length() < this.size);
         } else {
-            //@TODO Do conversion
-            System.out.println("!!!!!binary data conversion not implemented");
+            this.data = binary.substring(binary.length()-this.size); // cut from end (overflow left)
+            System.out.println("!!!!!overflow in set value -- this should never happen!!!!!");
         }
             
     }
