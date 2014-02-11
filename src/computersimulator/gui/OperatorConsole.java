@@ -185,7 +185,7 @@ public class OperatorConsole implements Runnable {
                     } catch(HaltSystemException eHalt){
                         System.out.println("System HALT.");
                     } catch(Exception err){
-                        System.out.println("Error: "+ e);
+                        System.out.println("Error: "+ err);
                     }
                 }
         });

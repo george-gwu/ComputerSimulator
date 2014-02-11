@@ -61,8 +61,16 @@ public class Unit {
     public static Unit UnitFromBinaryString(String binaryReadable){              
         String binary = binaryReadable.replace(" ", "");
         
+        // original size
         int size = binary.length();
-        int intValue = Integer.parseInt(binary, 2);
+        
+        // sign extend to use Long class for conversion to int (Java Integer class is unsigned)
+        while(binary.length() < 32){
+            binary = binary.substring(0,1) + binary;
+        }        
+        
+        Long longValue = Long.parseLong(binary,2);        
+        int intValue = longValue.intValue();
         
         return new Unit(size, intValue);       
     }
