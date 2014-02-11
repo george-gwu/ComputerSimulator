@@ -1,7 +1,5 @@
 package computersimulator.components;
 
-import java.util.Arrays;
-
 /**
  * A Unit is the primary component for data inside our Computer Simulator. It
  * allows our computer to maintain N-bit data types. It also allows quick debugging
@@ -9,7 +7,7 @@ import java.util.Arrays;
  */
 public class Unit {
     
-    private Integer data;
+    private String data;   
     private final int size;
 
 
@@ -84,8 +82,8 @@ public class Unit {
      * @throws ArithmeticException
      */
     public final void setValue(int value) throws java.lang.ArithmeticException {        
-        if(value <= this.MAX_VALUE && value >= this.MIN_VALUE){
-            this.data = value;
+        if(value <= this.MAX_VALUE && value >= this.MIN_VALUE){           
+            this.data = Integer.toBinaryString(value);
         } else {
             throw new java.lang.ArithmeticException("{"+value+"} Out Of Range: ["+this.MIN_VALUE+" through "+this.MAX_VALUE+"]"); 
             //@TODO: this is a great location to throw a special overflow exception which can be caught later
@@ -96,8 +94,12 @@ public class Unit {
      * This method is probably unused outside this class due to the Integer storage type (why it is private).
      * @return raw value as Integer
      */
-    public Integer getValue() {
-        return data;
+    public Integer getValue() {        
+        return this.getLongValue().intValue();
+    }
+    
+    public Long getLongValue(){
+        return Long.parseLong(this.data, 2);
     }
     
     /**
@@ -181,7 +183,13 @@ public class Unit {
      * @param binary
      */
     public void setValueBinary(String binary){
-          this.setValue(Integer.parseInt(binary, 2));        
+        if(binary.length()==this.size){
+            this.data = binary;
+        } else {
+            //@TODO Do conversion
+            System.out.println("!!!!!binary data conversion not implemented");
+        }
+            
     }
     
     @Override

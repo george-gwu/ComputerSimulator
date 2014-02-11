@@ -47,7 +47,8 @@ public class Word extends Unit {
             return null;            
         }
         
-        int intValue = Integer.parseInt(binary, 2);
+        Long longValue = Long.parseLong(binary,2);
+        int intValue = longValue.intValue();
         return new Word(intValue);
         
     }    
