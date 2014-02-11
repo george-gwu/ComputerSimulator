@@ -85,10 +85,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
                 this.setResult(this.add(operand1, operand2));
                 break;
             case ArithmeticLogicUnit.CONTROL_SUBTRACT:
-                // attempt to fix subtract, ready to test
                 this.setResult(this.subtract(operand1, operand2));                 
-                //@TODO: Hack fix. Subtract is broken
-                //this.setResult(new Unit(operand1.getSize(), (operand1.getValue() - operand2.getValue())));
                 break;
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
@@ -323,46 +320,4 @@ public class ArithmeticLogicUnit implements IClockCycle {
         return res;
     }
 
-
-    /**
-     * TODO: to be removed
-     * Add two binary numbers (in binary formats) Credit:
-     * http://tianrunhe.wordpress.com/2012/07/08/sum-of-two-binary-strings-add-binary/
-     *
-     * @param a
-     * @param b
-     * @return
-     */
-    private String addBinary(String a, String b) {
-        if (b.indexOf('1') == -1) {
-            return a.indexOf('1') == -1 ? a : a.substring(a.indexOf('1'));
-        }
-        int diff = Math.abs(a.length() - b.length());
-        if (a.length() > b.length()) {
-            for (int i = 0; i < diff; ++i) {
-                b = '0' + b;
-            }
-        } else {
-            for (int i = 0; i < diff; ++i) {
-                a = '0' + a;
-            }
-        }
-
-        String sum = new String();
-        String carry = "0";
-        for (int i = a.length() - 1; i >= 0; --i) {
-            if ((a.charAt(i) == '1' && b.charAt(i) == '1')
-                    || (a.charAt(i) == '0' && b.charAt(i) == '0')) {
-                sum = '0' + sum;
-            } else {
-                sum = '1' + sum;
-            }
-            if (a.charAt(i) == '1' && b.charAt(i) == '1') {
-                carry = '1' + carry;
-            } else {
-                carry = '0' + carry;
-            }
-        }
-        return addBinary(sum, carry);
-    }
 }
