@@ -877,21 +877,21 @@ public class ControlUnit implements IClockCycle {
         if(this.instructionRegisterDecoded.get("rfi").getValue()==0)
         {
             System.out.println("Micro-6: RF(RFI)==0");
-            this.getProgramCounter().setValue(this.getProgramCounter().getValue()+1);
-            System.out.println("Mircro-6a: PC=PC+1 PC="+this.getProgramCounter());
+           // this.getProgramCounter().setValue(this.getProgramCounter().getValue()+1);
+            //System.out.println("Mircro-6a: PC=PC+1 PC="+this.getProgramCounter());
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: PC="+this.getProgramCounter().getValue());
+                System.out.println("COMPLETED INSTRUCTION");
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
         }
         else
         {
             System.out.println("Micro-7: RF(RFI)!=0");
-            this.getProgramCounter().setValue(this.effectiveAddress.getValue());
-            System.out.println("Mircro-7a: PC=EA PC="+this.getProgramCounter());
+            this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+         //   System.out.println("Mircro-7a: PC=EA PC="+this.getProgramCounter());
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: PC="+this.getProgramCounter().getValue());
+                System.out.println("COMPLETED INSTRUCTION");
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
         }    
  
@@ -904,21 +904,22 @@ public class ControlUnit implements IClockCycle {
         if(this.instructionRegisterDecoded.get("rfi").getValue()!=0)
         {
             System.out.println("Micro-6: RF(RFI)!=0");
-            this.getProgramCounter().setValue(this.getProgramCounter().getValue()+1);
-            System.out.println("Mircro-6a: PC=PC+1 PC="+this.getProgramCounter());
+            //this.getProgramCounter().setValue(this.getProgramCounter().getValue()+1);
+           // System.out.println("Mircro-6a: PC=PC+1 PC="+this.getProgramCounter());
              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: PC="+this.getProgramCounter().getValue());
+                System.out.println("COMPLETED INSTRUCTION");
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
             this.signalMicroStateExecutionComplete();
         }
         else
         {
             System.out.println("Micro-7: RF(RFI)==0");
-            System.out.println("Mircro-7a: PC=EA PC="+this.getProgramCounter());
-            this.getProgramCounter().setValue(this.effectiveAddress.getValue());
+             this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+        //    System.out.println("Mircro-7a: PC=EA PC="+this.getProgramCounter());
+          //  this.getProgramCounter().setValue(this.effectiveAddress.getValue());
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: PC="+this.getProgramCounter().getValue());
+                System.out.println("COMPLETED INSTRUCTION");
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
         } 
     }
