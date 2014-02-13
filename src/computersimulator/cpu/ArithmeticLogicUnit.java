@@ -198,7 +198,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @param operand2
      * @return rets
      */
-    public Unit subtract(Unit operand1, Unit operand2) {        
+    private Unit subtract(Unit operand1, Unit operand2) {        
         String op1Str = operand1.getBinaryString();
         String op2Str = operand2.getBinaryString();
        
@@ -246,7 +246,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @return  rets
      * 
      */    
-    public Unit add(Unit operand1, Unit operand2){
+    private Unit add(Unit operand1, Unit operand2){
         String op1Str = operand1.getBinaryString();
         String op2Str = operand2.getBinaryString();
         
