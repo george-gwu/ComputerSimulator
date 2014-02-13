@@ -107,9 +107,8 @@ public class ControlUnit implements IClockCycle {
         this.state = ControlUnit.STATE_NONE;
         this.memory = mem;        
         this.alu=aluRef;
-        this.conditionCode = new Unit(4);   // @TODO: GT, EQ, LT ?  
+        this.conditionCode = new Unit(4);  
         this.clearConditions();        
-        this.alu.setControlUnit(this); // exchange reference
         
         for(int x=0;x<3;x++){
             this.indexRegisters[x] = new Unit(13);

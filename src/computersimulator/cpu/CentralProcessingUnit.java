@@ -16,6 +16,7 @@ public class CentralProcessingUnit implements IClockCycle {
         alu = new ArithmeticLogicUnit();
         
         controlUnit = new ControlUnit(this.memory, this.alu);   
+        alu.setControlUnit(controlUnit); // exchange reference
         
         
     }
