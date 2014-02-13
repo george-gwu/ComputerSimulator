@@ -237,11 +237,7 @@ public class ControlUnit implements IClockCycle {
         }
     }
 
-    public Unit getPC() {
-        return this.programCounter;
-    }
-
-    public void setPC(Unit programCounter) {
+    public void setProgramCounter(Unit programCounter) {
         this.programCounter = programCounter;
     }
 
@@ -317,7 +313,7 @@ public class ControlUnit implements IClockCycle {
             case 0:
                 System.out.println("Micro-0: PC -> MAR");
                 // Micro-0: PC -> MAR
-                Unit pc = this.getPC();
+                Unit pc = this.getProgramCounter();
                 System.out.println("-- PC: "+pc);
                 this.memory.setMAR(pc);
                 this.microState=1;  
@@ -517,7 +513,7 @@ public class ControlUnit implements IClockCycle {
                 // Micro-N PC <- tempPC (internal to our simulator)
                 this.getProgramCounter().setValue(this.nextProgramCounter.getValue());
             }
-            System.out.println("-- PC: "+this.getPC());
+            System.out.println("-- PC: "+this.getProgramCounter());
             this.state = ControlUnit.STATE_NONE;     
             this.microState = null;
             this.signalBlockingMicroFunction();            
