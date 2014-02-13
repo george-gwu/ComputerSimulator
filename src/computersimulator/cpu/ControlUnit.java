@@ -33,6 +33,11 @@ public class ControlUnit implements IClockCycle {
     //R1…R3	20 bits General Purpose Registers (GPRs) – each 20 bits in length
     private Word[] gpRegisters = new Word[4];    
     
+    //CC	4 bits	Condition Code: set when arithmetic/logical operations are executed; 
+    //          it has four 1-bit elements: overflow, underflow, division by zero, equal-or-not. 
+    //          OVERFLOW[0], UNDERFLOW[1], DIVZERO[2], EQUALORNOT[3]
+    private Unit conditionCode;    
+    
     
     /**************************************
      * All the variables below are internal and used to maintain state of the control unit
@@ -96,8 +101,11 @@ public class ControlUnit implements IClockCycle {
         this.machineStatusRegister = new Word();
         this.machineFaultRegister = new Unit(4);
         this.state = ControlUnit.STATE_NONE;
-        this.memory = mem;
+        this.memory = mem;        
         this.alu=aluRef;
+        this.conditionCode = new Unit(4);   // @TODO: GT, EQ, LT ?  
+        this.clearConditions();        
+        this.alu.setControlUnit(this); // exchange reference
         
         for(int x=0;x<3;x++){
             this.indexRegisters[x] = new Unit(13);
@@ -107,6 +115,52 @@ public class ControlUnit implements IClockCycle {
             this.gpRegisters[x] = new Word();
         }                         
     }
+    
+   
+    public Unit getConditionCode() {
+        return conditionCode;
+    }    
+    
+    /**
+     * Set a Condition Flag
+     * Usage:  this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+     * @param ConditionRegister (see static variables)
+     */
+    public void setCondition(int ConditionRegister){
+        Integer[] raw = this.conditionCode.getBinaryArray();
+        raw[ConditionRegister] = 1;
+        
+        StringBuilder ret = new StringBuilder();
+        for (Integer el : raw) {
+            ret.append(el);
+        }
+        this.conditionCode.setValueBinary(ret.toString());        
+    }
+    
+
+    
+    /**
+     * Unset a Condition Flag
+     * Usage:  this.unsetCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+     * @param ConditionRegister (see static variables)
+     */
+    public void unsetCondition(int ConditionRegister){
+        Integer[] raw = this.conditionCode.getBinaryArray();
+        raw[ConditionRegister] = 0;
+        
+        StringBuilder ret = new StringBuilder();
+        for (Integer el : raw) {
+            ret.append(el);
+        }
+        this.conditionCode.setValueBinary(ret.toString());         
+    }
+    
+    /**
+     * Clear any previously set condition codes
+     */
+    public final void clearConditions(){
+        this.conditionCode.setValueBinary("0000");
+    }    
     
     public Unit getProgramCounter() {
         return programCounter;

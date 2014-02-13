@@ -10,10 +10,7 @@ import computersimulator.components.Unit;
  */
 public class ArithmeticLogicUnit implements IClockCycle {
     
-    //CC	4 bits	Condition Code: set when arithmetic/logical operations are executed; 
-    //          it has four 1-bit elements: overflow, underflow, division by zero, equal-or-not. 
-    //          OVERFLOW[0], UNDERFLOW[1], DIVZERO[2], EQUALORNOT[3]
-    private Unit conditionCode;
+
     
     private final static int CONDITION_REGISTER_OVERFLOW = 0;
     private final static int CONDITION_REGISTER_UNDERFLOW = 1;
@@ -41,10 +38,16 @@ public class ArithmeticLogicUnit implements IClockCycle {
     private final static int STATE_START_COMPUTATION = 1;
     private final static int STATE_COMPUTATION_FINISHED = 2;
     
+    private ControlUnit controlUnit;
+    
     
 
     public ArithmeticLogicUnit() {
-        this.conditionCode = new Unit(4);   // @TODO: GT, EQ, LT ?        
+    
+    }
+    
+    public void setControlUnit(ControlUnit c){
+        this.controlUnit=c;
     }
     
    
@@ -79,7 +82,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * Used internally on the clock cycle when start computation is set.
      */
     private void compute(){
-        this.clearConditions();
+        this.controlUnit.clearConditions();
         switch(this.control){
             case ArithmeticLogicUnit.CONTROL_ADD:
                 this.setResult(this.add(operand1, operand2));
@@ -147,49 +150,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
     }
     
         
-   
-    public Unit getConditionCode() {
-        return conditionCode;
-    }    
-    
-    /**
-     * Set a Condition Flag
-     * Usage:  this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
-     * @param ConditionRegister (see static variables)
-     */
-    private void setCondition(int ConditionRegister){
-        Integer[] raw = this.conditionCode.getBinaryArray();
-        raw[ConditionRegister] = 1;
-        
-        StringBuilder ret = new StringBuilder();
-        for (Integer el : raw) {
-            ret.append(el);
-        }
-        this.conditionCode.setValueBinary(ret.toString());        
-    }
-    
-    /**
-     * Unset a Condition Flag
-     * Usage:  this.unsetCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
-     * @param ConditionRegister (see static variables)
-     */
-    private void unsetCondition(int ConditionRegister){
-        Integer[] raw = this.conditionCode.getBinaryArray();
-        raw[ConditionRegister] = 0;
-        
-        StringBuilder ret = new StringBuilder();
-        for (Integer el : raw) {
-            ret.append(el);
-        }
-        this.conditionCode.setValueBinary(ret.toString());         
-    }
-    
-    /**
-     * Clear any previously set condition codes
-     */
-    private void clearConditions(){
-        this.conditionCode.setValueBinary("0000");
-    }
+
     
  
     /**
@@ -315,7 +276,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
         // check if overflow occurred
         if (carry == 1) {
             System.out.println("****overflow occured**** ");
-            this.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+            this.controlUnit.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
         }
         return res;
     }
