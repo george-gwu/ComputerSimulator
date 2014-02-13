@@ -64,10 +64,10 @@ public class ControlUnit implements IClockCycle {
     private static final int STATE_EXECUTE_INSTRUCTION=3;
             
     //used for Condition Code Register
-    public final static int CONDITION_REGISTER_OVERFLOW = 0;
-    public final static int CONDITION_REGISTER_UNDERFLOW = 1;
-    public final static int CONDITION_REGISTER_DIVZERO = 2;
-    public final static int CONDITION_REGISTER_EQUALORNOT = 3;
+    public final static int CONDITION_REGISTER_OVERFLOW = 1;
+    public final static int CONDITION_REGISTER_UNDERFLOW = 2;
+    public final static int CONDITION_REGISTER_DIVZERO = 3;
+    public final static int CONDITION_REGISTER_EQUALORNOT = 4;
     
     private static final int MICROSTATE_EXECUTE_COMPLETE=999;
     
@@ -121,7 +121,17 @@ public class ControlUnit implements IClockCycle {
     }
     
    
-    public Unit getConditionCode() {
+    public int getConditionCode(int ConditionRegister) {
+        int cri = ConditionRegister-1; // scaled for array(4)
+        Integer[] raw = this.conditionCode.getBinaryArray();        
+        return raw[cri];
+    }
+
+    /**
+     * Used for GUI
+     * @return ConditionCodeRegister Unit(4) - 
+     */
+    public Unit getConditionCodeRegister() {
         return conditionCode;
     }    
     
@@ -131,8 +141,9 @@ public class ControlUnit implements IClockCycle {
      * @param ConditionRegister (see static variables)
      */
     public void setCondition(int ConditionRegister){
+        int cri = ConditionRegister-1; // scaled for array(4)
         Integer[] raw = this.conditionCode.getBinaryArray();
-        raw[ConditionRegister] = 1;
+        raw[cri] = 1;
         
         StringBuilder ret = new StringBuilder();
         for (Integer el : raw) {
@@ -149,8 +160,9 @@ public class ControlUnit implements IClockCycle {
      * @param ConditionRegister (see static variables)
      */
     public void unsetCondition(int ConditionRegister){
+        int cri = ConditionRegister-1; // scaled for array(4)
         Integer[] raw = this.conditionCode.getBinaryArray();
-        raw[ConditionRegister] = 0;
+        raw[cri] = 0;
         
         StringBuilder ret = new StringBuilder();
         for (Integer el : raw) {

@@ -93,7 +93,7 @@ public class Computer implements IClockCycle {
             case "PC":
                 return this.getCpu().getControlUnit().getProgramCounter();
             case "CC":
-                return this.getCpu().getControlUnit().getConditionCode();
+                return this.getCpu().getControlUnit().getConditionCodeRegister();
             case "IR":
                 return this.getCpu().getControlUnit().getInstructionRegister();
             default:
@@ -144,7 +144,7 @@ public class Computer implements IClockCycle {
                 this.getCpu().getControlUnit().getProgramCounter().setValue(deposit.getValue());
                 break;
             case "CC":
-                this.getCpu().getControlUnit().getConditionCode();
+                // This doesn't accept deposits
                 break;
             case "IR":                
                 this.getCpu().getControlUnit().getInstructionRegister().setValue(deposit.getValue());
