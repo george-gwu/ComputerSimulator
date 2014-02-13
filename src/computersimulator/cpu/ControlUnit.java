@@ -907,6 +907,8 @@ public class ControlUnit implements IClockCycle {
 
     /**
      * Execute Unconditional Jump to Address
+     * PC <- EA, if I bit not set; PC <− c(EA), if I bit set
+     * Note: r is ignored in this instruction
      */
     private void executeOpcodeJMP(){
         if(this.instructionRegisterDecoded.get("index").getValue()==0){
@@ -914,6 +916,9 @@ public class ControlUnit implements IClockCycle {
             this.nextProgramCounter = new Unit(13, this.instructionRegisterDecoded.get("address").getValue());
             System.out.println("Micro-6: PC <- ADDR - "+this.nextProgramCounter);
             this.signalMicroStateExecutionComplete();
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println("COMPLETED INSTRUCTION: JMP - IND=0: " + this.nextProgramCounter);
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");              
         } else { // else, ind==1
             switch(this.microState){
             case 0:
@@ -931,38 +936,60 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("Micro-8: PC <- MBR - "+this.memory.getMBR());
                 this.nextProgramCounter = this.memory.getMBR();
                 this.signalMicroStateExecutionComplete();
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: JMP - IND=1: " + this.nextProgramCounter);
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                      
                 break;                            
-            }
-            
+            }            
         }
         
     }
-    /*
-       Jump if zero
-    */
-    private void  executeOpcodeJZ()
-    {
-        if(this.instructionRegisterDecoded.get("rfi").getValue()==0)
-        {
-            System.out.println("Micro-6: RF(RFI)==0");
-           // this.getProgramCounter().setValue(this.getProgramCounter().getValue()+1);
-            //System.out.println("Mircro-6a: PC=PC+1 PC="+this.getProgramCounter());
+    /**
+     * Jump If Zero:
+     *  If c(r) = 0, then PC <− EA or c(EA), if I bit set;
+     *  Else PC <- PC+1
+     */
+    private void  executeOpcodeJZ(){        
+        int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+        if(this.gpRegisters[RFI].getValue()==0){ // c(r)==0, jump
+                        
+            if(this.instructionRegisterDecoded.get("index").getValue()==0){ //direct
+                //if(ind==0),  PC <- ADDR
+                this.nextProgramCounter = new Unit(13, this.instructionRegisterDecoded.get("address").getValue());
+                System.out.println("Micro-6: PC <- ADDR - "+this.nextProgramCounter);
+                this.signalMicroStateExecutionComplete();
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: JNZ - R("+RFI+") was Zero -- JUMPING: "+this.nextProgramCounter);
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");            
+            } else { // else, ind==1
+                switch(this.microState){
+                case 0:
+                    // MAR <- ADDR
+                    this.memory.setMAR(new Unit(13, this.instructionRegisterDecoded.get("address").getValue()));
+                    System.out.println("Micro-6: MAR <- ADDR - "+this.memory.getMAR());
+                    break;
+                case 1:
+                    // MBR <- MEMORY(MAR)
+                    System.out.println("Micro-7: MBR <- M(MAR)");
+                    // do nothing, happens automatically
+                    break;
+                case 2:
+                    // PC <-- MBR
+                    System.out.println("Micro-8: PC <- MBR - "+this.memory.getMBR());
+                    this.nextProgramCounter = this.memory.getMBR();
+                    this.signalMicroStateExecutionComplete();
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println("COMPLETED INSTRUCTION: JNZ - R("+RFI+") was Zero -- JUMPING: "+this.nextProgramCounter);
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                  
+                    break;                            
+                }            
+            }                        
+        } else { // not zero->PC++
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION");
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
-        }
-        else
-        {
-            System.out.println("Micro-7: RF(RFI)!=0");
-            this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
-         //   System.out.println("Mircro-7a: PC=EA PC="+this.getProgramCounter());
-            this.signalMicroStateExecutionComplete();
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION");
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
+            System.out.println("COMPLETED INSTRUCTION: JNZ - R("+RFI+") was NOT Zero -- Continuing.");
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
         }    
- 
     }
     /*
        Jump if not equal
