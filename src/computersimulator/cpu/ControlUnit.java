@@ -75,6 +75,7 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_JMP=13;
     private static final int OPCODE_JZ=10;
     private static final int OPCODE_JNE=11;
+    private static final int OPCODE_JGE=17;
     
     
     // Engineer: used to control micro step, defined per state
@@ -432,6 +433,8 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_JNE:
                     this.executeOpcodeJNE();
                     break;
+                case ControlUnit.OPCODE_JGE:
+                    this.executeOpcodeJGE();
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
@@ -922,6 +925,54 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("COMPLETED INSTRUCTION");
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
         } 
+    }
+    
+    /*
+     *  Execute Jump If Greater Than Or Equal
+    */
+    private void  executeOpcodeJGE()
+    {
+        if(this.instructionRegisterDecoded.get("rfi").getValue() > 0 || this.instructionRegisterDecoded.get("rfi").getValue() == 0){
+            
+            if(this.instructionRegisterDecoded.get("index").getValue()==0){
+            //if(ind==0),  PC <- ADDR
+            this.nextProgramCounter = new Unit(13, this.instructionRegisterDecoded.get("address").getValue());
+            System.out.println("Micro-6: PC <- ADDR - "+this.nextProgramCounter);
+            this.signalMicroStateExecutionComplete();
+            }
+            
+            else { // else, ind==1
+            switch(this.microState){
+            case 0:
+                // MAR <- ADDR
+                this.memory.setMAR(new Unit(13, this.instructionRegisterDecoded.get("address").getValue()));
+                System.out.println("Micro-6: MAR <- ADDR - "+this.memory.getMAR());
+                break;
+            case 1:
+                // MBR <- MEMORY(MAR)
+                System.out.println("Micro-7: MBR <- M(MAR)");
+                // do nothing, happens automatically
+                break;
+            case 2:
+                // PC <-- MBR
+                System.out.println("Micro-8: PC <- MBR - "+this.memory.getMBR());
+                this.nextProgramCounter = this.memory.getMBR();
+                this.signalMicroStateExecutionComplete();
+                break;
+            }
+           }
+        }
+        else{
+             System.out.println("Micro-7: RF(RFI) < 0");
+             this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+             //System.out.println("Mircro-7a: PC=EA PC="+this.getProgramCounter());
+             //this.getProgramCounter().setValue(this.effectiveAddress.getValue());
+             this.signalMicroStateExecutionComplete();
+             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+             System.out.println("COMPLETED INSTRUCTION JGE r, x, address[,I]");
+             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+            
     }
     /**
      * Stop the machine
