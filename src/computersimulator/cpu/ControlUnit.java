@@ -62,7 +62,12 @@ public class ControlUnit implements IClockCycle {
     private static final int STATE_FETCH_INSTRUCTION=1;
     private static final int STATE_DECODE_INSTRUCTION=2;
     private static final int STATE_EXECUTE_INSTRUCTION=3;
-    
+            
+    //used for Condition Code Register
+    public final static int CONDITION_REGISTER_OVERFLOW = 0;
+    public final static int CONDITION_REGISTER_UNDERFLOW = 1;
+    public final static int CONDITION_REGISTER_DIVZERO = 2;
+    public final static int CONDITION_REGISTER_EQUALORNOT = 3;
     
     private static final int MICROSTATE_EXECUTE_COMPLETE=999;
     
@@ -70,7 +75,6 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_LDR=1;
     private static final int OPCODE_STR=2;
     private static final int OPCODE_LDA=3;
-    private static final int OPCODE_TRAP=30;
     private static final int OPCODE_LDX=41;
     private static final int OPCODE_STX=42;
     private static final int OPCODE_AMR=4;

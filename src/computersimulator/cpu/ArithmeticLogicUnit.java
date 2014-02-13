@@ -12,11 +12,6 @@ public class ArithmeticLogicUnit implements IClockCycle {
     
 
     
-    private final static int CONDITION_REGISTER_OVERFLOW = 0;
-    private final static int CONDITION_REGISTER_UNDERFLOW = 1;
-    private final static int CONDITION_REGISTER_DIVZERO = 2;
-    private final static int CONDITION_REGISTER_EQUALORNOT = 3;
-    
     // OP1 - Unit - Up to 20 Bits
     private Unit operand1;
     
@@ -149,9 +144,6 @@ public class ArithmeticLogicUnit implements IClockCycle {
         this.result = result;
     }
     
-        
-
-    
  
     /**
      * Perform subtract operation implements twos complement math. 
@@ -276,7 +268,9 @@ public class ArithmeticLogicUnit implements IClockCycle {
         // check if overflow occurred
         if (carry == 1) {
             System.out.println("****overflow occured**** ");
-            this.controlUnit.setCondition(ArithmeticLogicUnit.CONDITION_REGISTER_OVERFLOW);
+            this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_OVERFLOW);
+        } else {
+            this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_OVERFLOW);
         }
         return res;
     }
