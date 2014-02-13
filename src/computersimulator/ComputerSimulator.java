@@ -40,7 +40,7 @@ public class ComputerSimulator {
         computer.getMemory().engineerSetMemoryLocation(new Unit(13, 100), new Word(1023));
         computer.getMemory().engineerSetMemoryLocation(new Unit(13, 152), new Word(512));
         computer.getMemory().engineerSetMemoryLocation(new Unit(13, 512), new Word(768));
-        computer.getCpu().getControlUnit().setPC(new Unit(13, 1)); // Start at 1
+        computer.getCpu().getControlUnit().setProgramCounter(new Unit(13, 1)); // Start at 1
         //@TODO: Note for TESTING.. Make sure to set MAR FIRST, then MBR. (otherwise Fetch)
                 
         
