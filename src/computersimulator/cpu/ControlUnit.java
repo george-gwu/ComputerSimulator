@@ -320,6 +320,7 @@ public class ControlUnit implements IClockCycle {
         
         switch(this.microState){            
             case 0:
+                this.clearConditions();   // Clear CC on new instruction
                 System.out.println("Micro-0: PC -> MAR");
                 // Micro-0: PC -> MAR
                 Unit pc = this.getProgramCounter();
