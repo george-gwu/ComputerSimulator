@@ -73,19 +73,19 @@ public class Computer implements IClockCycle {
     public Unit getComponentValueByName(String name){
         switch(name){
             case "R0":
-                return this.getCpu().getControlUnit().getGpRegisters()[0];
+                return this.getCpu().getControlUnit().getGeneralPurposeRegister(0);
             case "R1":
-                return this.getCpu().getControlUnit().getGpRegisters()[1];
+                return this.getCpu().getControlUnit().getGeneralPurposeRegister(1);
             case "R2":
-                return this.getCpu().getControlUnit().getGpRegisters()[2];                
+                return this.getCpu().getControlUnit().getGeneralPurposeRegister(2);        
             case "R3":
-                return this.getCpu().getControlUnit().getGpRegisters()[3];                
+                return this.getCpu().getControlUnit().getGeneralPurposeRegister(3);
             case "X1":
-                return this.getCpu().getControlUnit().getIndexRegisters()[0];
+                return this.getCpu().getControlUnit().getIndexRegister(1);
             case "X2":
-                return this.getCpu().getControlUnit().getIndexRegisters()[1];
+                return this.getCpu().getControlUnit().getIndexRegister(2);
             case "X3":
-                return this.getCpu().getControlUnit().getIndexRegisters()[2];
+                return this.getCpu().getControlUnit().getIndexRegister(3);
             case "MAR":
                 return this.getMemory().getMAR();
             case "MBR":
@@ -112,16 +112,16 @@ public class Computer implements IClockCycle {
         
         switch(name){
             case "R0":
-                this.getCpu().getControlUnit().getGpRegisters()[0].setValue(deposit.getValue());
+                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[0].setValue(deposit.getValue());
                 break;
             case "R1":
-                this.getCpu().getControlUnit().getGpRegisters()[1].setValue(deposit.getValue());
+                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[1].setValue(deposit.getValue());
                 break;
             case "R2":
-                this.getCpu().getControlUnit().getGpRegisters()[2].setValue(deposit.getValue());                
+                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[2].setValue(deposit.getValue());                
                 break;
             case "R3":
-                this.getCpu().getControlUnit().getGpRegisters()[3].setValue(deposit.getValue());                
+                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[3].setValue(deposit.getValue());                
                 break;
             case "X1":
                 this.getCpu().getControlUnit().getIndexRegisters()[0].setValue(deposit.getValue());

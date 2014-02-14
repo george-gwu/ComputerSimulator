@@ -221,20 +221,28 @@ public class ControlUnit implements IClockCycle {
         }
     }
 
-    public Word[] getGpRegisters() {
+    public Word[] getGeneralPurposeRegisters() {
         return gpRegisters;
     }  
      /**
      *Use to set General Purpose Register
-     * @param gprid GpRegistersId(0~3)
-     * @param GpRegister initial data
+     * @param RFI GeneralPurposeRegisterValuesId(0~3)
+     * @param GeneralPurposeRegisterValue initial data
      */
-    public void setGpRegister(int gprid,Word GpRegister)
-    {
-        if(gprid<4&&gprid>=0) // GPR 0-3
+    public void setGeneralPurposeRegister(int RFI,Word GeneralPurposeRegisterValue){
+        if(RFI<4&&RFI>=0) // GPR 0-3
         {
-            this.gpRegisters[gprid]=GpRegister;
+            this.gpRegisters[RFI]=GeneralPurposeRegisterValue;
         }
+    }
+    
+    /**
+     * 
+     * @param RFI
+     * @return R(RFI)
+     */
+    public Word getGeneralPurposeRegister(int RFI){
+        return this.gpRegisters[RFI];
     }
 
     public void setProgramCounter(Unit programCounter) {
@@ -549,7 +557,7 @@ public class ControlUnit implements IClockCycle {
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
                 int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-                this.gpRegisters[RFI] = this.memory.getMBR();
+                this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 System.out.println("COMPLETED INSTRUCTION: LDR - rfi["+RFI+"] is now: "+ this.memory.getMBR());
@@ -577,7 +585,7 @@ public class ControlUnit implements IClockCycle {
               // Micro-7: MBR <- RF(RFI)
               System.out.println("Micro-7: MBR <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              memory.setMBR(this.gpRegisters[RFI]);
+              memory.setMBR(this.getGeneralPurposeRegister(RFI));
               this.signalBlockingMicroFunction();
             break;
                 
@@ -617,7 +625,7 @@ public class ControlUnit implements IClockCycle {
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
                 int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-                this.gpRegisters[RFI] = this.memory.getMBR();
+                this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 System.out.println("COMPLETED INSTRUCTION: LDA - rfi["+RFI+"] is now: "+ this.memory.getMBR());
@@ -723,7 +731,7 @@ public class ControlUnit implements IClockCycle {
               // Micro-9: OP2 <- RF(RFI)
               System.out.println("Micro-9: OP2 <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              alu.setOperand2(this.gpRegisters[RFI]);
+              alu.setOperand2(this.getGeneralPurposeRegister(RFI));
             break;
                 
             case 4:
@@ -742,10 +750,10 @@ public class ControlUnit implements IClockCycle {
             case 6:
               // Micro-12: RF(RFI) <- RES
               System.out.println("Micro-12: RF(RFI) <- RES");
-              RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              this.gpRegisters[RFI] = new Word(alu.getResult());  
+              RFI = this.instructionRegisterDecoded.get("rfi").getValue(); 
+              this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: AMR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
+              System.out.println("COMPLETED INSTRUCTION: AMR - RF("+RFI+"): "+  this.getGeneralPurposeRegister(RFI));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 
               this.signalMicroStateExecutionComplete();
@@ -782,7 +790,7 @@ public class ControlUnit implements IClockCycle {
               // Micro-9: OP2 <- RF(RFI)
               System.out.println("Micro-9: OP2 <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              alu.setOperand2(this.gpRegisters[RFI]);
+              alu.setOperand2(this.getGeneralPurposeRegister(RFI));
             break;
                 
             case 5:
@@ -802,9 +810,9 @@ public class ControlUnit implements IClockCycle {
               System.out.println("Micro-12: RF(RFI) <- RES");
               RFI = this.instructionRegisterDecoded.get("rfi").getValue();
               
-              this.gpRegisters[RFI] = new Word(alu.getResult());  
+              this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: SMR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
+              System.out.println("COMPLETED INSTRUCTION: SMR - RF("+RFI+"): "+  this.getGeneralPurposeRegister(RFI));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
               this.signalMicroStateExecutionComplete();
@@ -820,7 +828,7 @@ public class ControlUnit implements IClockCycle {
             case 0:
                 // Micro-6: OP1 <- RF(RFI)                
                 int RFI = this.instructionRegisterDecoded.get("rfi").getValue();                
-                alu.setOperand1(this.gpRegisters[RFI]);
+                alu.setOperand1(this.getGeneralPurposeRegister(RFI));
                 System.out.println("Micro-6: OP1 <- RF(RFI) - "+alu.getOperand1());
             break;
                         
@@ -847,10 +855,10 @@ public class ControlUnit implements IClockCycle {
                 // Micro-10: RF(RFI) <- RES
                 System.out.println("Micro-10: RF(RFI) <- RES - "+alu.getResult());
                 RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              
-                this.gpRegisters[RFI] = new Word(alu.getResult());  
+               
+                this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: AIR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
+                System.out.println("COMPLETED INSTRUCTION: AIR - RF("+RFI+"): "+  this.getGeneralPurposeRegister(RFI));
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
                 this.signalMicroStateExecutionComplete();
@@ -866,7 +874,7 @@ public class ControlUnit implements IClockCycle {
             case 0:
                 // Micro-6: OP1 <- RF(RFI)                
                 int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-                alu.setOperand1(this.gpRegisters[RFI]);
+                alu.setOperand1(this.getGeneralPurposeRegister(RFI));
                 System.out.println("Micro-6: OP1 <- RF(RFI) - "+alu.getOperand1());
             break;
                         
@@ -893,10 +901,10 @@ public class ControlUnit implements IClockCycle {
                 // Micro-10: RF(RFI) <- RES
                 System.out.println("Micro-10: RF(RFI) <- RES - "+alu.getResult());
                 RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-              
-                this.gpRegisters[RFI] = new Word(alu.getResult());  
+               
+                this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: SIR - RF("+RFI+"): "+  this.gpRegisters[RFI]);
+                System.out.println("COMPLETED INSTRUCTION: SIR - RF("+RFI+"): "+  this.getGeneralPurposeRegister(RFI));
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
                 this.signalMicroStateExecutionComplete();
@@ -951,7 +959,7 @@ public class ControlUnit implements IClockCycle {
      */
     private void  executeOpcodeJZ(){        
         int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-        if(this.gpRegisters[RFI].getValue()==0){ // c(r)==0, jump
+        if(this.getGeneralPurposeRegister(RFI).getValue()==0){ // c(r)==0, jump
                         
             if(this.instructionRegisterDecoded.get("index").getValue()==0){ //direct
                 //if(ind==0),  PC <- ADDR
