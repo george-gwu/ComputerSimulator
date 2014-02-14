@@ -967,7 +967,7 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("Micro-6: PC <- ADDR - "+this.nextProgramCounter);
                 this.signalMicroStateExecutionComplete();
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: JNZ - R("+RFI+") was Zero -- JUMPING: "+this.nextProgramCounter);
+                System.out.println("COMPLETED INSTRUCTION: JZ - R("+RFI+") was Zero -- JUMPING: "+this.nextProgramCounter);
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");            
             } else { // else, ind==1
                 switch(this.microState){
@@ -987,7 +987,7 @@ public class ControlUnit implements IClockCycle {
                     this.nextProgramCounter = this.memory.getMBR();
                     this.signalMicroStateExecutionComplete();
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    System.out.println("COMPLETED INSTRUCTION: JNZ - R("+RFI+") was Zero -- JUMPING: "+this.nextProgramCounter);
+                    System.out.println("COMPLETED INSTRUCTION: JZ - R("+RFI+") was Zero -- JUMPING: "+this.nextProgramCounter);
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                  
                     break;                            
                 }            
@@ -995,12 +995,12 @@ public class ControlUnit implements IClockCycle {
         } else { // not zero->PC++
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("COMPLETED INSTRUCTION: JNZ - R("+RFI+") was NOT Zero -- Continuing.");
+            System.out.println("COMPLETED INSTRUCTION: JZ - R("+RFI+") was NOT Zero -- Continuing.");
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
         }    
     }
     /**
-     * Jump If Not Equal (to Zero)
+     * Jump If Not Equal (to Zero) -- really JNZ.
      * If c(r) != 0, then PC <−- EA or c(EA) , if I bit set;
      * Else PC <- PC + 1
      */
