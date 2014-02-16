@@ -517,13 +517,9 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_SOB: //Tested
                     this.executeOpcodeSOB();
                     break;
-<<<<<<< HEAD
-                case ControlUnit.OPCODE_JCC:
-                   // this.executeOpcodeJCC();
-                    break;
-                case ControlUnit.OPCODE_RFS:
-                 //   this.executeOpcodeRFS();
-=======
+
+
+
                 case ControlUnit.OPCODE_JCC:                                    //If condition needs to be implementd
                     this.executeOpcodeJCC();
                     break;
@@ -533,7 +529,7 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_JSR:                                    //Partially implemented
                     this.executeOpcodeJSR();
                     break;
->>>>>>> 8ec8c24ec60fe43d97ff55a91a1b06c376a91eca
+
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
@@ -1097,13 +1093,11 @@ public class ControlUnit implements IClockCycle {
      * If CC = 1, then PC <- EA or c(EA) , if I bit set;
      * Else PC <- PC + 1
     */
-   /* private void executeOpcodeJCC(){
+  private void executeOpcodeJCC(){
         int CC = this.instructionRegisterDecoded.get("rfi").getValue();         //CC replaces RFI for the JCC instruction.
-<<<<<<< HEAD
-        if(this.getConditionCode(CC).getValue()==1){
-=======
+
         if(this.getConditionCode(CC)==1){
->>>>>>> 8ec8c24ec60fe43d97ff55a91a1b06c376a91eca
+
             if(this.instructionRegisterDecoded.get("index").getValue()==0){     //direct    CC = 1 and Index = 0
                 //if(ind==0),  PC <- ADDR
                 this.nextProgramCounter = new Unit(13, this.instructionRegisterDecoded.get("address").getValue());
@@ -1144,7 +1138,7 @@ public class ControlUnit implements IClockCycle {
         }
             
     }
-  */
+ 
     /**
      * 
      * Return From Subroutine:
