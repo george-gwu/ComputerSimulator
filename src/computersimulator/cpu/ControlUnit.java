@@ -1181,7 +1181,7 @@ public class ControlUnit implements IClockCycle {
     */
     private void executeOpcodeJCC(){
         int CC = this.instructionRegisterDecoded.get("rfi").getValue();         //CC replaces RFI for the JCC instruction.
-        if(this.getConditionCode(CC).getValue()==1){
+        if(this.getConditionCode(CC)==1){
             if(this.instructionRegisterDecoded.get("index").getValue()==0){     //direct    CC = 1 and Index = 0
                 //if(ind==0),  PC <- ADDR
                 this.nextProgramCounter = new Unit(13, this.instructionRegisterDecoded.get("address").getValue());
