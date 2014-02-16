@@ -27,9 +27,10 @@ public class Unit {
         this.size = Size;
         
         // MAX VALUE = ((2xy(n-1))-1)      
-        this.MAX_VALUE = (int)(Math.pow(2, (this.size-1))-1);
+        this.MAX_VALUE = Math.max((int)(Math.pow(2, (this.size-1))-1),1);
         // MIN VALUE = -((2xy(n-1))-1)
-        this.MIN_VALUE = -(this.MAX_VALUE);
+        this.MIN_VALUE = Math.min(0, -(this.MAX_VALUE));
+      
         
         this.setValue(Value);
     }
