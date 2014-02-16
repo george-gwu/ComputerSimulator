@@ -77,7 +77,6 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * Used internally on the clock cycle when start computation is set.
      */
     private void compute(){
-        this.controlUnit.clearConditions();
         switch(this.control){
             case ArithmeticLogicUnit.CONTROL_ADD:
                 this.setResult(this.add(operand1, operand2));
