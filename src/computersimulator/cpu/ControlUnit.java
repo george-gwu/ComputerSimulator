@@ -88,6 +88,7 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_SOB=16;
     private static final int OPCODE_JCC=12;
     private static final int OPCODE_RFS=15;
+    private static final int OPCODE_JSR=14;
     
     
     // Engineer: used to control micro step, defined per state
@@ -516,11 +517,23 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_SOB: //Tested
                     this.executeOpcodeSOB();
                     break;
+<<<<<<< HEAD
                 case ControlUnit.OPCODE_JCC:
                    // this.executeOpcodeJCC();
                     break;
                 case ControlUnit.OPCODE_RFS:
                  //   this.executeOpcodeRFS();
+=======
+                case ControlUnit.OPCODE_JCC:                                    //If condition needs to be implementd
+                    this.executeOpcodeJCC();
+                    break;
+                case ControlUnit.OPCODE_RFS:                                    //To be implemented
+                    this.executeOpcodeRFS();
+                    break;
+                case ControlUnit.OPCODE_JSR:                                    //Partially implemented
+                    this.executeOpcodeJSR();
+                    break;
+>>>>>>> 8ec8c24ec60fe43d97ff55a91a1b06c376a91eca
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
@@ -1086,14 +1099,18 @@ public class ControlUnit implements IClockCycle {
     */
    /* private void executeOpcodeJCC(){
         int CC = this.instructionRegisterDecoded.get("rfi").getValue();         //CC replaces RFI for the JCC instruction.
+<<<<<<< HEAD
         if(this.getConditionCode(CC).getValue()==1){
+=======
+        if(this.getConditionCode(CC)==1){
+>>>>>>> 8ec8c24ec60fe43d97ff55a91a1b06c376a91eca
             if(this.instructionRegisterDecoded.get("index").getValue()==0){     //direct    CC = 1 and Index = 0
                 //if(ind==0),  PC <- ADDR
                 this.nextProgramCounter = new Unit(13, this.instructionRegisterDecoded.get("address").getValue());
                 System.out.println("Micro-6: PC <- ADDR - "+this.nextProgramCounter);
                 this.signalMicroStateExecutionComplete();
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: JCC");
+                System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Jumping: "+this.nextProgramCounter);
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");            
             } else { // else, ind==1                                            CC = 1 and Index = 1
                 switch(this.microState){
@@ -1113,7 +1130,7 @@ public class ControlUnit implements IClockCycle {
                         this.nextProgramCounter = this.memory.getMBR();
                         this.signalMicroStateExecutionComplete();
                         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                        System.out.println("COMPLETED INSTRUCTION: JCC");
+                        System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Jumping: "+ this.nextProgramCounter);
                         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                  
                         break;                            
                 }   
@@ -1122,7 +1139,7 @@ public class ControlUnit implements IClockCycle {
         else { // not zero->PC++                                                CC != 1
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("COMPLETED INSTRUCTION: JCC");
+            System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Not Jumping.");
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
         }
             
@@ -1136,6 +1153,48 @@ public class ControlUnit implements IClockCycle {
     */    
     private void executeOpcodeRFS(){
         
+    }
+    
+    /**
+     * 
+     * Jump and Save Return Address:
+     * R3 <- PC + 1, PC <- EA or c(EA) , if I bit set;
+     * R0 should contain pointer to arguments. Argument list should end with -17777 value.
+    */
+    private void executeOpcodeJSR(){
+        switch(this.microState){
+            case 0:
+                // RFI1 <- 3
+                System.out.println("Micro-6: RFI1 <- 3");
+            break;
+                
+            case 1:
+                //RF(RFI1) <- PC + 1
+                System.out.println("Micro-7: RF(RFI1) <- PC + 1");
+            break;
+                
+            case 2:
+                // MAR <- EA
+                this.memory.setMAR(new Unit(13, this.instructionRegisterDecoded.get("address").getValue()));
+                System.out.println("Micro-8: MAR <- EA - "+this.memory.getMAR());
+            break;
+                
+            case 3:
+                // MBR <- MEMORY(MAR)
+                System.out.println("Micro-9: MBR <- M(MAR)");
+                // do nothing, happens automatically
+            break;
+                
+            case 4:
+                // PC <-- MBR
+                System.out.println("Micro-8: PC <- MBR - "+this.memory.getMBR());
+                this.nextProgramCounter = this.memory.getMBR();
+                this.signalMicroStateExecutionComplete();
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: JSR");
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                  
+            break;  
+        }
     }
     /**
      * Stop the machine
