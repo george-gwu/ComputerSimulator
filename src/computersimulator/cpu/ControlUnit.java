@@ -1188,7 +1188,7 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("Micro-6: PC <- ADDR - "+this.nextProgramCounter);
                 this.signalMicroStateExecutionComplete();
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: JCC");
+                System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Jumping: "+this.nextProgramCounter);
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");            
             } else { // else, ind==1                                            CC = 1 and Index = 1
                 switch(this.microState){
@@ -1208,7 +1208,7 @@ public class ControlUnit implements IClockCycle {
                         this.nextProgramCounter = this.memory.getMBR();
                         this.signalMicroStateExecutionComplete();
                         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                        System.out.println("COMPLETED INSTRUCTION: JCC");
+                        System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Jumping: "+ this.nextProgramCounter);
                         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                  
                         break;                            
                 }   
@@ -1217,7 +1217,7 @@ public class ControlUnit implements IClockCycle {
         else { // not zero->PC++                                                CC != 1
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("COMPLETED INSTRUCTION: JCC");
+            System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Not Jumping.");
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
         }
             
