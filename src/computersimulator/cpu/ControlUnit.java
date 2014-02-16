@@ -64,10 +64,10 @@ public class ControlUnit implements IClockCycle {
     private static final int STATE_EXECUTE_INSTRUCTION=3;
             
     //used for Condition Code Register
-    public final static int CONDITION_REGISTER_OVERFLOW = 1;
-    public final static int CONDITION_REGISTER_UNDERFLOW = 2;
-    public final static int CONDITION_REGISTER_DIVZERO = 3;
-    public final static int CONDITION_REGISTER_EQUALORNOT = 4;
+    public final static int CONDITION_REGISTER_OVERFLOW = 0;
+    public final static int CONDITION_REGISTER_UNDERFLOW = 1;
+    public final static int CONDITION_REGISTER_DIVZERO = 2;
+    public final static int CONDITION_REGISTER_EQUALORNOT = 3;
     
     private static final int MICROSTATE_EXECUTE_COMPLETE=999;
     
