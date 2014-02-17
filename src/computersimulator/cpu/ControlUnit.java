@@ -517,10 +517,10 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_SOB: //Tested
                     this.executeOpcodeSOB();
                     break;
-                case ControlUnit.OPCODE_JCC:                                    //If condition needs to be implementd
+                case ControlUnit.OPCODE_JCC:
                     this.executeOpcodeJCC();
                     break;
-                case ControlUnit.OPCODE_RFS:                                    //To be implemented
+                case ControlUnit.OPCODE_RFS:
                     this.executeOpcodeRFS();
                     break;
                 case ControlUnit.OPCODE_JSR:                                    //Partially implemented
@@ -1110,12 +1110,33 @@ public class ControlUnit implements IClockCycle {
  
     /**
      * 
-     * Return From Subroutine:
-     * If CC = 1, then PC <- EA or c(EA) , if I bit set;
-     * Else PC <- PC + 1
+     * Return From Subroutine w/ return code as Immediate portion (optional) 
+     * stored in R0’s address field. 
+     * R0 <− Immed; PC <− c(R3)
+     * IX, I fields are ignored.
+     * 
     */    
     private void executeOpcodeRFS(){
-        
+      switch(this.microState){
+            case 0:
+                // R0 <- Immed (Immed is stored in ADDR)        
+                this.setGeneralPurposeRegister(0, new Word(this.instructionRegisterDecoded.get("address")));
+                System.out.println("Micro-6: R0 <- Immediate");
+            break;
+                
+            case 1:
+                // PC <- c(R3)
+                this.nextProgramCounter = new Unit(13, this.getGeneralPurposeRegister(3).getValue());
+                System.out.println("Micro-7: PC <- c(R3)");
+            
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: RFS - Ret: "+this.getGeneralPurposeRegister(0)+" - Jump: "+  this.nextProgramCounter);
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+                
+                this.signalMicroStateExecutionComplete();
+            break;          
+        }
+                
     }
     
     /**
