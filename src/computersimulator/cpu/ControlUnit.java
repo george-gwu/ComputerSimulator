@@ -1147,34 +1147,28 @@ public class ControlUnit implements IClockCycle {
             case 0:
                 // RFI1 <- 3
                 System.out.println("Micro-6: RFI1 <- 3");
+                 
             break;
                 
             case 1:
                 //RF(RFI1) <- PC + 1
+                int RFI=3;
+                this.setGeneralPurposeRegister(RFI, new Word(this.getProgramCounter().getValue()+1));
                 System.out.println("Micro-7: RF(RFI1) <- PC + 1");
             break;
                 
             case 2:
-                // MAR <- EA
-                this.memory.setMAR(new Unit(13, this.instructionRegisterDecoded.get("address").getValue()));
-                System.out.println("Micro-8: MAR <- EA - "+this.memory.getMAR());
-            break;
-                
+                //PC<-EA
+                 this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+                 System.out.println("Micro-8: PC <- EA - "+this.nextProgramCounter);
+                 
+                break;
             case 3:
-                // MBR <- MEMORY(MAR)
-                System.out.println("Micro-9: MBR <- M(MAR)");
-                // do nothing, happens automatically
-            break;
-                
-            case 4:
-                // PC <-- MBR
-                System.out.println("Micro-8: PC <- MBR - "+this.memory.getMBR());
-                this.nextProgramCounter = this.memory.getMBR();
+                System.out.println("Now Store the pointer of the Arguments into R0 here");
                 this.signalMicroStateExecutionComplete();
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: JSR");
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                  
-            break;  
+                break;
+                
+              
         }
     }
     /**
