@@ -125,9 +125,8 @@ public class ControlUnit implements IClockCycle {
     
    
     public int getConditionCode(int ConditionRegister) {
-        int cri = ConditionRegister-1; // scaled for array(4)
         Integer[] raw = this.conditionCode.getBinaryArray();        
-        return raw[cri];
+        return raw[ConditionRegister];
     }
 
     /**
@@ -144,9 +143,8 @@ public class ControlUnit implements IClockCycle {
      * @param ConditionRegister (see static variables)
      */
     public void setCondition(int ConditionRegister){
-        int cri = ConditionRegister-1; // scaled for array(4)
         Integer[] raw = this.conditionCode.getBinaryArray();
-        raw[cri] = 1;
+        raw[ConditionRegister] = 1;
         
         StringBuilder ret = new StringBuilder();
         for (Integer el : raw) {
@@ -163,9 +161,8 @@ public class ControlUnit implements IClockCycle {
      * @param ConditionRegister (see static variables)
      */
     public void unsetCondition(int ConditionRegister){
-        int cri = ConditionRegister-1; // scaled for array(4)
         Integer[] raw = this.conditionCode.getBinaryArray();
-        raw[cri] = 0;
+        raw[ConditionRegister] = 0;
         
         StringBuilder ret = new StringBuilder();
         for (Integer el : raw) {
@@ -285,7 +282,7 @@ public class ControlUnit implements IClockCycle {
     }  
     
     /**
-     * Used internally to signal that a microcycle needs a full clock cycle
+     * Used internally to signal that a micro-cycle needs a full clock cycle
      */
     private void signalBlockingMicroFunction(){
         this.blocked=true;
