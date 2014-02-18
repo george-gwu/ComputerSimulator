@@ -163,6 +163,80 @@ public class Unit {
     }
     
     /**
+     * Sets value using an array of integers
+     * @param raw Integer Binary Array
+     */
+    public void setValueBinaryArray(Integer[] raw){
+        this.setValueBinary(Unit.IntArrayToBinaryString(raw));
+    }
+    
+    /**
+     * Perform Shift Operation 
+     * @param leftRight shifted left (L/R =1) or right (L/R = 0)
+     * @param count number of times to shift
+     * @param algorithmicLogical logically (A/L = 1) or arithmetically (A/L = 0)
+     */
+    public void shiftByCount(int leftRight, int count, int algorithmicLogical){
+        if(leftRight==1){ // left
+            // logical / algorithmic are identical
+            while(count>0){
+                Integer[] shiftTemp= this.getBinaryArray();
+                for(int i=0; i<this.size-1; i++){
+                    shiftTemp[i] = shiftTemp[i+1];
+                }
+                shiftTemp[this.size-1] = 0; // shiftOff in Rotate
+                this.setValueBinaryArray(shiftTemp);
+                count--;
+            }
+        } else { // right            
+            while(count>0){
+                Integer[] shiftTemp= this.getBinaryArray();
+                int shiftOn=(algorithmicLogical==0) ? shiftTemp[0] : 0; 
+
+                for(int i=this.size-1; i>0; i--){
+                    shiftTemp[i] = shiftTemp[i-1];
+                }
+                shiftTemp[0] = shiftOn;
+                this.setValueBinaryArray(shiftTemp);
+                count--;
+            }
+            
+        }
+    }
+    
+    /**
+     * Perform Rotate Operation 
+     * @param leftRight rotated left (L/R =1) or right (L/R = 0)
+     * @param count number of times to rotate
+     */
+    public void rotateByCount(int leftRight, int count){
+        if(leftRight==1){ // left
+            // logical / algorithmic are identical
+            while(count>0){
+                Integer[] shiftTemp= this.getBinaryArray();
+                int shiftOff = shiftTemp[0]; // shifted on to the right side below
+                for(int i=0; i<this.size-1; i++){
+                    shiftTemp[i] = shiftTemp[i+1];
+                }
+                shiftTemp[this.size-1] = shiftOff; 
+                this.setValueBinaryArray(shiftTemp);
+                count--;
+            }
+        } else { // right            
+            while(count>0){
+                Integer[] shiftTemp= this.getBinaryArray();
+                int shiftOff = shiftTemp[this.size-1]; // used in rotate
+                for(int i=this.size-1; i>0; i--){
+                    shiftTemp[i] = shiftTemp[i-1];
+                }
+                shiftTemp[0] = shiftOff;
+                this.setValueBinaryArray(shiftTemp);
+                count--;
+            }            
+        }
+    }    
+    
+    /**
      *
      * @return Binary representation as a String
      */

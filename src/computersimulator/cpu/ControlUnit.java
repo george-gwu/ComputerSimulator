@@ -89,6 +89,8 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_JCC=12;
     private static final int OPCODE_RFS=15;
     private static final int OPCODE_JSR=14;
+    private static final int OPCODE_SRC=31;
+    private static final int OPCODE_RRC=32;
     
     
     // Engineer: used to control micro step, defined per state
@@ -523,7 +525,12 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_JSR:                                    //Partially implemented
                     this.executeOpcodeJSR();
                     break;
-
+                case ControlUnit.OPCODE_SRC:
+                    this.executeOpcodeSRC();
+                    break;
+                case ControlUnit.OPCODE_RRC:
+                    this.executeOpcodeRRC();
+                    break;                    
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
@@ -1171,6 +1178,51 @@ public class ControlUnit implements IClockCycle {
               
         }
     }
+    
+    /**
+     * Shift Register by Count
+     * c(r) is shifted left (L/R =1) or right (L/R = 0) either logically (A/L = 1) or arithmetically (A/L = 0)
+     * XX, XXX are ignored
+     * Count = 0…20
+     * If Count = 0, no shift occurs
+     */
+    private void executeOpcodeSRC(){
+        int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+        
+        int algorithmicLogical = this.getIR().decomposeByIndex(10).getValue();
+        int leftRight = this.getIR().decomposeByIndex(11).getValue();
+        int count = this.getIR().decomposeByOffset(15, 19).getValue();
+        
+        // Shift functionality is implemented in Unit
+        this.getGeneralPurposeRegister(RFI).shiftByCount(leftRight, count, algorithmicLogical);
+        
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: SRC - Shift Register "+RFI+" "+((leftRight==1) ? "Left" : "Right") +" "+((algorithmicLogical==1) ? "Logical" : "Algorithmic")+" by "+count+": "+this.getGeneralPurposeRegister(RFI));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                                 
+        
+    }
+    
+    /**
+     * Rotate Register by Count
+     * c(r) is rotated left (L/R = 1) or right (L/R =0) either logically (A/L =1)
+     * XX, XXX is ignored
+     * Count = 0…20
+     * If Count = 0, no rotate occurs
+     */
+    private void executeOpcodeRRC(){
+        int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+        
+        int leftRight = this.getIR().decomposeByIndex(11).getValue();
+        int count = this.getIR().decomposeByOffset(15, 19).getValue();
+        
+        // Rotate functionality is implemented in Unit
+        this.getGeneralPurposeRegister(RFI).rotateByCount(leftRight, count);
+        
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: RRC - Rotate Register "+RFI+" "+((leftRight==1) ? "Left" : "Right") +" by "+count+": "+this.getGeneralPurposeRegister(RFI));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");            
+    }
+    
     /**
      * Stop the machine
      */
