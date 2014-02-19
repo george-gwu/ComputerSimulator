@@ -377,19 +377,19 @@ public class ControlUnit implements IClockCycle {
             this.instructionRegisterDecoded = this.decodeInstructionRegister(this.getIR());     
             System.out.println("-- IR Decoded: "+this.instructionRegisterDecoded);
                         
-            int opcode = this.instructionRegisterDecoded.get("opcode").getValue();            
+            int opcode = this.instructionRegisterDecoded.get("opcode").getUnsignedValue();            
             if(opcode == ControlUnit.OPCODE_AIR || opcode ==ControlUnit.OPCODE_SIR){
                 // These instructions don't require EA calculation. Skip ahead.
                 this.microState=null;
                 this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;            
             } else { // Every other instruction does. We'll progress through eaState and microState now.
-                if(this.instructionRegisterDecoded.get("xfi").getValue()==0 && this.instructionRegisterDecoded.get("rfi").getValue()==0){                        
+                if(this.instructionRegisterDecoded.get("xfi").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("rfi").getUnsignedValue()==0){                        
                     this.eaState = ControlUnit.EA_DIRECT;
-                } else if(this.instructionRegisterDecoded.get("index").getValue()==0 && this.instructionRegisterDecoded.get("xfi").getValue()>=1 && this.instructionRegisterDecoded.get("xfi").getValue()<=3){
+                } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()>=1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()<=3){
                     this.eaState = ControlUnit.EA_REGISTER_INDIRECT;                    
-                } else if(this.instructionRegisterDecoded.get("index").getValue()==1 && this.instructionRegisterDecoded.get("xfi").getValue()==0){
+                } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()==0){
                     this.eaState = ControlUnit.EA_INDEXED;
-                } else if(this.instructionRegisterDecoded.get("index").getValue()==1 && this.instructionRegisterDecoded.get("xfi").getValue()>=1 && this.instructionRegisterDecoded.get("xfi").getValue()<=3){
+                } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()>=1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()<=3){
                     this.eaState = ControlUnit.EA_INDEXED_OFFSET;
                 }                                
                 this.microState++;
@@ -405,9 +405,9 @@ public class ControlUnit implements IClockCycle {
                     switch(this.microState){
                         case 1:
                             Unit addr = this.instructionRegisterDecoded.get("address");  
-                            int contentsOfX = this.getIndexRegister(this.instructionRegisterDecoded.get("xfi").getValue()).getValue(); //read Xi here  
-                            this.effectiveAddress = new Unit(13, (contentsOfX + addr.getValue()));
-                            System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+addr.getValue()+"): "+this.effectiveAddress);
+                            int contentsOfX = this.getIndexRegister(this.instructionRegisterDecoded.get("xfi").getUnsignedValue()).getUnsignedValue(); //read Xi here  
+                            this.effectiveAddress = new Unit(13, (contentsOfX + addr.getUnsignedValue()));
+                            System.out.println("Register Indirect + Offset ("+contentsOfX+" + "+addr.getUnsignedValue()+"): "+this.effectiveAddress);
                             break;                            
                     }                           
                     break;
@@ -420,8 +420,8 @@ public class ControlUnit implements IClockCycle {
                             break;
                         case 2: // c(ADDR) from MBR, set to MAR
                             Word contentsOfAddr = this.memory.getMBR();
-                            this.effectiveAddress =  new Unit(13, (contentsOfAddr.getValue()));
-                            System.out.println("Indexed - c(ADDR) =  c("+this.instructionRegisterDecoded.get("address").getValue()+") = "+this.effectiveAddress);                            
+                            this.effectiveAddress =  new Unit(13, (contentsOfAddr.getUnsignedValue()));
+                            System.out.println("Indexed - c(ADDR) =  c("+this.instructionRegisterDecoded.get("address").getUnsignedValue()+") = "+this.effectiveAddress);                            
                             break;
                     }                           
                     break;                    
@@ -429,14 +429,14 @@ public class ControlUnit implements IClockCycle {
                     switch(this.microState){
                         case 1:
                             Unit addr = this.instructionRegisterDecoded.get("address");
-                            int contentsOfX = this.getIndexRegister(this.instructionRegisterDecoded.get("xfi").getValue()).getValue();    //read Xi here                        
-                            Unit location = new Unit(13, (contentsOfX + addr.getValue()));
+                            int contentsOfX = this.getIndexRegister(this.instructionRegisterDecoded.get("xfi").getUnsignedValue()).getUnsignedValue();    //read Xi here                        
+                            Unit location = new Unit(13, (contentsOfX + addr.getUnsignedValue()));
                             this.memory.setMAR(location);
                             this.microState++;    
                             break;
                         case 2:
                             Word contentsOfLocation = this.memory.getMBR();
-                            this.effectiveAddress = new Unit(13, contentsOfLocation.getValue());
+                            this.effectiveAddress = new Unit(13, contentsOfLocation.getUnsignedValue());
                             System.out.println("Indexed + Offset --> "+this.effectiveAddress);                                
                             break;
                     }                      
@@ -468,7 +468,7 @@ public class ControlUnit implements IClockCycle {
         /* This delegates the microstate to the instruction, but does handle a special
             microstate (999) to signal completion. */
         if(this.microState < ControlUnit.MICROSTATE_EXECUTE_COMPLETE){
-            int opcode = this.instructionRegisterDecoded.get("opcode").getValue();
+            int opcode = this.instructionRegisterDecoded.get("opcode").getUnsignedValue();
             System.out.println("--EXECUTING OPCODE: "+ opcode);
             switch(opcode){
                 case ControlUnit.OPCODE_HLT:
@@ -522,7 +522,7 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_RFS:
                     this.executeOpcodeRFS();
                     break;
-                case ControlUnit.OPCODE_JSR:                                    //Partially implemented
+                case ControlUnit.OPCODE_JSR://Partially implemented
                     this.executeOpcodeJSR();
                     break;
                 case ControlUnit.OPCODE_SRC:
@@ -539,10 +539,10 @@ public class ControlUnit implements IClockCycle {
             if(this.nextProgramCounter==null){
                 // Micro-N: c(PC) + 1 -> PC  --- Increment PC
                 System.out.println("Micro-Final: c(PC) + 1 -> PC (Increment PC)");
-                this.getProgramCounter().setValue(this.getProgramCounter().getValue() + 1); // @TODO: ALU?
+                this.getProgramCounter().setValue(this.getProgramCounter().getUnsignedValue() + 1); 
             } else { 
                 // Micro-N PC <- tempPC (internal to our simulator)
-                this.getProgramCounter().setValue(this.nextProgramCounter.getValue());
+                this.getProgramCounter().setValue(this.nextProgramCounter.getUnsignedValue());
             }
             System.out.println("-- PC: "+this.getProgramCounter());
             this.state = ControlUnit.STATE_NONE;     
@@ -579,7 +579,7 @@ public class ControlUnit implements IClockCycle {
             case 2:
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
-                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+                int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
                 this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -607,7 +607,7 @@ public class ControlUnit implements IClockCycle {
               
               // Micro-7: MBR <- RF(RFI)
               System.out.println("Micro-7: MBR <- RF(RFI)");
-              int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
               memory.setMBR(this.getGeneralPurposeRegister(RFI));
               this.signalBlockingMicroFunction();
             break;
@@ -647,7 +647,7 @@ public class ControlUnit implements IClockCycle {
             case 2:
                 // Micro-8: RF(RFI) <- MBR   
                 System.out.println("Micro-8: RF(RFI) <- MBR");
-                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+                int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
                 this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -680,7 +680,7 @@ public class ControlUnit implements IClockCycle {
 
             case 2:
               // Micro 8: c(XFI) <- MBR              
-              int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
+              int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
               this.setIndexRegister(XFI, this.memory.getMBR());
               
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -707,7 +707,7 @@ public class ControlUnit implements IClockCycle {
             case 1:
               // Micro 7: MBR <- c(XFI)
               System.out.println("Micro 7: MBR <- c(XFI)");
-              int XFI = this.instructionRegisterDecoded.get("xfi").getValue();
+              int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
               memory.setMBR(this.getIndexRegister(XFI));
             break;
                 
@@ -753,7 +753,7 @@ public class ControlUnit implements IClockCycle {
             case 3:
               // Micro-9: OP2 <- RF(RFI)
               System.out.println("Micro-9: OP2 <- RF(RFI)");
-              int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
               alu.setOperand2(this.getGeneralPurposeRegister(RFI));
             break;
                 
@@ -773,7 +773,7 @@ public class ControlUnit implements IClockCycle {
             case 6:
               // Micro-12: RF(RFI) <- RES
               System.out.println("Micro-12: RF(RFI) <- RES");
-              RFI = this.instructionRegisterDecoded.get("rfi").getValue(); 
+              RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue(); 
               this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               System.out.println("COMPLETED INSTRUCTION: AMR - RF("+RFI+"): "+  this.getGeneralPurposeRegister(RFI));
@@ -812,7 +812,7 @@ public class ControlUnit implements IClockCycle {
             case 4:
               // Micro-9: OP2 <- RF(RFI)
               System.out.println("Micro-9: OP2 <- RF(RFI)");
-              int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
               alu.setOperand2(this.getGeneralPurposeRegister(RFI));
             break;
                 
@@ -831,7 +831,7 @@ public class ControlUnit implements IClockCycle {
             case 7:
               // Micro-12: RF(RFI) <- RES
               System.out.println("Micro-12: RF(RFI) <- RES");
-              RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+              RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
               
               this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
               System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -850,7 +850,7 @@ public class ControlUnit implements IClockCycle {
         switch(this.microState){
             case 0:
                 // Micro-6: OP1 <- RF(RFI)                
-                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();                
+                int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();                
                 alu.setOperand1(this.getGeneralPurposeRegister(RFI));
                 System.out.println("Micro-6: OP1 <- RF(RFI) - "+alu.getOperand1());
             break;
@@ -877,7 +877,7 @@ public class ControlUnit implements IClockCycle {
             case 4:
                 // Micro-10: RF(RFI) <- RES
                 System.out.println("Micro-10: RF(RFI) <- RES - "+alu.getResult());
-                RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+                RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
                
                 this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -896,7 +896,7 @@ public class ControlUnit implements IClockCycle {
         switch(this.microState){
             case 0:
                 // Micro-6: OP1 <- RF(RFI)                
-                int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+                int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
                 alu.setOperand1(this.getGeneralPurposeRegister(RFI));
                 System.out.println("Micro-6: OP1 <- RF(RFI) - "+alu.getOperand1());
             break;
@@ -923,7 +923,7 @@ public class ControlUnit implements IClockCycle {
             case 4:
                 // Micro-10: RF(RFI) <- RES
                 System.out.println("Micro-10: RF(RFI) <- RES - "+alu.getResult());
-                RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+                RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
                
                 this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -945,11 +945,11 @@ public class ControlUnit implements IClockCycle {
      */
     private void executeOpcodeJMP(){
         
-        this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+        this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
          System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("COMPLETED INSTRUCTION: JMP - IND="+this.instructionRegisterDecoded.get("index").getValue()+": " + this.nextProgramCounter);
+            System.out.println("COMPLETED INSTRUCTION: JMP - IND="+this.instructionRegisterDecoded.get("index").getUnsignedValue()+": " + this.nextProgramCounter);
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
      
     }
@@ -961,10 +961,10 @@ public class ControlUnit implements IClockCycle {
      * Test pased by Fan based on 001010  00  01  1  0  01111011(given by professor)
      */
     private void  executeOpcodeJZ(){        
-        int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-        if(this.getGeneralPurposeRegister(RFI).getValue()==0)
+        int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
+        if(this.getGeneralPurposeRegister(RFI).getUnsignedValue()==0)
         { // c(r)==0, jump
-         this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+         this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
          System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);              
          this.signalMicroStateExecutionComplete();
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -993,10 +993,10 @@ public class ControlUnit implements IClockCycle {
      * Test pased by Fan based on 001011 00 01 1 0 01111011(R(0)==0 AND R(0)=1)
      */
     private void executeOpcodeJNE(){
-            int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-        if(this.getGeneralPurposeRegister(RFI).getValue()!=0)
+            int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
+        if(this.getGeneralPurposeRegister(RFI).getUnsignedValue()!=0)
         { // c(r)!=0, jump
-         this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+         this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
          System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);              
          this.signalMicroStateExecutionComplete();
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -1025,17 +1025,17 @@ public class ControlUnit implements IClockCycle {
      * Test pased by Fan based on 010000 00 01 1 0 01111011 (R0=1 or r0=2)
      */
      private void executeOpcodeSOB(){        
-        int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+        int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
         
         switch(this.microState){
             case 0: // case 0, we decrement c(r)
                 System.out.println("Micro-6:RF("+RFI+")=c("+RFI+")-1");  
-                this.setGeneralPurposeRegister(RFI, new Word(this.getGeneralPurposeRegister(RFI).getValue()-1));
+                this.setGeneralPurposeRegister(RFI, new Word(this.getGeneralPurposeRegister(RFI).getUnsignedValue()-1));
                 break;
             default: // case >= 1
-                if(this.getGeneralPurposeRegister(RFI).getValue()>0)
+                if(this.getGeneralPurposeRegister(RFI).getUnsignedValue()>0)
                 { // c(r)>0, jump
-                    this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+                    this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
                     System.out.println("Micro-7: PC <- EA - "+this.nextProgramCounter);              
                     this.signalMicroStateExecutionComplete();
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -1065,10 +1065,10 @@ public class ControlUnit implements IClockCycle {
     */
    private void executeOpcodeJGE()
    {
-        int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
-        if(this.getGeneralPurposeRegister(RFI).getValue()>=0)
+        int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
+        if(this.getGeneralPurposeRegister(RFI).getUnsignedValue()>=0)
         { // c(r)>=0, jump
-         this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+         this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
          System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);              
          this.signalMicroStateExecutionComplete();
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -1095,9 +1095,9 @@ public class ControlUnit implements IClockCycle {
      * Else PC <- PC + 1
     */
   private void executeOpcodeJCC(){
-        int CC = this.instructionRegisterDecoded.get("rfi").getValue();         //CC replaces RFI for the JCC instruction.
+        int CC = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();         //CC replaces RFI for the JCC instruction.
         if(this.getConditionCode(CC)==1){
-            this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+            this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
             System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);              
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -1130,7 +1130,7 @@ public class ControlUnit implements IClockCycle {
                 
             case 1:
                 // PC <- c(R3)
-                this.nextProgramCounter = new Unit(13, this.getGeneralPurposeRegister(3).getValue());
+                this.nextProgramCounter = new Unit(13, this.getGeneralPurposeRegister(3).getUnsignedValue());
                 System.out.println("Micro-7: PC <- c(R3)");
             
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -1160,13 +1160,13 @@ public class ControlUnit implements IClockCycle {
             case 1:
                 //RF(RFI1) <- PC + 1
                 int RFI=3;
-                this.setGeneralPurposeRegister(RFI, new Word(this.getProgramCounter().getValue()+1));
+                this.setGeneralPurposeRegister(RFI, new Word(this.getProgramCounter().getUnsignedValue()+1));
                 System.out.println("Micro-7: RF(RFI1) <- PC + 1");
             break;
                 
             case 2:
                 //PC<-EA
-                 this.nextProgramCounter=new Unit(13,this.effectiveAddress.getValue());
+                 this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
                  System.out.println("Micro-8: PC <- EA - "+this.nextProgramCounter);
                  
                 break;
@@ -1187,11 +1187,11 @@ public class ControlUnit implements IClockCycle {
      * If Count = 0, no shift occurs
      */
     private void executeOpcodeSRC(){
-        int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+        int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
         
-        int algorithmicLogical = this.getIR().decomposeByIndex(10).getValue();
-        int leftRight = this.getIR().decomposeByIndex(11).getValue();
-        int count = this.getIR().decomposeByOffset(15, 19).getValue();
+        int algorithmicLogical = this.getIR().decomposeByIndex(10).getUnsignedValue();
+        int leftRight = this.getIR().decomposeByIndex(11).getUnsignedValue();
+        int count = this.getIR().decomposeByOffset(15, 19).getUnsignedValue();
         
         // Shift functionality is implemented in Unit
         this.getGeneralPurposeRegister(RFI).shiftByCount(leftRight, count, algorithmicLogical);
@@ -1210,10 +1210,10 @@ public class ControlUnit implements IClockCycle {
      * If Count = 0, no rotate occurs
      */
     private void executeOpcodeRRC(){
-        int RFI = this.instructionRegisterDecoded.get("rfi").getValue();
+        int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
         
-        int leftRight = this.getIR().decomposeByIndex(11).getValue();
-        int count = this.getIR().decomposeByOffset(15, 19).getValue();
+        int leftRight = this.getIR().decomposeByIndex(11).getUnsignedValue();
+        int count = this.getIR().decomposeByOffset(15, 19).getUnsignedValue();
         
         // Rotate functionality is implemented in Unit
         this.getGeneralPurposeRegister(RFI).rotateByCount(leftRight, count);

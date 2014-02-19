@@ -83,7 +83,9 @@ public class MemoryControlUnit implements IClockCycle {
      * @return TRUE/FALSE if successful
      */
     public boolean setMBR(Unit dataUnit){
-        return setMBR(new Word(dataUnit.getValue()));
+        Word res = new Word();
+        res.setValueBinary(dataUnit.getBinaryString());
+        return setMBR(res);
     }
     
     /**
@@ -168,7 +170,7 @@ public class MemoryControlUnit implements IClockCycle {
      */
     private int[] calculateActualMemoryLocation(Unit address) {
         // Load the addressRaw in MAR
-        int addressRaw = address.getValue();
+        int addressRaw = address.getUnsignedValue();
                 
         // Decode the Address in MAR      
         int bankIndex = (int)Math.floor((addressRaw / MemoryControlUnit.BANK_CELLS));
@@ -199,7 +201,7 @@ public class MemoryControlUnit implements IClockCycle {
         int cellIndex = addr[1]; 
         
         Word value = new Word(this.memory[bankIndex][cellIndex]);
-        System.out.println("ENGINEER: Fetch Addr: "+address.getValue()+"  ("+bankIndex+"/"+cellIndex+") ---  Value: "+value);
+        System.out.println("ENGINEER: Fetch Addr: "+address.getUnsignedValue()+"  ("+bankIndex+"/"+cellIndex+") ---  Value: "+value);
         
         return value;
     }
@@ -215,7 +217,7 @@ public class MemoryControlUnit implements IClockCycle {
         int bankIndex = addr[0]; 
         int cellIndex = addr[1];        
         
-        System.out.println("ENGINEER: Set Addr: "+address.getValue()+"  ("+bankIndex+"/"+cellIndex+") to  Value: "+value);
+        System.out.println("ENGINEER: Set Addr: "+address.getUnsignedValue()+"  ("+bankIndex+"/"+cellIndex+") to  Value: "+value);
         
         this.memory[bankIndex][cellIndex] = value;
     }
@@ -235,7 +237,7 @@ public class MemoryControlUnit implements IClockCycle {
         
             // Copy the contents of that memory location into the MBR            
             this.memoryBufferRegister = new Word(this.memory[bankIndex][cellIndex]);
-            System.out.println("-- Fetch MAR("+this.memoryAddressRegister.getValue()+"): "+this.memoryBufferRegister);
+            System.out.println("-- Fetch MAR("+this.memoryAddressRegister.getUnsignedValue()+"): "+this.memoryBufferRegister);
         } catch(Exception e){
             //@TODO: Handle bad addressRaw (virtual memory?)
             System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
@@ -258,7 +260,7 @@ public class MemoryControlUnit implements IClockCycle {
 
             //Copy the value from MDR to Memory                
             this.memory[bankIndex][cellIndex] = new Word(this.memoryBufferRegister);
-            System.out.println("-- Memory Set - MAR("+this.memoryAddressRegister.getValue()+") to "+this.memoryBufferRegister);
+            System.out.println("-- Memory Set - MAR("+this.memoryAddressRegister.getUnsignedValue()+") to "+this.memoryBufferRegister);
         } catch(Exception e){
             //@TODO: Handle bad addressRaw (virtual memory?)
             System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());

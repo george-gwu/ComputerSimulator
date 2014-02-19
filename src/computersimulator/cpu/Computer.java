@@ -112,28 +112,29 @@ public class Computer implements IClockCycle {
         
         switch(name){
             case "R0":
-                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[0].setValue(deposit.getValue());
+                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[0].setValueBinary(deposit.getBinaryString());
                 break;
             case "R1":
-                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[1].setValue(deposit.getValue());
+                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[1].setValueBinary(deposit.getBinaryString());
                 break;
             case "R2":
-                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[2].setValue(deposit.getValue());                
+                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[2].setValueBinary(deposit.getBinaryString());               
                 break;
             case "R3":
-                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[3].setValue(deposit.getValue());                
+                this.getCpu().getControlUnit().getGeneralPurposeRegisters()[3].setValueBinary(deposit.getBinaryString());                
                 break;
             case "X1":
-                this.getCpu().getControlUnit().getIndexRegisters()[0].setValue(deposit.getValue());
+                this.getCpu().getControlUnit().getIndexRegisters()[0].setValueBinary(deposit.getBinaryString());
                 break;
             case "X2":
-                this.getCpu().getControlUnit().getIndexRegisters()[1].setValue(deposit.getValue());
+                this.getCpu().getControlUnit().getIndexRegisters()[1].setValueBinary(deposit.getBinaryString());
                 break;
             case "X3":
-                this.getCpu().getControlUnit().getIndexRegisters()[2].setValue(deposit.getValue());
+                this.getCpu().getControlUnit().getIndexRegisters()[2].setValueBinary(deposit.getBinaryString());
                 break;
-            case "MAR":
-                Unit depositUnit = new Unit(13, deposit.getValue());
+            case "MAR":                
+                Unit depositUnit = new Unit(13);
+                depositUnit.setValueBinary(deposit.getBinaryString());
                 this.getMemory().setMAR(depositUnit);
                 break;
             case "MBR":
@@ -141,13 +142,13 @@ public class Computer implements IClockCycle {
                 this.getMemory().setMBR(depositWord);
                 break;
             case "PC":
-                this.getCpu().getControlUnit().getProgramCounter().setValue(deposit.getValue());
+                this.getCpu().getControlUnit().getProgramCounter().setValueBinary(deposit.getBinaryString());
                 break;
             case "CC":
                 // This doesn't accept deposits
                 break;
             case "IR":                
-                this.getCpu().getControlUnit().getInstructionRegister().setValue(deposit.getValue());
+                this.getCpu().getControlUnit().getInstructionRegister().setValueBinary(deposit.getBinaryString());
                 break;
         }                  
     }             

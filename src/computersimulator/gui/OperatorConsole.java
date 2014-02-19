@@ -186,7 +186,7 @@ public class OperatorConsole implements Runnable {
                     // If Widget is checked, it is receiving the deposit
                     if (widget.isChecked()) {
                         computer.setComponentValueByName(widget.getName(), unitToDeposit);
-                        System.out.println("Deposit " + unitToDeposit.getValue() + " to " + widget.getName());
+                        System.out.println("Deposit s" + unitToDeposit.getSignedValue() + "/u" + unitToDeposit.getUnsignedValue() + " to " + widget.getName());
                         widget.uncheck();
                         widget.updateDisplay();
                     }

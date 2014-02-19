@@ -31,7 +31,7 @@ public class Word extends Unit {
      */
     public Word(Unit c){
         super(WORD_SIZE);
-        this.setValue(c.getValue());
+        this.setValueBinary(c.getBinaryString());
     }
     
     

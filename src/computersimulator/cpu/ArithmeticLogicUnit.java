@@ -186,7 +186,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
         int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
         
         Unit resultTemporary = Unit.UnitFromBinaryString(finalResultStr);
-        Unit resultResized = new Unit(size, resultTemporary.getValue());        
+        Unit resultResized = new Unit(size);        
+        resultResized.setValueBinary(resultTemporary.getBinaryString());
         
         return resultResized;        
     }
@@ -207,7 +208,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
         int size = (operand1.getSize() > operand2.getSize() ? operand1.getSize() : operand2.getSize());
         
         Unit resultTemporary = Unit.UnitFromBinaryString(finalResultStr);
-        Unit resultResized = new Unit(size, resultTemporary.getValue());
+        Unit resultResized = new Unit(size);        
+        resultResized.setValueBinary(resultTemporary.getBinaryString());
           
         return resultResized;
     }      

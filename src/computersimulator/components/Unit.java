@@ -11,8 +11,13 @@ public class Unit {
     private final int size;
 
 
-    private final int MIN_VALUE;
-    private final int MAX_VALUE;
+    private final int MIN_SIGNED_VALUE;
+    private final int MIN_UNSIGNED_VALUE;
+    
+    
+    private final int MAX_SIGNED_VALUE;
+    private final int MAX_UNSIGNED_VALUE;
+    
     
     public Unit(int Size) {
         this(Size,0);
@@ -26,14 +31,14 @@ public class Unit {
         }
         this.size = Size;
         
-        //@TODO: This is a bug. This needs to account for unsigned and signed values. 
-        //@TODO: We need to calculate the max of both (s/u) and have an equivalent "Set" function for both
+        // MAX SIGNED VALUE = ((2xy(n-1))-1)      
+        this.MAX_SIGNED_VALUE = (int)(Math.pow(2, (this.size-1))-1);        
+        // MIN SIGNED VALUE = -((2xy(n-1))-1)
+        this.MIN_SIGNED_VALUE = -(this.MAX_SIGNED_VALUE);
         
-        // MAX VALUE = ((2xy(n-1))-1)      
-        this.MAX_VALUE = Math.max((int)(Math.pow(2, (this.size-1))-1),1);
-        // MIN VALUE = -((2xy(n-1))-1)
-        this.MIN_VALUE = Math.min(0, -(this.MAX_VALUE));
-      
+        // MAX UNSIGNED VALUE (2xyn)-1
+        this.MAX_UNSIGNED_VALUE = (int)(Math.pow(2, this.size))-1;
+        this.MIN_UNSIGNED_VALUE = 0;
         
         this.setValue(Value);
     }
@@ -46,8 +51,12 @@ public class Unit {
     public Unit(Unit c){
         this.data = c.data;
         this.size = c.size;
-        this.MIN_VALUE = c.MIN_VALUE;
-        this.MAX_VALUE = c.MAX_VALUE;
+        
+        this.MAX_SIGNED_VALUE = c.MAX_SIGNED_VALUE;
+        this.MAX_UNSIGNED_VALUE = c.MAX_UNSIGNED_VALUE;
+        
+        this.MIN_SIGNED_VALUE = c.MIN_SIGNED_VALUE;
+        this.MIN_UNSIGNED_VALUE = c.MIN_UNSIGNED_VALUE;        
     }    
 
     /** 
@@ -60,16 +69,11 @@ public class Unit {
         
         // original size
         int size = binary.length();
+               
+        Unit ret = new Unit(size);
+        ret.setValueBinary(binary);
         
-        // sign extend to use Long class for conversion to signed int (Java Integer class is unsigned)
-        while(binary.length() < 32){
-            binary = binary.substring(0,1) + binary;
-        }        
-        
-        Long longValue = Long.parseLong(binary,2);        
-        int intValue = longValue.intValue();
-        
-        return new Unit(size, intValue);       
+        return ret;
     }
     
     /**
@@ -82,28 +86,53 @@ public class Unit {
 
     /**
      *
-     * @param value
+     * @param value Integer
      * @throws ArithmeticException
      */
     public final void setValue(int value) throws java.lang.ArithmeticException {        
-        if(value <= this.MAX_VALUE && value >= this.MIN_VALUE){           
-            this.data = Integer.toBinaryString(value);
+        if(value <= this.MAX_UNSIGNED_VALUE && value >= this.MIN_SIGNED_VALUE){           
+            String raw = Integer.toBinaryString(value);            
+            
+            char signExtend = (value < 0) ? raw.charAt(0) : '0';
+            
+            while(raw.length() < this.size){
+                raw = signExtend + raw;
+            }
+            
+            this.data=raw;
+            
         } else {
-            throw new java.lang.ArithmeticException("{"+value+"} Out Of Range: ["+this.MIN_VALUE+" through "+this.MAX_VALUE+"]"); 
+            throw new java.lang.ArithmeticException("{"+value+"} Out Of Range: ["+this.MIN_UNSIGNED_VALUE+" through "+this.MAX_SIGNED_VALUE+"]"); 
             //@TODO: this is a great location to throw a special overflow exception which can be caught later
         }
     }        
-
+    
+    
     /**
-     * This method is probably unused outside this class due to the Integer storage type (why it is private).
-     * @return raw value as Integer
+     *
+     * @return Value as Signed Integer
      */
-    public Integer getValue() {        
+    public Integer getSignedValue(){
+        return Integer.parseInt(this.data, 2);
+    }
+    
+    /**
+     * @return Value as Unsigned Integer
+     */
+    public Integer getUnsignedValue(){
         return this.getLongValue().intValue();
     }
     
+    
+    /**
+     * @return Value as Unsigned Long
+     */
     public Long getLongValue(){
-        return Long.parseLong(this.data, 2);
+        String res = this.data;
+        while(res.length() < 32){ // sign extend
+            res = res.charAt(0) + res;
+        }
+        return Long.parseLong(res, 2);
     }
     
     /**
@@ -155,11 +184,11 @@ public class Unit {
      * @return Array of Bits (Only possible values are 1/0 despite integer storage)
      */
     public Integer[] getBinaryArray(){
-        Integer[] digits = new Integer[this.size];
-        int x = this.getValue();
-        for (int i = 0; i < this.size; ++i) {
-            digits[this.size-i-1] = x & 0x1;  // mask of the lowest bit and assign it to the next-to-last
-            x >>= 1; // Shift off that bit moving the next bit into place
+        char[] temp=this.data.toCharArray();
+        
+        Integer[] digits = new Integer[temp.length];
+        for (int i = 0; i < temp.length; ++i) {
+            digits[i]= Character.digit(temp[i],10);
         }
 
         return digits;  
@@ -276,7 +305,7 @@ public class Unit {
     
     @Override
     public String toString() {
-        return "Unit("+this.size+"){" + "b10=" + this.getValue() +" (v:["+this.MIN_VALUE+"to"+this.MAX_VALUE+"]), b2=" + this.getBinaryString() + '}';
+        return "Unit("+this.size+"){" + "b10S=" + this.getSignedValue() +",b10U="+this.getUnsignedValue()+" v:["+this.MIN_UNSIGNED_VALUE+"to"+this.MAX_SIGNED_VALUE+"]), b2=" + this.getBinaryString() + '}';
     }
     
 }
