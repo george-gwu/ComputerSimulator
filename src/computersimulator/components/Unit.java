@@ -26,6 +26,9 @@ public class Unit {
         }
         this.size = Size;
         
+        //@TODO: This is a bug. This needs to account for unsigned and signed values. 
+        //@TODO: We need to calculate the max of both (s/u) and have an equivalent "Set" function for both
+        
         // MAX VALUE = ((2xy(n-1))-1)      
         this.MAX_VALUE = Math.max((int)(Math.pow(2, (this.size-1))-1),1);
         // MIN VALUE = -((2xy(n-1))-1)
