@@ -1187,7 +1187,7 @@ public class ControlUnit implements IClockCycle {
      * If Count = 0, no shift occurs
      */
     private void executeOpcodeSRC(){
-        int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
+        int RFI = this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
         
         int algorithmicLogical = this.getIR().decomposeByIndex(10).getUnsignedValue();
         int leftRight = this.getIR().decomposeByIndex(11).getUnsignedValue();
@@ -1210,7 +1210,7 @@ public class ControlUnit implements IClockCycle {
      * If Count = 0, no rotate occurs
      */
     private void executeOpcodeRRC(){
-        int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
+        int RFI = this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
         
         int leftRight = this.getIR().decomposeByIndex(11).getUnsignedValue();
         int count = this.getIR().decomposeByOffset(15, 19).getUnsignedValue();
