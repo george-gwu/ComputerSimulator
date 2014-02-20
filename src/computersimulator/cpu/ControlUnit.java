@@ -1254,8 +1254,8 @@ public class ControlUnit implements IClockCycle {
         int register = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();   //Get the register number as an integer.
         RFI = uRef.negate(RFI);                                                         //Perform Logical NOT.
         String res = uRef.IntArrayToBinaryString(RFI);                                  //Obtain negated value as a string.
-        Word result = res;                                                              //Conver the string to word.
-        this.setGeneralPurposeRegister(register, new Word(alu.getResult()));
+        Unit result = uRef.UnitFromBinaryString(res);                                   //Conver the string to unit.
+        this.setGeneralPurposeRegister(register, new Word(result));
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         System.out.println("COMPLETED INSTRUCTION: NOT rx");
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
