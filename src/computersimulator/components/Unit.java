@@ -112,15 +112,15 @@ public class Unit {
      *
      * @return Value as Signed Integer
      */
-    public Integer getSignedValue(){
-        return Integer.parseInt(this.data, 2);
+    public Integer getSignedValue(){        
+        return this.getLongValue().intValue();
     }
     
     /**
      * @return Value as Unsigned Integer
      */
     public Integer getUnsignedValue(){
-        return this.getLongValue().intValue();
+        return Integer.parseInt(this.data, 2);
     }
     
     
