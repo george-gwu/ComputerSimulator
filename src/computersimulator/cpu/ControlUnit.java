@@ -536,9 +536,9 @@ public class ControlUnit implements IClockCycle {
                     this.executeOpcodeRRC();
                     break;
                 case ControlUnit.OPCODE_ORR:
-                    this.executeOpcodeRRC();
+                    this.executeOpcodeORR();
                     break;
-                case ControlUnit.OPCODE_NOT:    //Partially implemented
+                case ControlUnit.OPCODE_NOT:
                     this.executeOpcodeNOT();
                     break;  
                 default: // Unhandle opcode. Crash!
@@ -1238,7 +1238,15 @@ public class ControlUnit implements IClockCycle {
      * c(rx) <- c(rx) OR c(ry)
      */
     private void executeOpcodeORR(){
+        Integer[] RFI1 = this.getIR().decomposeByOffset(6, 7).getBinaryArray();         //Get the contents of RFI as an integer array.
+        Integer[] RFI2 = this.getIR().decomposeByOffset(8, 9).getBinaryArray();         //Get the contents of RFI as an integer array. (XFI bits act as RFI)
+        int register = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();   //Get the register number as an integer.
         
+        Integer[] RFI = uRef.logicalOR(RFI1, RFI2);                                     //Perform logical OR.
+        String res = uRef.IntArrayToBinaryString(RFI);                                  //Obtain Logical OR value as a string.
+        Unit result = uRef.UnitFromBinaryString(res);                                   //Conver the string to unit.
+        
+        this.setGeneralPurposeRegister(register, new Word(result));
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         System.out.println("COMPLETED INSTRUCTION: ORR rx, ry");
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
@@ -1250,11 +1258,13 @@ public class ControlUnit implements IClockCycle {
      * C(rx) <- NOT c(rx)
      */
     private void executeOpcodeNOT(){
-        Integer[] RFI = this.getIR().decomposeByOffset(8, 9).getBinaryArray();          //Get the contents of RFI as an integer array.
+        Integer[] RFI = this.getIR().decomposeByOffset(6, 7).getBinaryArray();          //Get the contents of RFI as an integer array.
         int register = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();   //Get the register number as an integer.
+        
         RFI = uRef.negate(RFI);                                                         //Perform Logical NOT.
         String res = uRef.IntArrayToBinaryString(RFI);                                  //Obtain negated value as a string.
         Unit result = uRef.UnitFromBinaryString(res);                                   //Conver the string to unit.
+        
         this.setGeneralPurposeRegister(register, new Word(result));
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         System.out.println("COMPLETED INSTRUCTION: NOT rx");

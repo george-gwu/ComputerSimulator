@@ -314,6 +314,26 @@ public class Unit {
         return array;
     }
     
+    /**
+     *  Accepts two arrays and performs logical OR on the bits
+     */
+    public Integer[] logicalOR(Integer[] array1, Integer[] array2)
+    {
+        Integer[] ORarray = null;
+        for (int i = 0; i < array1.length; i++)
+        {
+            if (array1[i] == array2[i])
+            {
+                ORarray[i] = 0;
+            }
+            else
+            {
+                ORarray[i] = 1;
+            }
+        }
+        return ORarray;
+    }
+    
     @Override
     public String toString() {
         return "Unit("+this.size+"){" + "b10S=" + this.getSignedValue() +",b10U="+this.getUnsignedValue()+" v:["+this.MIN_UNSIGNED_VALUE+"to"+this.MAX_SIGNED_VALUE+"]), b2=" + this.getBinaryString() + '}';
