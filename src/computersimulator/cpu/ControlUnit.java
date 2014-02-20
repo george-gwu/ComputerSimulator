@@ -91,7 +91,8 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_JSR=14;
     private static final int OPCODE_SRC=31;
     private static final int OPCODE_RRC=32;
-    
+    private static final int OPCODE_ORR=24;
+    private static final int OPCODE_NOT=25;
     
     // Engineer: used to control micro step, defined per state
     private Integer microState = null;
@@ -101,6 +102,9 @@ public class ControlUnit implements IClockCycle {
     
     // ALU Reference
     private ArithmeticLogicUnit alu;
+    
+    // Unit reference
+    private Unit uRef;
     
     // nextPC	13 bits	Next Program Counter: Interal Register Used to signal program counter was adjusted by instruction
     private Unit nextProgramCounter;
@@ -530,7 +534,13 @@ public class ControlUnit implements IClockCycle {
                     break;
                 case ControlUnit.OPCODE_RRC:
                     this.executeOpcodeRRC();
-                    break;                    
+                    break;
+                case ControlUnit.OPCODE_ORR:
+                    this.executeOpcodeRRC();
+                    break;
+                case ControlUnit.OPCODE_NOT:    //Partially implemented
+                    this.executeOpcodeNOT();
+                    break;  
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
@@ -1223,6 +1233,35 @@ public class ControlUnit implements IClockCycle {
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");            
     }
     
+    /**
+     * Logical OR of Register and Register
+     * c(rx) <- c(rx) OR c(ry)
+     */
+    private void executeOpcodeORR(){
+        
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: ORR rx, ry");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+        this.signalMicroStateExecutionComplete();
+    }
+    
+    /**
+     * Logical Not of Register To Register
+     * C(rx) <- NOT c(rx)
+     */
+    private void executeOpcodeNOT(){
+        Integer[] RFI = this.getIR().decomposeByOffset(8, 9).getBinaryArray();          //Get the contents of RFI as an integer array.
+        int register = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();   //Get the register number as an integer.
+        RFI = uRef.negate(RFI);                                                         //Perform Logical NOT.
+        String res = uRef.IntArrayToBinaryString(RFI);                                  //Obtain negated value as a string.
+        Word result = res;                                                              //Conver the string to word.
+        this.setGeneralPurposeRegister(register, new Word(alu.getResult()));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: NOT rx");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+        this.signalMicroStateExecutionComplete();
+        
+    }
     /**
      * Stop the machine
      */

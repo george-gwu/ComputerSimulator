@@ -302,6 +302,17 @@ public class Unit {
         }
             
     }
+    /**
+     *  Accepts an array and performs logical NOT on the bits
+     */
+    public Integer[] negate(Integer[] array)
+    {
+        for (int i = 0; i < array.length; i++)
+        {
+            array[i] = 1 - array[i];
+        }
+        return array;
+    }
     
     @Override
     public String toString() {
