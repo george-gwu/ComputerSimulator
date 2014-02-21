@@ -1269,6 +1269,9 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         {
             this.unsetCondition(3);
         }
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION:TRR RF("+RFI1+")and RF("+RFI2+")is "+((this.getConditionCode(3)==1)?"equal":"unequal")+"  CC is"+this.getConditionCode(3));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");      
     }
     /*
     Logical And of Register and Register
@@ -1288,6 +1291,9 @@ c(rx) <- c(rx) AND c(ry)
         alu.setControl(ArithmeticLogicUnit.CONTROL_AND);
         alu.signalReadyToStartComputation();
         this.setGeneralPurposeRegister(RFI1, new Word(alu.getResult()));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION:AND RF("+RFI1+"), RF("+RFI2+")is "+this.getGeneralPurposeRegister(RFI1).getBinaryString());
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");      
  
     }
     

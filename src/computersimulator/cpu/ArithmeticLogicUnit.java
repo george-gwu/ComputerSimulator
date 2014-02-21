@@ -288,7 +288,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
         {
             res[iter]=operand1Array[iter]&operand2Array[iter];
         }
-      //  Unit returnValue=new Unit(13,res);
+        operand1.setValueBinaryArray(res);
         return operand1;
     }
     
