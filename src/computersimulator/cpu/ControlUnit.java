@@ -92,12 +92,16 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_SRC=31;
     private static final int OPCODE_RRC=32;
 
+
     private static final int OPCODE_TRR=22;
     private static final int OPCODE_AND=23;
 
+ 
+
+
+
     private static final int OPCODE_ORR=24;
     private static final int OPCODE_NOT=25;
-
 
     
     // Engineer: used to control micro step, defined per state
@@ -542,20 +546,19 @@ public class ControlUnit implements IClockCycle {
                     this.executeOpcodeRRC();
 
                     break;     
-                case ControlUnit.OPCODE_TRR:
-                    this.executeOpcodeTRR();
-                    break;
-                case ControlUnit.OPCODE_AND:
-                    this.executeOpcodeAND();
-                    break; 
 
                 case ControlUnit.OPCODE_ORR:
                     this.executeOpcodeORR();
                     break;
                 case ControlUnit.OPCODE_NOT:
                     this.executeOpcodeNOT();
-                    break;  
 
+                 case ControlUnit.OPCODE_TRR:
+                    this.executeOpcodeTRR();
+                    break;
+                case ControlUnit.OPCODE_AND:
+                    this.executeOpcodeAND();
+                    break; 
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
@@ -1309,6 +1312,7 @@ c(rx) <- c(rx) AND c(ry)
     }
     
     /**
+
      * Logical Not of Register To Register
      * C(rx) <- NOT c(rx)
      */
