@@ -23,6 +23,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
     public final static int CONTROL_NONE=0;
     public final static int CONTROL_ADD=1;
     public final static int CONTROL_SUBTRACT=2;
+    public final static int CONTROL_AND=3;
+    
     
     // RES - Unit - Up to 20 Bits
     private Unit result;
@@ -84,6 +86,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
             case ArithmeticLogicUnit.CONTROL_SUBTRACT:
                 this.setResult(this.subtract(operand1, operand2));                 
                 break;
+            case ArithmeticLogicUnit.CONTROL_AND:
+                this.setResult(this.and(operand1, operand2));
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
                 //@TODO Handle error.
@@ -275,5 +279,18 @@ public class ArithmeticLogicUnit implements IClockCycle {
         }
         return res;
     }
+    private Unit and(Unit operand1, Unit operand2)
+    {
+        Integer[] operand1Array=this.getOperand1().getBinaryArray();
+        Integer[] operand2Array=this.getOperand2().getBinaryArray();
+        Integer[] res=new Integer[operand1Array.length];
+        for(int iter=0;operand1Array.length>=iter;++iter)
+        {
+            res[iter]=operand1Array[iter]&operand2Array[iter];
+        }
+      //  Unit returnValue=new Unit(13,res);
+        return operand1;
+    }
+    
 
 }

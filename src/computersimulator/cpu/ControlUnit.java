@@ -91,7 +91,14 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_JSR=14;
     private static final int OPCODE_SRC=31;
     private static final int OPCODE_RRC=32;
-    
+
+    private static final int OPCODE_TRR=22;
+    private static final int OPCODE_AND=23;
+
+    private static final int OPCODE_ORR=24;
+    private static final int OPCODE_NOT=25;
+
+
     
     // Engineer: used to control micro step, defined per state
     private Integer microState = null;
@@ -101,6 +108,9 @@ public class ControlUnit implements IClockCycle {
     
     // ALU Reference
     private ArithmeticLogicUnit alu;
+    
+    // Unit reference
+    private Unit uRef;
     
     // nextPC	13 bits	Next Program Counter: Interal Register Used to signal program counter was adjusted by instruction
     private Unit nextProgramCounter;
@@ -530,7 +540,22 @@ public class ControlUnit implements IClockCycle {
                     break;
                 case ControlUnit.OPCODE_RRC:
                     this.executeOpcodeRRC();
-                    break;                    
+
+                    break;     
+                case ControlUnit.OPCODE_TRR:
+                    this.executeOpcodeTRR();
+                    break;
+                case ControlUnit.OPCODE_AND:
+                    this.executeOpcodeAND();
+                    break; 
+
+                case ControlUnit.OPCODE_ORR:
+                    this.executeOpcodeORR();
+                    break;
+                case ControlUnit.OPCODE_NOT:
+                    this.executeOpcodeNOT();
+                    break;  
+
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
@@ -1222,7 +1247,86 @@ public class ControlUnit implements IClockCycle {
         System.out.println("COMPLETED INSTRUCTION: RRC - Rotate Register "+RFI+" "+((leftRight==1) ? "Left" : "Right") +" by "+count+": "+this.getGeneralPurposeRegister(RFI));
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");            
     }
+    /*
+    Test the Equality of Register and Register
+
+If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
+
+
+    */
+    private void executeOpcodeTRR()
+    {
+        int RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+        int RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+        if(this.getGeneralPurposeRegister(RFI1).getUnsignedValue()==this.getGeneralPurposeRegister(RFI2).getUnsignedValue())
+        {
+            this.setCondition(3);
+        }
+        else
+        {
+            this.unsetCondition(3);
+        }
+    }
+    /*
+    Logical And of Register and Register
+
+c(rx) <- c(rx) AND c(ry)
+
+
+    */
+    private void executeOpcodeAND()
+    {
+        int RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+        int RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+        Unit ContentOfRFI1=new Unit(13,this.getGeneralPurposeRegister(RFI1).getUnsignedValue());
+        Unit ContentOfRFI2=new Unit(13,this.getGeneralPurposeRegister(RFI2).getUnsignedValue());
+        alu.setOperand1(ContentOfRFI1);
+        alu.setOperand2(ContentOfRFI2);
+        alu.setControl(ArithmeticLogicUnit.CONTROL_AND);
+        alu.signalReadyToStartComputation();
+        this.setGeneralPurposeRegister(RFI1, new Word(alu.getResult()));
+ 
+    }
     
+    /**
+     * Logical OR of Register and Register
+     * c(rx) <- c(rx) OR c(ry)
+     */
+    private void executeOpcodeORR(){
+        Integer[] RFI1 = this.getIR().decomposeByOffset(6, 7).getBinaryArray();         //Get the contents of RFI as an integer array.
+        Integer[] RFI2 = this.getIR().decomposeByOffset(8, 9).getBinaryArray();         //Get the contents of RFI as an integer array. (XFI bits act as RFI)
+        int register = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();   //Get the register number as an integer.
+        
+        Integer[] RFI = uRef.logicalOR(RFI1, RFI2);                                     //Perform logical OR.
+        String res = uRef.IntArrayToBinaryString(RFI);                                  //Obtain Logical OR value as a string.
+        Unit result = uRef.UnitFromBinaryString(res);                                   //Conver the string to unit.
+        
+        this.setGeneralPurposeRegister(register, new Word(result));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: ORR rx, ry");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+        this.signalMicroStateExecutionComplete();
+    }
+    
+    /**
+     * Logical Not of Register To Register
+     * C(rx) <- NOT c(rx)
+     */
+    private void executeOpcodeNOT(){
+        Integer[] RFI = this.getIR().decomposeByOffset(6, 7).getBinaryArray();          //Get the contents of RFI as an integer array.
+        int register = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();   //Get the register number as an integer.
+        
+        RFI = uRef.negate(RFI);                                                         //Perform Logical NOT.
+        String res = uRef.IntArrayToBinaryString(RFI);                                  //Obtain negated value as a string.
+        Unit result = uRef.UnitFromBinaryString(res);                                   //Conver the string to unit.
+        
+        this.setGeneralPurposeRegister(register, new Word(result));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: NOT rx");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+        this.signalMicroStateExecutionComplete();
+        
+    }
     /**
      * Stop the machine
      */

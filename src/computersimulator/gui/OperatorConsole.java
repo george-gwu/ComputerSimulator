@@ -13,6 +13,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  * OperatorConsole should include:
@@ -82,7 +84,7 @@ public class OperatorConsole implements Runnable {
         // Create grid layout for main window - main layout will include 2 columns: 
         // left column will hold components and right column will hold the numeric pad
         //GridLayout layout = new GridLayout(15, 1, 15, 5);
-        GridLayout layout = new GridLayout(1, 2);
+        GridLayout layout = new GridLayout(1, 2, 10, 5);
         //layout.setVgap(1);
         mainWindow.setLayout(layout);
 
@@ -91,7 +93,7 @@ public class OperatorConsole implements Runnable {
         leftPanel.setLayout(leftLayout);
 
         // create grid layout - it will hold the numberic pad
-        GridLayout rightLayout = new GridLayout(2, 1);
+        GridLayout rightLayout = new GridLayout(4, 1);
         rightPanel.setLayout(rightLayout);
 
         // Create simulator components and initialize the initial state         
@@ -149,13 +151,21 @@ public class OperatorConsole implements Runnable {
         rightTitle.setFont(new Font("Verdana", Font.BOLD, 14));
         rightTitle.setForeground(Color.BLACK);
         rightLabelHolder.add(rightTitle);
-
         rightPanel.add(rightLabelHolder);
+        
+        // add text area
+        JTextArea textArea = new JTextArea(5, 20);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        rightPanel.add(scrollPane);
 
         // add numeric pad component to right pane
         PadComposite pad = new PadComposite();
         pad.createComposite();
         rightPanel.add(pad.getGUI());
+        
+        // add empty area
+        JLabel rightEmpty = new JLabel("");
+        rightPanel.add(rightEmpty);
 
         //mainWindow.add(pad.getGUI());
         mainWindow.add(rightPanel);

@@ -29,8 +29,10 @@ public class PadComposite {
         // add 10 buttons
         for (int i = 0; i < buttons.length; i++) {
              buttons[i] = new JButton(""+i+"");
-             buttonPanel.add(buttons[i]);
+             if(i>0)buttonPanel.add(buttons[i]);
         }
+        
+        buttonPanel.add(buttons[0]); // add 0 on the bottom row
         
         // add Enter/Clear buttons
         buttonPanel.add(new JButton("Enter"));

@@ -112,15 +112,15 @@ public class Unit {
      *
      * @return Value as Signed Integer
      */
-    public Integer getSignedValue(){
-        return Integer.parseInt(this.data, 2);
+    public Integer getSignedValue(){        
+        return this.getLongValue().intValue();
     }
     
     /**
      * @return Value as Unsigned Integer
      */
     public Integer getUnsignedValue(){
-        return this.getLongValue().intValue();
+        return Integer.parseInt(this.data, 2);
     }
     
     
@@ -301,6 +301,37 @@ public class Unit {
             System.out.println("!!!!!overflow in set value -- this should never happen!!!!!");
         }
             
+    }
+    /**
+     *  Accepts an array and performs logical NOT on the bits
+     */
+    public Integer[] negate(Integer[] array)
+    {
+        for (int i = 0; i < array.length; i++)
+        {
+            array[i] = 1 - array[i];
+        }
+        return array;
+    }
+    
+    /**
+     *  Accepts two arrays and performs logical OR on the bits
+     */
+    public Integer[] logicalOR(Integer[] array1, Integer[] array2)
+    {
+        Integer[] ORarray = null;
+        for (int i = 0; i < array1.length; i++)
+        {
+            if (array1[i] == array2[i])
+            {
+                ORarray[i] = 0;
+            }
+            else
+            {
+                ORarray[i] = 1;
+            }
+        }
+        return ORarray;
     }
     
     @Override
