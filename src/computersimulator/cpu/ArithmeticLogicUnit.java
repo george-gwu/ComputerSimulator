@@ -217,7 +217,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
           
         return resultResized;
     }      
-
+    
     /**
      * Create 1 bit
      *
@@ -291,6 +291,31 @@ public class ArithmeticLogicUnit implements IClockCycle {
         operand1.setValueBinaryArray(res);
         return operand1;
     }
+    
+     /**
+     * Perform multiply operation
+     * @param operand1
+     * @param operand2
+     * @return result of multiplication
+     */
+    private Unit multiply(Unit operand1, Unit operand2){
+        Integer res = operand1.getSignedValue() * operand2.getSignedValue();
+        
+        return new Unit(operand1.getSize(), res);
+    }
+    
+    /**
+     * Perform divide operation
+     * @param operand1
+     * @param operand2
+     * @return result of division
+     */
+    private Unit divide(Unit operand1, Unit operand2){
+        Integer res = operand1.getSignedValue() / operand2.getSignedValue();
+        
+        return new Unit(operand1.getSize(), res);
+    }
+
     
 
 }
