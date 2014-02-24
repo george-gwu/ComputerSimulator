@@ -24,6 +24,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
     public final static int CONTROL_ADD=1;
     public final static int CONTROL_SUBTRACT=2;
     public final static int CONTROL_AND=3;
+    public final static int CONTROL_MULTIPLY=4;
+    public final static int CONTROL_DIVIDE=5;
     
     
     // RES - Unit - Up to 20 Bits
@@ -88,6 +90,13 @@ public class ArithmeticLogicUnit implements IClockCycle {
                 break;
             case ArithmeticLogicUnit.CONTROL_AND:
                 this.setResult(this.and(operand1, operand2));
+                break;
+            case ArithmeticLogicUnit.CONTROL_MULTIPLY:
+                this.setResult(this.multiply(operand1, operand2));                 
+                break;
+            case ArithmeticLogicUnit.CONTROL_DIVIDE:
+                this.setResult(this.divide(operand1, operand2));                 
+                break;
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
                 //@TODO Handle error.
@@ -293,26 +302,24 @@ public class ArithmeticLogicUnit implements IClockCycle {
     }
     
      /**
-     * Perform multiply operation
+     * Multiply operation
      * @param operand1
      * @param operand2
      * @return result of multiplication
      */
     private Unit multiply(Unit operand1, Unit operand2){
         Integer res = operand1.getSignedValue() * operand2.getSignedValue();
-        
         return new Unit(operand1.getSize(), res);
     }
     
     /**
-     * Perform divide operation
+     * Divide operation
      * @param operand1
      * @param operand2
      * @return result of division
      */
     private Unit divide(Unit operand1, Unit operand2){
         Integer res = operand1.getSignedValue() / operand2.getSignedValue();
-        
         return new Unit(operand1.getSize(), res);
     }
 

@@ -1337,11 +1337,51 @@ c(rx) <- c(rx) AND c(ry)
         this.signalMicroStateExecutionComplete();
         
     }
+    
+    /**
+     * Multiply Register by Register
+     * rx, rx+1 <- c(rx) * c(ry)
+     */
+    private void executeOpcodeMLT() {
+        Integer RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+        Integer RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+        Unit contentOfRFI1=new Unit(13,this.getGeneralPurposeRegister(RFI1).getUnsignedValue());
+        Unit contentOfRFI2=new Unit(13,this.getGeneralPurposeRegister(RFI2).getUnsignedValue());
+        alu.setOperand1(contentOfRFI1);
+        alu.setOperand2(contentOfRFI2);
+        alu.setControl(ArithmeticLogicUnit.CONTROL_MULTIPLY);
+        alu.signalReadyToStartComputation();
+        this.setGeneralPurposeRegister(RFI1, new Word(alu.getResult()));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION:MLT RF("+RFI1+"), RF("+RFI2+")is "+this.getGeneralPurposeRegister(RFI1).getBinaryString());
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
+    }
+    
+    /**
+     * Divide Register by Register
+     * rx, rx+1 <- c(rx) / c(ry)
+     */
+    private void executeOpcodeDVD() {
+        Integer RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+        Integer RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+        Unit contentOfRFI1=new Unit(13,this.getGeneralPurposeRegister(RFI1).getUnsignedValue());
+        Unit contentOfRFI2=new Unit(13,this.getGeneralPurposeRegister(RFI2).getUnsignedValue());
+        alu.setOperand1(contentOfRFI1);
+        alu.setOperand2(contentOfRFI2);
+        alu.setControl(ArithmeticLogicUnit.CONTROL_DIVIDE);
+        alu.signalReadyToStartComputation();
+        this.setGeneralPurposeRegister(RFI1, new Word(alu.getResult()));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION:DVD RF("+RFI1+"), RF("+RFI2+")is "+this.getGeneralPurposeRegister(RFI1).getBinaryString());
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+        
     /**
      * Stop the machine
      */
     private void executeOpcodeHLT() throws HaltSystemException {
         throw new HaltSystemException();
-    }    
+    }   
     
+  
 }
