@@ -1326,7 +1326,7 @@ c(rx) <- c(rx) AND c(ry)
         Integer[] RFI = this.getIR().decomposeByOffset(6, 7).getBinaryArray();          //Get the contents of RFI as an integer array.
         int register = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();   //Get the register number as an integer.
         
-        RFI = uRef.negate(RFI);                                                         //Perform Logical NOT.
+        RFI = uRef.logicalNOT(RFI);                                                         //Perform Logical NOT.
         String res = uRef.IntArrayToBinaryString(RFI);                                  //Obtain negated value as a string.
         Unit result = uRef.UnitFromBinaryString(res);                                   //Conver the string to unit.
         

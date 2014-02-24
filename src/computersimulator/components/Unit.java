@@ -305,7 +305,7 @@ public class Unit {
     /**
      *  Accepts an array and performs logical NOT on the bits
      */
-    public Integer[] negate(Integer[] array)
+    public Integer[] logicalNOT(Integer[] array)
     {
         for (int i = 0; i < array.length; i++)
         {
