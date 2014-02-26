@@ -1407,6 +1407,7 @@ c(rx) <- c(rx) AND c(ry)
      * rx, rx+1 <- c(rx) / c(ry)
      */
     private void executeOpcodeDVD() {
+        /*
         Integer RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
         Integer RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
         Unit contentOfRFI1=new Unit(13,this.getGeneralPurposeRegister(RFI1).getUnsignedValue());
@@ -1419,6 +1420,51 @@ c(rx) <- c(rx) AND c(ry)
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         System.out.println("COMPLETED INSTRUCTION:DVD RF("+RFI1+"), RF("+RFI2+")is "+this.getGeneralPurposeRegister(RFI1).getBinaryString());
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        */
+        switch(this.microState){
+            case 0:
+                // Micro-6: OP1 <- RF(RFI1)                
+                Integer RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+                Unit contentOfRFI1=new Unit(13,this.getGeneralPurposeRegister(RFI1).getUnsignedValue());
+                alu.setOperand1(contentOfRFI1);
+                System.out.println("Micro-6: OP1 <- RF(RFI1) - "+alu.getOperand1());
+            break;
+                        
+            case 1:
+                // Micro-7: OP2 <- RF(RFI2)   
+                Integer RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+                Unit contentOfRFI2=new Unit(13,this.getGeneralPurposeRegister(RFI2).getUnsignedValue());
+                alu.setOperand2(contentOfRFI2);
+            break;
+                
+            case 2:
+                // Micro-8: CTRL <- OPCODE
+                System.out.println("Micro-8: CTRL <- OPCODE");
+                alu.setControl(ArithmeticLogicUnit.CONTROL_DIVIDE);
+                alu.signalReadyToStartComputation();
+            break;
+                
+            case 3:
+                // Micro-9: RES <- c(OP1) * c(OP2)      
+                System.out.println("Micro-9: RES <- c(OP1) / c(OP2)");
+                // Do nothing. (occurs automatically one clock cycle after signaled ready to compute)
+            break;
+                
+            case 4:
+                // Micro-10: RF(RFI1) <- RES
+                //           RF(RFI2) <- RES
+                System.out.println("Micro-10: RF(RFI1) <- RES - "+alu.getResult());
+                System.out.println("        : RF(RFI2) <- RES - "+alu.getResult());
+                RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+                RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+                this.setGeneralPurposeRegister(RFI1, new Word(alu.getResult()));
+                this.setGeneralPurposeRegister(RFI2, new Word(alu.getResult()));
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION:DVD RF("+RFI1+"), RF("+RFI2+")is "+this.getGeneralPurposeRegister(RFI1).getBinaryString());
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
+                this.signalMicroStateExecutionComplete();
+            break;          
+        }  
     }
         
     /**
