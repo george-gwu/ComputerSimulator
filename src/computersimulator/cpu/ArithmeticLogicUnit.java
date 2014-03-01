@@ -338,30 +338,18 @@ public class ArithmeticLogicUnit implements IClockCycle {
     }
     
     /**
-     * Get low and high order bits
-     * @param index 
-     */
-    public void getLowHighOrderBits(Integer index) {
-        Integer low = index & 0xffff; 			// extract low 20 bits
-        Integer hi = (index >> 19) & 0xffff; 		// extract high 20 bits.
-
-        System.out.println("low bits: " + Integer.toBinaryString(low)
-                + ", high bits: " + Integer.toBinaryString(hi));
-    }
-    
-    /**
-     * Get low order bits
+     * Get low order 20 bits
      * @param index 
      */
     public Integer getLowOrderBits(Integer index) {
-        return index & 0xffff; 			// extract low 20 bits
+        return index & 0xfffff;                     
     }
     
     /**
-     * Get high order bits
+     * Get high order 20 bits
      * @param index 
      */
     public Integer getHighOrderBits(Integer index) {
-        return (index >> 19) & 0xffff;      // extract high 20 bits.
+        return (index >> 12) & 0xfffff;             
     }
 }

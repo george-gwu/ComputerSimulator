@@ -57,12 +57,20 @@ public class ArchitectureProg {
 
     }
 
-    public void retrieveLowHighOrderBits(Integer index) {
+    public void retrieve16LowHighOrderBits(Integer index) {
         Integer low = index & 0xffff; 				// extract low 16 bits
         Integer hi = (index >> 15) & 0xffff; 		// extract high 16 bits.
 
-        System.out.println("low bits: " + Integer.toBinaryString(low)
-                + ", high bits: " + Integer.toBinaryString(hi));
+        System.out.println("16 low bits: " + Integer.toBinaryString(low)
+                + ", 16 high bits: " + Integer.toBinaryString(hi));
+    }
+    
+    public void retrieve20LowHighOrderBits(Integer index) {
+        Integer low = index & 0xfffff; 				// extract low 20 bits
+        Integer hi = (index >> 12) & 0xfffff; 		// extract high 20 bits.
+
+        System.out.println("20 low bits: " + Integer.toBinaryString(low)
+                + ", 20 high bits: " + Integer.toBinaryString(hi));
     }
 
     /**
@@ -81,9 +89,15 @@ public class ArchitectureProg {
 
         System.out.println("############################################");
 
-        // retrieve low/high order bits
-        a.retrieveLowHighOrderBits(5);
-        a.retrieveLowHighOrderBits(2147483646);
-        a.retrieveLowHighOrderBits(2147483647);
+        
+        int num = 2147483646;
+        System.out.println("number " + Integer.toBinaryString(num));
+        
+        // retrieve 16 low/high order bits
+        a.retrieve16LowHighOrderBits(num);
+        
+        // retrieve 20 low/high order bits 
+        a.retrieve20LowHighOrderBits(num);
+ 
     }
 }
