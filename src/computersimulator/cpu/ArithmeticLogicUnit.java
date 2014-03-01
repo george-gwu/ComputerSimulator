@@ -25,7 +25,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
     public final static int CONTROL_SUBTRACT=2;
     public final static int CONTROL_AND=3;
     public final static int CONTROL_MULTIPLY=4;
-    public final static int CONTROL_DIVIDE=5;
+    public final static int CONTROL_DIVIDE_QUOTIENT=5;
+    public final static int CONTROL_DIVIDE_REMINDER=6;
     
     
     // RES - Unit - Up to 20 Bits
@@ -94,9 +95,11 @@ public class ArithmeticLogicUnit implements IClockCycle {
             case ArithmeticLogicUnit.CONTROL_MULTIPLY:
                 this.setResult(this.multiply(operand1, operand2));                 
                 break;
-            case ArithmeticLogicUnit.CONTROL_DIVIDE:
-                this.setResult(this.divide(operand1, operand2));                 
-                break;
+            case ArithmeticLogicUnit.CONTROL_DIVIDE_QUOTIENT:
+                this.setResult(this.divideQuotient(operand1, operand2)); 
+            case ArithmeticLogicUnit.CONTROL_DIVIDE_REMINDER:
+                this.setResult(this.divideQuotient(operand1, operand2)); 
+            break;
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
                 //@TODO Handle error.
@@ -312,14 +315,25 @@ public class ArithmeticLogicUnit implements IClockCycle {
         return new Unit(operand1.getSize(), res);
     }
     
-    /**
-     * Divide operation
+     /**
+     * Divide operation - calculates quotient
      * @param operand1
      * @param operand2
      * @return result of division
      */
-    private Unit divide(Unit operand1, Unit operand2){
+    private Unit divideQuotient(Unit operand1, Unit operand2){
         Integer res = operand1.getSignedValue() / operand2.getSignedValue();
+        return new Unit(operand1.getSize(), res);
+    }
+    
+    /**
+     * Divide operation - calculates reminder
+     * @param operand1
+     * @param operand2
+     * @return result of division
+     */
+    private Unit divideReminder(Unit operand1, Unit operand2){
+        Integer res = operand1.getSignedValue() % operand2.getSignedValue();
         return new Unit(operand1.getSize(), res);
     }
     
@@ -328,12 +342,26 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @param index 
      */
     public void getLowHighOrderBits(Integer index) {
-        Integer low = index & 0xffff; 			// extract low 16 bits
-        Integer hi = (index >> 15) & 0xffff; 		// extract high 16 bits.
+        Integer low = index & 0xffff; 			// extract low 20 bits
+        Integer hi = (index >> 19) & 0xffff; 		// extract high 20 bits.
 
         System.out.println("low bits: " + Integer.toBinaryString(low)
                 + ", high bits: " + Integer.toBinaryString(hi));
     }
     
-
+    /**
+     * Get low order bits
+     * @param index 
+     */
+    public Integer getLowOrderBits(Integer index) {
+        return index & 0xffff; 			// extract low 20 bits
+    }
+    
+    /**
+     * Get high order bits
+     * @param index 
+     */
+    public Integer getHighOrderBits(Integer index) {
+        return (index >> 19) & 0xffff;      // extract high 20 bits.
+    }
 }
