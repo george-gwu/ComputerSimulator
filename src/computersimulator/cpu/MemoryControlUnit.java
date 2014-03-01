@@ -173,8 +173,16 @@ public class MemoryControlUnit implements IClockCycle {
         int addressRaw = address.getUnsignedValue();
                 
         // Decode the Address in MAR      
-        int bankIndex = (int)Math.floor((addressRaw / MemoryControlUnit.BANK_CELLS));
-        int cellIndex = addressRaw % (MemoryControlUnit.BANK_CELLS);
+
+        // This stripes through banks
+        //int bankIndex = (int)Math.floor((addressRaw / MemoryControlUnit.BANK_CELLS));
+        //int cellIndex = addressRaw % (MemoryControlUnit.BANK_CELLS);
+        
+        // This stripes across banks
+        int bankIndex = (int)(addressRaw % MemoryControlUnit.BANK_SIZE);
+        int cellIndex = (int)Math.floor(addressRaw /MemoryControlUnit.BANK_SIZE);
+        
+                
         
         System.out.println("Calculated Memory Address: "+addressRaw+" as Bank: "+bankIndex+", Cell: "+cellIndex+")");
         

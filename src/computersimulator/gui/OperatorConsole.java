@@ -167,8 +167,7 @@ public class OperatorConsole implements Runnable {
         JLabel rightEmpty = new JLabel("");
         rightPanel.add(rightEmpty);
 
-        //mainWindow.add(pad.getGUI());
-        mainWindow.add(rightPanel);
+        //mainWindow.add(rightPanel);
 
         // add listeners
         final OperatorConsole opconsole = this;
