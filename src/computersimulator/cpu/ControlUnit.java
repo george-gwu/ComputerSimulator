@@ -409,6 +409,7 @@ public class ControlUnit implements IClockCycle {
                     // These instructions don't require EA calculation. Skip ahead.
                     this.microState=null;
                     this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;                                
+                    this.effectiveAddress=null;
                     break;
                 default:// Every other instruction does. We'll progress through eaState and microState now.
                     if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()==0){                        
