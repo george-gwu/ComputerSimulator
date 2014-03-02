@@ -95,6 +95,8 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_AND=23;
     private static final int OPCODE_ORR=24;
     private static final int OPCODE_NOT=25;
+    private static final int OPCODE_MLT=26;
+    private static final int OPCODE_DVD=27;
 
     
     // Engineer: used to control micro step, defined per state
@@ -563,6 +565,12 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_AND:
                     this.executeOpcodeAND();
                     break; 
+                case ControlUnit.OPCODE_MLT:
+                    this.executeOpcodeMLT();
+                    break;
+                case ControlUnit.OPCODE_DVD:
+                    this.executeOpcodeDVD();
+                    break;             
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
