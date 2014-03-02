@@ -9,7 +9,6 @@ import computersimulator.io.ReadFilebyJava;
 /**
  * Computer Simulator Program - This controls the GUI and instantiates a 
  * Computer, which represents the main simulator. 
- * @TODO: It also contains a few debug conditions that are set to ease testing in Part 1.
  */
 public class ComputerSimulator {
     
@@ -37,7 +36,6 @@ public class ComputerSimulator {
         fileReader.ReadFromFile(computer, new Unit(13,0));
         
         /***** Testing Data *****/
-        // @TODO Remove this after Phase 1
         computer.getMemory().engineerSetMemoryLocation(new Unit(13, 52), new Word(100));
         computer.getMemory().engineerSetMemoryLocation(new Unit(13, 100), new Word(1023));
         computer.getMemory().engineerSetMemoryLocation(new Unit(13, 152), new Word(255));
@@ -48,7 +46,6 @@ public class ComputerSimulator {
         computer.getMemory().setMAR(new Unit(13,1));
      //   computer.getMemory().setMBR(new Word(132731));
         computer.getCpu().getControlUnit().setProgramCounter(new Unit(13, 1)); // Start at 1
-        //@TODO: Note for TESTING.. Make sure to set MAR FIRST, then MBR. (otherwise Fetch)
                 
         
         
