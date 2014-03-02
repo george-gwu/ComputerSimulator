@@ -1,5 +1,7 @@
 package computersimulator.cpu;
 
+import computersimulator.components.HaltSystemException;
+
 /**
  * The CPU class primarily represents a placeholder for ALU and the ControlUnit.
  * It also passes the reference to memory to symbolize that communication buffer.
@@ -9,6 +11,8 @@ public class CentralProcessingUnit implements IClockCycle {
     private ControlUnit controlUnit;
     private ArithmeticLogicUnit alu;
     private MemoryControlUnit memory;
+    
+    private Boolean running = false;
     
 
     public CentralProcessingUnit(MemoryControlUnit mem) {        
@@ -28,9 +32,13 @@ public class CentralProcessingUnit implements IClockCycle {
      * @throws java.lang.Exception
      */
     @Override
-    public void clockCycle() throws Exception{
-        this.controlUnit.clockCycle();
-        this.alu.clockCycle();
+    public void clockCycle() throws Exception{       
+        try {
+            this.controlUnit.clockCycle();
+            this.alu.clockCycle();
+        } catch(HaltSystemException hse){
+            this.running=false;
+        }
     }           
 
     public ControlUnit getControlUnit() {
@@ -41,7 +49,15 @@ public class CentralProcessingUnit implements IClockCycle {
         return alu;
     }
     
-   
+       
+    
+    public Boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(Boolean running) {
+        this.running = running;
+    }
     
     
 }

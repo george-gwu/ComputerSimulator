@@ -17,6 +17,14 @@ public class Computer implements IClockCycle {
     private CentralProcessingUnit cpu;
     private MemoryControlUnit memory;
     private InputOutputController io;   
+    
+        
+    private int runmode = 0;    
+
+    public static final int RUNMODE_MICROSTEP=0;
+    public static final int RUNMODE_STEP=1;
+    public static final int RUNMODE_RUN=2;    
+    
 
     public Computer() {        
         memory = new MemoryControlUnit();  
@@ -30,16 +38,36 @@ public class Computer implements IClockCycle {
      */
     @Override
     public final void clockCycle() throws Exception{
-        //System.out.println("-------- CLOCK CYCLE --------"); 
-        /** @TODO: Turned off this message until part 2, we're running more 
-        * clock cycles than necessary in part 1 because we not actually running 
-        * a program yet. **/
-
         this.cpu.clockCycle();
         this.memory.clockCycle();
         this.io.clockCycle();                
     }
+    
+    
+    public void run() throws Exception {
+        switch(this.runmode){
+            case Computer.RUNMODE_MICROSTEP: // runs one micro instruction
+                this.clockCycle();
+                break;
+            case Computer.RUNMODE_STEP: // runs until instruction complete
+                do {
+                    this.clockCycle();
+                } while(this.cpu.getControlUnit().getState() > ControlUnit.STATE_NONE);
+                break;
+            case Computer.RUNMODE_RUN: // runs until halt
+                this.cpu.setRunning(true);
+                do {
+                    this.clockCycle();
+                } while(this.cpu.isRunning());                
+                break;
+        }        
+    }
 
+    public void setRunmode(int runmode) {
+        System.out.println("New runmode: "+runmode);
+        this.runmode = runmode;
+    }    
+    
     /**
      *
      * @return CPU

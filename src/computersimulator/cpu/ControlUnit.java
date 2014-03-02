@@ -58,10 +58,10 @@ public class ControlUnit implements IClockCycle {
      
     // used to control the instruction cycle
     private int state;
-    private static final int STATE_NONE=0;
-    private static final int STATE_FETCH_INSTRUCTION=1;
-    private static final int STATE_DECODE_INSTRUCTION=2;
-    private static final int STATE_EXECUTE_INSTRUCTION=3;
+    public static final int STATE_NONE=0;
+    public static final int STATE_FETCH_INSTRUCTION=1;
+    public static final int STATE_DECODE_INSTRUCTION=2;
+    public static final int STATE_EXECUTE_INSTRUCTION=3;
             
     //used for Condition Code Register
     public final static int CONDITION_REGISTER_OVERFLOW = 0;
@@ -98,7 +98,7 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_MLT=26;
     private static final int OPCODE_DVD=27;
 
-    
+
     // Engineer: used to control micro step, defined per state
     private Integer microState = null;
         
@@ -134,7 +134,20 @@ public class ControlUnit implements IClockCycle {
         }                         
     }
     
+
+    /**
+     *
+     * @return current State
+     */
+    public int getState() {
+        return state;
+    }
    
+    /**
+     *
+     * @param ConditionRegister
+     * @return Condition Code for Register ID
+     */
     public int getConditionCode(int ConditionRegister) {
         Integer[] raw = this.conditionCode.getBinaryArray();        
         return raw[ConditionRegister];
@@ -276,19 +289,10 @@ public class ControlUnit implements IClockCycle {
      */
     @Override
     public void clockCycle() throws Exception {
-        // Used to run microcycles without causing a full clock cycle
-        //boolean runningMicroCycles=true;
-        //do {  // @TODO: Turned off until we're running a program (part 2)
-        //  System.out.println("Micro!");
-          
           this.instructionCycle();
-
           if(this.blocked == true){
-              // A microcycle signaled it is blocking.
-              //runningMicroCycles=false;
               this.blocked=false;
-          }
-        //} while(runningMicroCycles);                              
+          }                         
         
     }  
     
@@ -1463,7 +1467,7 @@ c(rx) <- c(rx) AND c(ry)
     /**
      * Stop the machine
      */
-    private void executeOpcodeHLT() throws HaltSystemException {
+    private void executeOpcodeHLT() throws HaltSystemException {        
         throw new HaltSystemException();
     }   
     

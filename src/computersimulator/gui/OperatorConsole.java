@@ -3,6 +3,7 @@ package computersimulator.gui;
 import computersimulator.components.*;
 import computersimulator.cpu.Computer;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -10,11 +11,16 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.SpinnerListModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * OperatorConsole should include:
@@ -131,15 +137,23 @@ public class OperatorConsole implements Runnable {
         JButton start = new JButton("IPL");
         JButton load = new JButton("Load");
         JButton deposit = new JButton("Deposit");
-        JButton step = new JButton("Step");
-        //JButton stop = new JButton("Stop");
-
+        JButton go = new JButton("Go");
+        
         // buttonPanel.add(start);
         buttonPanel.add(load);
         buttonPanel.add(deposit);
-        buttonPanel.add(step);
-        //buttonPanel.add(stop);
-
+        buttonPanel.add(go);
+        
+        SpinnerListModel model = new SpinnerListModel(new String[] {"Microstep", "Step", "Run"});
+        final JSpinner spinner = new JSpinner(model);        
+        JComponent field = ((JSpinner.DefaultEditor) spinner.getEditor());
+        Dimension prefSize = field.getPreferredSize();
+        prefSize = new Dimension(80, prefSize.height);
+        field.setPreferredSize(prefSize);        
+        buttonPanel.add(spinner);
+        
+        
+        
         // add button panel to frame
         //mainWindow.add(buttonPanel);
         leftPanel.add(buttonPanel);
@@ -226,19 +240,34 @@ public class OperatorConsole implements Runnable {
             }
         });
 
-        // step
-        step.addActionListener(new ActionListener() {
+        // go
+        go.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     computer.clockCycle();
-                    opconsole.updateDisplay();
-                } catch (HaltSystemException eHalt) {
-                    System.out.println("System HALT.");
+                    opconsole.updateDisplay();                
                 } catch (Exception err) {
                     System.out.println("Error: " + err);
                 }
             }
+        });
+        
+        spinner.addChangeListener(new ChangeListener(){
+           @Override
+           public void stateChanged(ChangeEvent e){
+               switch((String)spinner.getModel().getValue()){
+                   case "Step":
+                       computer.setRunmode(Computer.RUNMODE_STEP);
+                       break;
+                   case "Microstep":
+                       computer.setRunmode(Computer.RUNMODE_MICROSTEP);
+                       break;
+                   case "Run":
+                       computer.setRunmode(Computer.RUNMODE_RUN);
+                       break;
+               }
+           }                      
         });
 
         this.updateDisplay();
