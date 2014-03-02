@@ -303,36 +303,41 @@ public class Unit {
             
     }
     /**
-     *  Accepts an array and performs logical NOT on the bits
+     * Returns an inverted Unit
+     * @return Unit Inverted
      */
-    public Integer[] logicalNOT(Integer[] array)
-    {
-        for (int i = 0; i < array.length; i++)
-        {
-            array[i] = 1 - array[i];
+    public Unit logicalNOT(){        
+        Integer[] data = this.getBinaryArray();
+        
+        for (int i = 0; i < data.length; i++){
+            data[i] = 1 - data[i];
         }
-        return array;
+        
+        Unit inverted = new Unit(this.size);
+        inverted.setValueBinaryArray(data);
+        
+        return inverted;
     }
     
     /**
-     *  Accepts two arrays and performs logical OR on the bits
+     * Performs an OR operation on this operand with operand2
+     * @param operand2
+     * @return Unit result
      */
-    public Integer[] logicalOR(Integer[] array1, Integer[] array2)
-    {
-        Integer[] ORarray = null;
-        for (int i = 0; i < array1.length; i++)
-        {
-            if (array1[i] == array2[i])
-            {
-                ORarray[i] = 0;
-            }
-            else
-            {
-                ORarray[i] = 1;
-            }
+    public Unit logicalOR(Unit operand2){
+        Integer[] data = this.getBinaryArray();
+        Integer[] data2 = operand2.getBinaryArray();
+        
+        for (int i = 0; i < data.length; i++){
+            data[i] = (data[i] == data2[i]) ? 0 : 1;
         }
-        return ORarray;
+        
+        Unit result = new Unit(this.size);
+        result.setValueBinaryArray(data);
+        
+        return result;
     }
+    
     
     @Override
     public String toString() {

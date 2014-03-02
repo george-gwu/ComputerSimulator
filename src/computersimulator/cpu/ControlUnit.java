@@ -106,10 +106,7 @@ public class ControlUnit implements IClockCycle {
     private MemoryControlUnit memory;
     
     // ALU Reference
-    private ArithmeticLogicUnit alu;
-    
-    // Unit reference
-    private Unit uRef;
+    private ArithmeticLogicUnit alu;   
     
     // nextPC	13 bits	Next Program Counter: Interal Register Used to signal program counter was adjusted by instruction
     private Unit nextProgramCounter;
@@ -1323,17 +1320,17 @@ c(rx) <- c(rx) AND c(ry)
      * c(rx) <- c(rx) OR c(ry)
      */
     private void executeOpcodeORR(){
-        Integer[] RFI1 = this.getIR().decomposeByOffset(6, 7).getBinaryArray();         //Get the contents of RFI as an integer array.
-        Integer[] RFI2 = this.getIR().decomposeByOffset(8, 9).getBinaryArray();         //Get the contents of RFI as an integer array. (XFI bits act as RFI)
-        int register = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();   //Get the register number as an integer.
+        Integer rx = this.getIR().decomposeByOffset(6, 7).getUnsignedValue(); // rx
+        Integer ry = this.getIR().decomposeByOffset(8, 9).getUnsignedValue(); // ry
         
-        Integer[] RFI = uRef.logicalOR(RFI1, RFI2);                                     //Perform logical OR.
-        String res = uRef.IntArrayToBinaryString(RFI);                                  //Obtain Logical OR value as a string.
-        Unit result = uRef.UnitFromBinaryString(res);                                   //Conver the string to unit.
+        Unit contentsOfRx = this.getGeneralPurposeRegister(rx);
+        Unit contentsOfRy = this.getGeneralPurposeRegister(ry);
         
-        this.setGeneralPurposeRegister(register, new Word(result));
+        Unit result = contentsOfRx.logicalOR(contentsOfRy);
+        
+        this.setGeneralPurposeRegister(rx, new Word(result));
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("COMPLETED INSTRUCTION: ORR rx, ry");
+        System.out.println("COMPLETED INSTRUCTION: ORR rx("+contentsOfRx.getBinaryString()+"), ry("+contentsOfRy.getBinaryString()+") = "+result);
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
         this.signalMicroStateExecutionComplete();
     }
@@ -1344,16 +1341,14 @@ c(rx) <- c(rx) AND c(ry)
      * C(rx) <- NOT c(rx)
      */
     private void executeOpcodeNOT(){
-        Integer[] RFI = this.getIR().decomposeByOffset(6, 7).getBinaryArray();          //Get the contents of RFI as an integer array.
-        int register = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();   //Get the register number as an integer.
         
-        RFI = uRef.logicalNOT(RFI);                                                         //Perform Logical NOT.
-        String res = uRef.IntArrayToBinaryString(RFI);                                  //Obtain negated value as a string.
-        Unit result = uRef.UnitFromBinaryString(res);                                   //Conver the string to unit.
-        
-        this.setGeneralPurposeRegister(register, new Word(result));
+        Integer rx = this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+        Unit contentsOfRx = this.getGeneralPurposeRegister(rx);
+        Unit InvertedContentsOfRx = contentsOfRx.logicalNOT();
+       
+        this.setGeneralPurposeRegister(rx, new Word(InvertedContentsOfRx));
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("COMPLETED INSTRUCTION: NOT rx");
+        System.out.println("COMPLETED INSTRUCTION: NOT rx("+contentsOfRx.getBinaryString()+") = "+InvertedContentsOfRx);
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
         this.signalMicroStateExecutionComplete();
         
