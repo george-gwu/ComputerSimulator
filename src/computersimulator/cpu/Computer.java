@@ -50,9 +50,10 @@ public class Computer implements IClockCycle {
                 this.clockCycle();
                 break;
             case Computer.RUNMODE_STEP: // runs until instruction complete
+                this.cpu.setRunning(true);
                 do {
-                    this.clockCycle();
-                } while(this.cpu.getControlUnit().getState() > ControlUnit.STATE_NONE);
+                    this.clockCycle();//@TODO: NOT WORKING.
+                } while(this.cpu.getControlUnit().getState() > ControlUnit.STATE_NONE && this.cpu.isRunning());
                 break;
             case Computer.RUNMODE_RUN: // runs until halt
                 this.cpu.setRunning(true);
