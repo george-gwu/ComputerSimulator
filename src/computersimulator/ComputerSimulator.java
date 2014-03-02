@@ -38,12 +38,12 @@ public class ComputerSimulator {
         
         /***** Testing Data *****/
         // @TODO Remove this after Phase 1
-      //  computer.getMemory().engineerSetMemoryLocation(new Unit(13, 52), new Word(100));
-      //  computer.getMemory().engineerSetMemoryLocation(new Unit(13, 100), new Word(1023));
-      //  computer.getMemory().engineerSetMemoryLocation(new Unit(13, 152), new Word(512));
-       // computer.getMemory().engineerSetMemoryLocation(new Unit(13, 512), new Word(768));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 52), new Word(100));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 100), new Word(1023));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 152), new Word(255));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 255), new Word(768));
         computer.getMemory().engineerSetMemoryLocation(new Unit(13, 223), new Word(500));
-        computer.getCpu().getControlUnit().setGeneralPurposeRegister(0, new Word(2));
+        computer.getCpu().getControlUnit().setGeneralPurposeRegister(2, new Word(255));
         computer.getCpu().getControlUnit().setIndexRegister(1, new Unit(13,100));
         computer.getMemory().setMAR(new Unit(13,1));
      //   computer.getMemory().setMBR(new Word(132731));

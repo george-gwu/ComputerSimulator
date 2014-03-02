@@ -399,7 +399,7 @@ public class ControlUnit implements IClockCycle {
                 this.microState=null;
                 this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;            
             } else { // Every other instruction does. We'll progress through eaState and microState now.
-                if(this.instructionRegisterDecoded.get("xfi").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("rfi").getUnsignedValue()==0){                        
+                if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()==0){                        
                     this.eaState = ControlUnit.EA_DIRECT;
                 } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()>=1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()<=3){
                     this.eaState = ControlUnit.EA_REGISTER_INDIRECT;                    
@@ -678,32 +678,17 @@ public class ControlUnit implements IClockCycle {
      * Execute Load Register with Address
      */
     private void executeOpcodeLDA() {
-        switch(this.microState){                
-            case 0:
-                // Micro-6: MAR <- EA
-                System.out.println("Micro-6: MAR <- EA");
-                memory.setMAR(this.effectiveAddress);    
-                memory.signalFetch();                
-                
-            default:
-                if(!memory.isBusy()){
-                    // Micro-7: MBR <- M(MAR)
-                    System.out.println("Micro-7: MBR <- M(MAR)");
-                    // Micro-8: RF(RFI) <- MBR   
-                    System.out.println("Micro-8: RF(RFI) <- MBR");
-                    int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
-                    this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
+       
+                // Micro-6: RF(RFI) <- EA
+                System.out.println("Micro-6: RF(RFI) <- EA");
+               // memory.setMAR(this.effectiveAddress); 
+                int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
+                this.setGeneralPurposeRegister(RFI, new Word(this.effectiveAddress.getUnsignedValue()));
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: LDA - rfi["+RFI+"] is now: "+this.getGeneralPurposeRegister(RFI));
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                this.signalMicroStateExecutionComplete();             
 
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    System.out.println("COMPLETED INSTRUCTION: LDA - rfi["+RFI+"] is now: "+ this.memory.getMBR());
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-                    this.signalMicroStateExecutionComplete();
-                } else {
-                    this.signalBlockingMicroFunction();
-                }
-            break;            
-        }
     }
     
     /**

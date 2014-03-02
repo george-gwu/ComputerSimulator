@@ -36,7 +36,7 @@ public class ReadFilebyJava {
              String strLine=null;
              while((strLine=br.readLine())!=null)
              {
-                 
+                 System.out.println(strLine);
                  String str=strLine.substring(0, 20);
                  addr.setValue(addr.getUnsignedValue()+1);
                  Word instructions=new Word();
