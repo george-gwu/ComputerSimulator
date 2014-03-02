@@ -4,6 +4,7 @@ import computersimulator.components.*;
 import javax.swing.SwingUtilities;
 import computersimulator.cpu.Computer;
 import computersimulator.gui.OperatorConsole;
+import computersimulator.io.ReadFilebyJava;
 
 /**
  * Computer Simulator Program - This controls the GUI and instantiates a 
@@ -31,9 +32,10 @@ public class ComputerSimulator {
         
         OperatorConsole opconsole = new OperatorConsole();        
         opconsole.setComputer(computer); // pass computer instance into GUI
+    
+        ReadFilebyJava fileReader=new ReadFilebyJava();
+        fileReader.ReadFromFile(computer, new Unit(13,0));
         
-        
-     
         /***** Testing Data *****/
         // @TODO Remove this after Phase 1
       //  computer.getMemory().engineerSetMemoryLocation(new Unit(13, 52), new Word(100));
