@@ -248,7 +248,7 @@ public class OperatorConsole implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    computer.clockCycle();
+                    computer.run();
                     opconsole.updateDisplay();                
                 } catch (Exception err) {
                     System.out.println("Error: " + err);
