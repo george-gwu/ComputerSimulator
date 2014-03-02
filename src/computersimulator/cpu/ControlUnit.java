@@ -403,7 +403,9 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_TRR:
                 case ControlUnit.OPCODE_AND:
                 case ControlUnit.OPCODE_ORR:
-                case ControlUnit.OPCODE_NOT:                   
+                case ControlUnit.OPCODE_NOT:                     
+                case ControlUnit.OPCODE_SRC:
+                case ControlUnit.OPCODE_RRC:
                     // These instructions don't require EA calculation. Skip ahead.
                     this.microState=null;
                     this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;                                
