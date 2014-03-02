@@ -132,7 +132,7 @@ public class MemoryControlUnit implements IClockCycle {
     }
     
     public void signalStore(){
-       this.state = MemoryControlUnit.STATE_PRE_FETCH;
+       this.state = MemoryControlUnit.STATE_PRE_STORE;
     }
     
        

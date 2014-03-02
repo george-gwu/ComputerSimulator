@@ -653,6 +653,7 @@ public class ControlUnit implements IClockCycle {
               // Micro-7: MBR <- RF(RFI)
               System.out.println("Micro-7: MBR <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
+           
               memory.setMBR(this.getGeneralPurposeRegister(RFI));
               memory.signalStore();
               break;
@@ -660,8 +661,8 @@ public class ControlUnit implements IClockCycle {
             default:
                 if(!memory.isBusy()){
                     System.out.println("Micro-8: M(MAR) <- MBR");
-                    // do nothing, done by memory in this clock cycle    
-
+                    // do nothing, done by memory in this clock cycle   
+           
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     System.out.println("COMPLETED INSTRUCTION: STR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
