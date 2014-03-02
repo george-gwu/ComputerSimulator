@@ -22,11 +22,10 @@ public class ArithmeticLogicUnit implements IClockCycle {
     private int control;
     public final static int CONTROL_NONE=0;
     public final static int CONTROL_ADD=1;
-    public final static int CONTROL_SUBTRACT=2;
-    public final static int CONTROL_AND=3;
-    public final static int CONTROL_MULTIPLY=4;
-    public final static int CONTROL_DIVIDE_QUOTIENT=5;
-    public final static int CONTROL_DIVIDE_REMINDER=6;
+    public final static int CONTROL_SUBTRACT=2;  
+    public final static int CONTROL_MULTIPLY=3;
+    public final static int CONTROL_DIVIDE_QUOTIENT=4;
+    public final static int CONTROL_DIVIDE_REMINDER=5;
     
     
     // RES - Unit - Up to 20 Bits
@@ -88,9 +87,6 @@ public class ArithmeticLogicUnit implements IClockCycle {
                 break;
             case ArithmeticLogicUnit.CONTROL_SUBTRACT:
                 this.setResult(this.subtract(operand1, operand2));                 
-                break;
-            case ArithmeticLogicUnit.CONTROL_AND:
-                this.setResult(this.and(operand1, operand2));
                 break;
             case ArithmeticLogicUnit.CONTROL_MULTIPLY:
                 this.setResult(this.multiply(operand1, operand2));                 
@@ -290,18 +286,6 @@ public class ArithmeticLogicUnit implements IClockCycle {
             this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_OVERFLOW);
         }
         return res;
-    }
-    private Unit and(Unit operand1, Unit operand2)
-    {
-        Integer[] operand1Array=this.getOperand1().getBinaryArray();
-        Integer[] operand2Array=this.getOperand2().getBinaryArray();
-        Integer[] res=new Integer[operand1Array.length];
-        for(int iter=0;operand1Array.length>=iter;++iter)
-        {
-            res[iter]=operand1Array[iter]&operand2Array[iter];
-        }
-        operand1.setValueBinaryArray(res);
-        return operand1;
     }
     
      /**

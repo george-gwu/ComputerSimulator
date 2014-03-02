@@ -1291,27 +1291,25 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         System.out.println("COMPLETED INSTRUCTION:TRR RF("+RFI1+")and RF("+RFI2+")is "+((this.getConditionCode(3)==1)?"equal":"unequal")+"  CC is"+this.getConditionCode(3));
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");      
     }
+    
     /*
     Logical And of Register and Register
-
-c(rx) <- c(rx) AND c(ry)
-
-
+    c(rx) <- c(rx) AND c(ry)
     */
-    private void executeOpcodeAND()
-    {
-        int RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
-        int RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
-        Unit ContentOfRFI1=new Unit(13,this.getGeneralPurposeRegister(RFI1).getUnsignedValue());
-        Unit ContentOfRFI2=new Unit(13,this.getGeneralPurposeRegister(RFI2).getUnsignedValue());
-        alu.setOperand1(ContentOfRFI1);
-        alu.setOperand2(ContentOfRFI2);
-        alu.setControl(ArithmeticLogicUnit.CONTROL_AND);
-        alu.signalReadyToStartComputation();
-        this.setGeneralPurposeRegister(RFI1, new Word(alu.getResult()));
+    private void executeOpcodeAND(){
+        Integer rx = this.getIR().decomposeByOffset(6, 7).getUnsignedValue(); // rx
+        Integer ry = this.getIR().decomposeByOffset(8, 9).getUnsignedValue(); // ry
+        
+        Unit contentsOfRx = this.getGeneralPurposeRegister(rx);
+        Unit contentsOfRy = this.getGeneralPurposeRegister(ry);
+        
+        Unit result = contentsOfRx.logicalAND(contentsOfRy);
+        
+        this.setGeneralPurposeRegister(rx, new Word(result));
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("COMPLETED INSTRUCTION:AND RF("+RFI1+"), RF("+RFI2+")is "+this.getGeneralPurposeRegister(RFI1).getBinaryString());
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");      
+        System.out.println("COMPLETED INSTRUCTION: AND rx("+contentsOfRx.getBinaryString()+"), ry("+contentsOfRy.getBinaryString()+") = "+result);
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+        this.signalMicroStateExecutionComplete();      
  
     }
     

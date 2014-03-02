@@ -338,6 +338,25 @@ public class Unit {
         return result;
     }
     
+    /**
+     * Performs an AND operation on this operand with operand2
+     * @param operand2
+     * @return Unit result
+     */
+    public Unit logicalAND(Unit operand2){
+        Integer[] data = this.getBinaryArray();
+        Integer[] data2 = operand2.getBinaryArray();
+        
+        for (int i = 0; i < data.length; i++){
+            data[i] = data[i] & data[2];
+        }
+        
+        Unit result = new Unit(this.size);
+        result.setValueBinaryArray(data);
+        
+        return result;
+    }
+        
     
     @Override
     public String toString() {
