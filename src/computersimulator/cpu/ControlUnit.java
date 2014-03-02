@@ -562,7 +562,7 @@ public class ControlUnit implements IClockCycle {
                     break;
                 case ControlUnit.OPCODE_NOT:
                     this.executeOpcodeNOT();
-
+                    break;
                  case ControlUnit.OPCODE_TRR:
                     this.executeOpcodeTRR();
                     break;
