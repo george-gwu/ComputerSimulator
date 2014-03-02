@@ -25,10 +25,9 @@ public class MemoryControlUnit implements IClockCycle {
     // state is used by the fetch/store controller to determine the current operation
     private int state;
     private final static int STATE_NONE = 0;    
-    private final static int STATE_STORE = 1;    
-    private final static int STATE_FETCH = 2;   
-    private final static int STATE_PRE_STORE = 3;
-    private final static int STATE_PRE_FETCH = 4;
+    private final static int STATE_PRE_STORE = 1;
+    private final static int STATE_PRE_FETCH = 2;
+    private final static int STATE_WAITING = 3;
     
 
     public MemoryControlUnit() {
@@ -48,26 +47,15 @@ public class MemoryControlUnit implements IClockCycle {
      */
     @Override
     public void clockCycle(){
-        this.fetchStoreController();                
-    }
-    
-    private void fetchStoreController(){
-        switch(state){            
-            case MemoryControlUnit.STATE_FETCH:
-            case MemoryControlUnit.STATE_STORE:
-                this.resetState(); // +1 cycles means we had a chance to pick up the result            
-                break;
-                
-            case MemoryControlUnit.STATE_PRE_STORE:
-                this.state = MemoryControlUnit.STATE_STORE;
+        switch(state){                                   
+            case MemoryControlUnit.STATE_PRE_STORE:                
                 this.storeAddressInMemoryOperation();   
-                
+                this.resetState();
                 break;
                 
-            case MemoryControlUnit.STATE_PRE_FETCH:               
-                this.state = MemoryControlUnit.STATE_FETCH;                        
+            case MemoryControlUnit.STATE_PRE_FETCH:                                                     
                 this.fetchAddressOperation();
-
+                this.resetState();
                 break;
                             
             case MemoryControlUnit.STATE_NONE:
@@ -76,36 +64,25 @@ public class MemoryControlUnit implements IClockCycle {
                 break;
         }
     }
+    
 
     /**
      * Set the Memory Buffer Register (used in store)
      * @param dataUnit The value to store (converted to Word)
-     * @return TRUE/FALSE if successful
      */
-    public boolean setMBR(Unit dataUnit){
+    public void setMBR(Unit dataUnit){
         Word res = new Word();
         res.setValueBinary(dataUnit.getBinaryString());
-        return setMBR(res);
+        setMBR(res);
     }
     
     /**
      * Set the Memory Buffer Register (used in store)
      * @param dataWord The value to store
-     * @return TRUE/FALSE if successful
      */
-    public boolean setMBR(Word dataWord){
-        switch(state){            
-            case MemoryControlUnit.STATE_FETCH:     
-            case MemoryControlUnit.STATE_STORE:
-                return false; // We're currently busy, set fails.
-                                
-            case MemoryControlUnit.STATE_NONE:
-            default:
-                
-                this.memoryBufferRegister = dataWord;
-                this.state = MemoryControlUnit.STATE_PRE_STORE;
-                return true;                              
-        }        
+    public void setMBR(Word dataWord){
+        this.state = MemoryControlUnit.STATE_WAITING;
+        this.memoryBufferRegister = dataWord; 
     }
     
     /**
@@ -119,21 +96,10 @@ public class MemoryControlUnit implements IClockCycle {
     /**
      * Set the Memory Access Register (used in get/store)
      * @param addressUnit The addressRaw to get/store
-     * @return TRUE/FALSE if successful
      */    
-    public boolean setMAR(Unit addressUnit){
-        switch(state){            
-            case MemoryControlUnit.STATE_FETCH:     
-            case MemoryControlUnit.STATE_STORE:
-                return false; // We're currently busy, set fails.
-                                
-            case MemoryControlUnit.STATE_NONE:
-            default:
-                this.state = MemoryControlUnit.STATE_PRE_FETCH;
-                this.memoryAddressRegister = addressUnit;
-                return true;                              
-        }         
-        
+    public void setMAR(Unit addressUnit){
+        this.state = MemoryControlUnit.STATE_WAITING;
+        this.memoryAddressRegister = addressUnit;          
     }   
 
     /**
@@ -150,15 +116,23 @@ public class MemoryControlUnit implements IClockCycle {
      * @return true/false 
      */
     public boolean isBusy(){
-        switch(state){            
-            case MemoryControlUnit.STATE_FETCH:     
-            case MemoryControlUnit.STATE_STORE:
-                return true;
-                                
+        switch(state){          
             case MemoryControlUnit.STATE_NONE:
+                return false;        
+            case MemoryControlUnit.STATE_WAITING:
+                System.out.println("Memory error. Likely forgot to signal which operation.");
             default:
-                return false;                         
+                return true;
         }    
+    }
+    
+    public void signalFetch(){      
+       this.state = MemoryControlUnit.STATE_PRE_FETCH;
+       //@TODO : attempt cache read and clear the flag if successful
+    }
+    
+    public void signalStore(){
+       this.state = MemoryControlUnit.STATE_PRE_FETCH;
     }
     
        
@@ -173,17 +147,11 @@ public class MemoryControlUnit implements IClockCycle {
         int addressRaw = address.getUnsignedValue();
                 
         // Decode the Address in MAR      
-
-        // This stripes through banks
-        //int bankIndex = (int)Math.floor((addressRaw / MemoryControlUnit.BANK_CELLS));
-        //int cellIndex = addressRaw % (MemoryControlUnit.BANK_CELLS);
         
-        // This stripes across banks
+        // Stripe across memory banks to simulate efficient read/write by data line
         int bankIndex = (int)(addressRaw % MemoryControlUnit.BANK_SIZE);
         int cellIndex = (int)Math.floor(addressRaw /MemoryControlUnit.BANK_SIZE);
-        
-                
-        
+               
         System.out.println("Calculated Memory Address: "+addressRaw+" as Bank: "+bankIndex+", Cell: "+cellIndex+")");
         
         if(bankIndex > MemoryControlUnit.BANK_SIZE){

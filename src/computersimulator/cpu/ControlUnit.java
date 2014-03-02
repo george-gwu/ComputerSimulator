@@ -91,15 +91,8 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_JSR=14;
     private static final int OPCODE_SRC=31;
     private static final int OPCODE_RRC=32;
-
-
     private static final int OPCODE_TRR=22;
     private static final int OPCODE_AND=23;
-
- 
-
-
-
     private static final int OPCODE_ORR=24;
     private static final int OPCODE_NOT=25;
 
@@ -341,24 +334,26 @@ public class ControlUnit implements IClockCycle {
                 // Micro-0: PC -> MAR
                 Unit pc = this.getProgramCounter();
                 System.out.println("-- PC: "+pc);
-                this.memory.setMAR(pc);
-                this.microState=1;  
-                this.signalBlockingMicroFunction();
-                break;         
+                this.memory.setMAR(pc);               
+                this.memory.signalFetch();               
+                this.microState=1;                  
                 
-                // unwritten step: clock cycle causes memory to pull PC
-            
+                // no break, in case it was cached 
+                //this.signalBlockingMicroFunction();
+                
             case 1:
-                System.out.println("Micro-1: MDR -> IR");
-                // Micro-1: MDR -> IR                
-                this.setIR(this.memory.getMBR());              
-                System.out.println("-- IR: "+this.memory.getMBR());
-                this.microState=2;              
+                if(!this.memory.isBusy()){ // block until memory read is ready
+                    System.out.println("Micro-1: MDR -> IR");
+                    // Micro-1: MDR -> IR                
+                    this.setIR(this.memory.getMBR());              
+                    System.out.println("-- IR: "+this.memory.getMBR());
+                    this.microState=2;              
 
-                // Set up for next major state
-                this.microState=null;
-                this.state=ControlUnit.STATE_DECODE_INSTRUCTION;
-                break;
+                    // Set up for next major state
+                    this.microState=null;
+                    this.state=ControlUnit.STATE_DECODE_INSTRUCTION;
+                    break;
+                }
         }
     }
     
@@ -429,13 +424,18 @@ public class ControlUnit implements IClockCycle {
                     switch(this.microState){
                         case 1: // Set ADDR onto MAR
                             Unit addr = this.instructionRegisterDecoded.get("address");
-                            this.memory.setMAR(addr);                            
-                            this.microState++;
-                            break;
+                            this.memory.setMAR(addr);  
+                            this.memory.signalFetch();
+                            this.microState=2;
+                            // no break in case of cache read
                         case 2: // c(ADDR) from MBR, set to MAR
-                            Word contentsOfAddr = this.memory.getMBR();
-                            this.effectiveAddress =  new Unit(13, (contentsOfAddr.getUnsignedValue()));
-                            System.out.println("Indexed - c(ADDR) =  c("+this.instructionRegisterDecoded.get("address").getUnsignedValue()+") = "+this.effectiveAddress);                            
+                            if(!this.memory.isBusy()){ // block until memory read is ready
+                                Word contentsOfAddr = this.memory.getMBR();
+                                this.effectiveAddress =  new Unit(13, (contentsOfAddr.getUnsignedValue()));
+                                System.out.println("Indexed - c(ADDR) =  c("+this.instructionRegisterDecoded.get("address").getUnsignedValue()+") = "+this.effectiveAddress);                            
+                            } else {
+                                this.signalBlockingMicroFunction();
+                            }
                             break;
                     }                           
                     break;                    
@@ -446,12 +446,17 @@ public class ControlUnit implements IClockCycle {
                             int contentsOfX = this.getIndexRegister(this.instructionRegisterDecoded.get("xfi").getUnsignedValue()).getUnsignedValue();    //read Xi here                        
                             Unit location = new Unit(13, (contentsOfX + addr.getUnsignedValue()));
                             this.memory.setMAR(location);
-                            this.microState++;    
+                            this.memory.signalFetch();
+                            this.microState=2;    
                             break;
                         case 2:
-                            Word contentsOfLocation = this.memory.getMBR();
-                            this.effectiveAddress = new Unit(13, contentsOfLocation.getUnsignedValue());
-                            System.out.println("Indexed + Offset --> "+this.effectiveAddress);                                
+                            if(!this.memory.isBusy()){ // block until memory read is ready
+                                Word contentsOfLocation = this.memory.getMBR();
+                                this.effectiveAddress = new Unit(13, contentsOfLocation.getUnsignedValue());
+                                System.out.println("Indexed + Offset --> "+this.effectiveAddress);                                
+                            } else {
+                                this.signalBlockingMicroFunction();
+                            }
                             break;
                     }                      
                     break;
@@ -544,9 +549,7 @@ public class ControlUnit implements IClockCycle {
                     break;
                 case ControlUnit.OPCODE_RRC:
                     this.executeOpcodeRRC();
-
                     break;     
-
                 case ControlUnit.OPCODE_ORR:
                     this.executeOpcodeORR();
                     break;
@@ -595,26 +598,27 @@ public class ControlUnit implements IClockCycle {
                 // Micro-6: MAR <- EA
                 System.out.println("Micro-6: MAR <- EA");
                 memory.setMAR(this.effectiveAddress);  
-                this.signalBlockingMicroFunction();
-                break;
+                memory.signalFetch();
+                // no break in case cached
                 
-            case 1:
+            default:
                 // Micro-7: MBR <- M(MAR)
-                System.out.println("Micro-7: MBR <- M(MAR)");
-                // do nothing, done by memory
-                break;
-
-            case 2:
                 // Micro-8: RF(RFI) <- MBR   
-                System.out.println("Micro-8: RF(RFI) <- MBR");
-                int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
-                this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
+                if(!this.memory.isBusy()){                
+                    System.out.println("Micro-7: MBR <- M(MAR)");
+                    System.out.println("Micro-8: RF(RFI) <- MBR");
+                    int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
+                    this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
 
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: LDR - rfi["+RFI+"] is now: "+ this.memory.getMBR());
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println("COMPLETED INSTRUCTION: LDR - rfi["+RFI+"] is now: "+ this.memory.getMBR());
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+                    this.signalMicroStateExecutionComplete();
+                } else {
+                    this.signalBlockingMicroFunction();
+                }
                 
-                this.signalMicroStateExecutionComplete();
                 break;            
             
         }
@@ -637,18 +641,22 @@ public class ControlUnit implements IClockCycle {
               System.out.println("Micro-7: MBR <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
               memory.setMBR(this.getGeneralPurposeRegister(RFI));
-              this.signalBlockingMicroFunction();
-            break;
+              memory.signalStore();
+              break;
                 
-            case 1:   
-              System.out.println("Micro-8: M(MAR) <- MBR");
-              // do nothing, done by memory in this clock cycle    
-              
-              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: STR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
-              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              
-              this.signalMicroStateExecutionComplete();
+            default:
+                if(!memory.isBusy()){
+                    System.out.println("Micro-8: M(MAR) <- MBR");
+                    // do nothing, done by memory in this clock cycle    
+
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println("COMPLETED INSTRUCTION: STR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+                    this.signalMicroStateExecutionComplete();
+                } else {
+                    this.signalBlockingMicroFunction();
+                }
             break;
         }
     }
@@ -657,33 +665,30 @@ public class ControlUnit implements IClockCycle {
      * Execute Load Register with Address
      */
     private void executeOpcodeLDA() {
-        switch(this.microState){
-                
+        switch(this.microState){                
             case 0:
                 // Micro-6: MAR <- EA
                 System.out.println("Micro-6: MAR <- EA");
                 memory.setMAR(this.effectiveAddress);    
-                this.signalBlockingMicroFunction();
-                break;
+                memory.signalFetch();                
                 
-            case 1:
-                // Micro-7: MBR <- M(MAR)
-                System.out.println("Micro-7: MBR <- M(MAR)");
-                // do nothing, done by memory
-            break;
-                
-            case 2:
-                // Micro-8: RF(RFI) <- MBR   
-                System.out.println("Micro-8: RF(RFI) <- MBR");
-                int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
-                this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
+            default:
+                if(!memory.isBusy()){
+                    // Micro-7: MBR <- M(MAR)
+                    System.out.println("Micro-7: MBR <- M(MAR)");
+                    // Micro-8: RF(RFI) <- MBR   
+                    System.out.println("Micro-8: RF(RFI) <- MBR");
+                    int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
+                    this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
 
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION: LDA - rfi["+RFI+"] is now: "+ this.memory.getMBR());
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                
-                this.signalMicroStateExecutionComplete();
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println("COMPLETED INSTRUCTION: LDA - rfi["+RFI+"] is now: "+ this.memory.getMBR());
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
+                    this.signalMicroStateExecutionComplete();
+                } else {
+                    this.signalBlockingMicroFunction();
+                }
             break;            
         }
     }
@@ -697,25 +702,24 @@ public class ControlUnit implements IClockCycle {
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR<-EA");
               memory.setMAR(this.effectiveAddress);
-              this.signalBlockingMicroFunction();
-            break;
+              memory.signalFetch();              
                 
-            case 1:
-              // Micro-7: MBR <- M(MAR)
-              System.out.println("Micro-7: MBR <- M(MAR)");
-              // do nothing, done by memory
-            break;
+            default:
+                if(!memory.isBusy()){
+                    // Micro-7: MBR <- M(MAR)
+                    System.out.println("Micro-7: MBR <- M(MAR)");
+                    // Micro 8: c(XFI) <- MBR              
+                    int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
+                    this.setIndexRegister(XFI, this.memory.getMBR());
 
-            case 2:
-              // Micro 8: c(XFI) <- MBR              
-              int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
-              this.setIndexRegister(XFI, this.memory.getMBR());
-              
-              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: LDX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
-              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                
-              this.signalMicroStateExecutionComplete();
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println("COMPLETED INSTRUCTION: LDX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+                    this.signalMicroStateExecutionComplete();
+                } else {
+                    this.signalBlockingMicroFunction();
+                }
             break;
         }
     }
@@ -728,8 +732,7 @@ public class ControlUnit implements IClockCycle {
             case 0:
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR <- EA");
-              memory.setMAR(this.effectiveAddress);
-              this.signalBlockingMicroFunction();
+              memory.setMAR(this.effectiveAddress);              
             break;
                 
             case 1:
@@ -737,18 +740,22 @@ public class ControlUnit implements IClockCycle {
               System.out.println("Micro 7: MBR <- c(XFI)");
               int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
               memory.setMBR(this.getIndexRegister(XFI));
-            break;
+              memory.signalStore();            
                 
-            case 2:
-              // Micro 8: M(MAR) <- MBR
-              System.out.println("Micro 8: M(MAR) <- MBR");
-              // do nothing, done by memory
-                
-              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              System.out.println("COMPLETED INSTRUCTION: STX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
-              System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                
-              this.signalMicroStateExecutionComplete();
+            default:
+              if(!memory.isBusy()){
+                    // Micro 8: M(MAR) <- MBR
+                    System.out.println("Micro 8: M(MAR) <- MBR");
+                    // do nothing, done by memory
+
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println("COMPLETED INSTRUCTION: STX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+                    this.signalMicroStateExecutionComplete();
+              } else {
+                  this.signalBlockingMicroFunction();
+              }
             break;
         }
     }
@@ -763,42 +770,42 @@ public class ControlUnit implements IClockCycle {
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR <- EA");
               memory.setMAR(this.effectiveAddress);
-              this.signalBlockingMicroFunction();
-            break;
+              memory.signalFetch();            
                 
-            case 1:
-              // Micro-7: MBR <- M(MAR)
-              System.out.println("Micro-7: MBR <- M(MAR)");
-              // do nothing, done by memory
+            case 1:              
+                if(!memory.isBusy()){
+                    // Micro-7: MBR <- M(MAR)
+                    System.out.println("Micro-7: MBR <- M(MAR)");
+                    // Micro-8: OP1 <- MBR
+                    System.out.println("Micro-8: OP1 <- MBR");
+                    alu.setOperand1(this.memory.getMBR());  // This might be possible to run in cycle 1                    
+                } else {
+                    this.signalBlockingMicroFunction();
+                    this.microState--; // decrement to stay in place
+                }                
             break;
                 
             case 2:
-              // Micro-8: OP1 <- MBR
-              System.out.println("Micro-8: OP1 <- MBR");
-              alu.setOperand1(this.memory.getMBR());  // This might be possible to run in cycle 1
-            break;
-                
-            case 3:
               // Micro-9: OP2 <- RF(RFI)
               System.out.println("Micro-9: OP2 <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
               alu.setOperand2(this.getGeneralPurposeRegister(RFI));
             break;
                 
-            case 4:
+            case 3:
               // Micro-10: CTRL <- OPCODE
               System.out.println("Micro-10: CTRL <- OPCODE");  
               alu.setControl(ArithmeticLogicUnit.CONTROL_ADD); // @TODO: Should this come from IR somehow?
               alu.signalReadyToStartComputation();
             break;
                 
-            case 5:
+            case 4:
               // Micro-11: RES <- c(OP1) + c(OP2)
               System.out.println("Micro-11: RES <- c(OP1) + c(OP2)");
               // Do nothing. (occurs automatically one clock cycle after signaled ready to compute)
             break;
                 
-            case 6:
+            case 5:
               // Micro-12: RF(RFI) <- RES
               System.out.println("Micro-12: RF(RFI) <- RES");
               RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue(); 
@@ -822,41 +829,41 @@ public class ControlUnit implements IClockCycle {
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR <- EA");
               memory.setMAR(this.effectiveAddress);
-              this.signalBlockingMicroFunction();
-            break;
+              memory.signalFetch();
                 
             case 1:
-              // Micro-7: MBR <- M(MAR)
-              System.out.println("Micro-7: MBR <- M(MAR)");
-              // do nothing, done by memory
-            break;
-                
-            case 3:
-              // Micro-8: OP1 <- MBR
-              System.out.println("Micro-8: OP1 <- MBR");
-              alu.setOperand1(this.memory.getMBR());
-            break;
-                
-            case 4:
+                if(!memory.isBusy()){
+                    // Micro-7: MBR <- M(MAR)
+                    System.out.println("Micro-7: MBR <- M(MAR)");
+                    // Micro-8: OP1 <- MBR
+                    System.out.println("Micro-8: OP1 <- MBR");
+                    alu.setOperand1(this.memory.getMBR());                  
+                } else {
+                    this.signalBlockingMicroFunction();
+                    this.microState--; // decrement to stay in place
+                } 
+                break;
+            case 2:                                     
+            
               // Micro-9: OP2 <- RF(RFI)
               System.out.println("Micro-9: OP2 <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
               alu.setOperand2(this.getGeneralPurposeRegister(RFI));
             break;
                 
-            case 5:
+            case 3:
               // Micro-10: CTRL <- OPCODE
               System.out.println("Micro-10: CTRL <- OPCODE");  
               alu.setControl(ArithmeticLogicUnit.CONTROL_SUBTRACT); // @TODO: Should this come from IR somehow?
               alu.signalReadyToStartComputation();
             break;
                 
-            case 6:
+            case 4:
               // Micro-11: RES <- c(OP1) - c(OP2)
               // Do nothing. (occurs automatically one clock cycle after signaled ready to compute)
             break;
                 
-            case 7:
+            case 5:
               // Micro-12: RF(RFI) <- RES
               System.out.println("Micro-12: RF(RFI) <- RES");
               RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
