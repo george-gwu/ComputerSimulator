@@ -339,7 +339,6 @@ public class ControlUnit implements IClockCycle {
                 this.microState=1;                  
                 
                 // no break, in case it was cached 
-                //this.signalBlockingMicroFunction();
                 
             case 1:
                 if(!this.memory.isBusy()){ // block until memory read is ready
@@ -353,6 +352,8 @@ public class ControlUnit implements IClockCycle {
                     this.microState=null;
                     this.state=ControlUnit.STATE_DECODE_INSTRUCTION;
                     break;
+                } else {
+                    this.signalBlockingMicroFunction();
                 }
         }
     }
