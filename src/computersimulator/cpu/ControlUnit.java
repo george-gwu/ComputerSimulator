@@ -393,23 +393,35 @@ public class ControlUnit implements IClockCycle {
             this.instructionRegisterDecoded = this.decodeInstructionRegister(this.getIR());     
             System.out.println("-- IR Decoded: "+this.instructionRegisterDecoded);
                         
-            int opcode = this.instructionRegisterDecoded.get("opcode").getUnsignedValue();            
-            if(opcode == ControlUnit.OPCODE_AIR || opcode ==ControlUnit.OPCODE_SIR){
-                // These instructions don't require EA calculation. Skip ahead.
-                this.microState=null;
-                this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;            
-            } else { // Every other instruction does. We'll progress through eaState and microState now.
-                if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()==0){                        
-                    this.eaState = ControlUnit.EA_DIRECT;
-                } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()>=1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()<=3){
-                    this.eaState = ControlUnit.EA_REGISTER_INDIRECT;                    
-                } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()==0){
-                    this.eaState = ControlUnit.EA_INDEXED;
-                } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()>=1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()<=3){
-                    this.eaState = ControlUnit.EA_INDEXED_OFFSET;
-                }                                
-                this.microState++;
-            }         
+            int opcode = this.instructionRegisterDecoded.get("opcode").getUnsignedValue();  
+            
+            switch(opcode){
+                case ControlUnit.OPCODE_AIR:
+                case ControlUnit.OPCODE_SIR:
+                case ControlUnit.OPCODE_MLT:
+                case ControlUnit.OPCODE_DVD:
+                case ControlUnit.OPCODE_TRR:
+                case ControlUnit.OPCODE_AND:
+                case ControlUnit.OPCODE_ORR:
+                case ControlUnit.OPCODE_NOT:                   
+                    // These instructions don't require EA calculation. Skip ahead.
+                    this.microState=null;
+                    this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;                                
+                    break;
+                default:// Every other instruction does. We'll progress through eaState and microState now.
+                    if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()==0){                        
+                        this.eaState = ControlUnit.EA_DIRECT;
+                    } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==0 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()>=1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()<=3){
+                        this.eaState = ControlUnit.EA_REGISTER_INDIRECT;                    
+                    } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()==0){
+                        this.eaState = ControlUnit.EA_INDEXED;
+                    } else if(this.instructionRegisterDecoded.get("index").getUnsignedValue()==1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()>=1 && this.instructionRegisterDecoded.get("xfi").getUnsignedValue()<=3){
+                        this.eaState = ControlUnit.EA_INDEXED_OFFSET;
+                    }                                
+                    this.microState++;    
+                    
+                    break;
+            }      
         } else { //microState >= 1 & we're computing EA
             System.out.println("Micro-5."+this.microState+": Compute Effective Address (Type: "+this.eaState+")");            
             switch(this.eaState){
