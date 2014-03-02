@@ -16,9 +16,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerListModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -142,7 +144,7 @@ public class OperatorConsole implements Runnable {
         // buttonPanel.add(start);
         buttonPanel.add(load);
         buttonPanel.add(deposit);
-        buttonPanel.add(go);
+        buttonPanel.add(new JSeparator(SwingConstants.VERTICAL));
         
         SpinnerListModel model = new SpinnerListModel(new String[] {"Microstep", "Step", "Run"});
         final JSpinner spinner = new JSpinner(model);        
@@ -151,6 +153,7 @@ public class OperatorConsole implements Runnable {
         prefSize = new Dimension(80, prefSize.height);
         field.setPreferredSize(prefSize);        
         buttonPanel.add(spinner);
+        buttonPanel.add(go);
         
         
         
