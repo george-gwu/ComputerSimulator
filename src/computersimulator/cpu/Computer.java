@@ -65,7 +65,6 @@ public class Computer implements IClockCycle {
     }
 
     public void setRunmode(int runmode) {
-        System.out.println("New runmode: "+runmode);
         this.runmode = runmode;
     }    
     
