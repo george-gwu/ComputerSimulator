@@ -95,8 +95,8 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_AND=23;
     private static final int OPCODE_ORR=24;
     private static final int OPCODE_NOT=25;
-    private static final int OPCODE_MLT=26;
-    private static final int OPCODE_DVD=27;
+    private static final int OPCODE_MLT=20;
+    private static final int OPCODE_DVD=21;
 
 
     // Engineer: used to control micro step, defined per state
