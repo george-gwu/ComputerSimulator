@@ -95,7 +95,8 @@ public class Cache implements IClockCycle {
             this.fetchBlock(block);   
         }
         
-        int blockID = this.getBlockLocation(tag);            
+        int blockID = this.getBlockLocation(tag);
+        lastUsed[blockID] = System.currentTimeMillis();
 
         int[] rawMemoryAddress = memory.calculateActualMemoryLocation(address);           
         int cacheAddress = rawMemoryAddress[1] % Cache.BLOCK_SIZE; 
@@ -154,7 +155,6 @@ public class Cache implements IClockCycle {
         
         int[] rawMemoryAddress = memory.calculateActualMemoryLocation(address);           
         int cacheAddress = rawMemoryAddress[1] % Cache.BLOCK_SIZE; 
-
 
         lastUsed[blockID] = System.currentTimeMillis();
         dirty[blockID] = true;
