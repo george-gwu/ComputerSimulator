@@ -47,6 +47,7 @@ public class Computer implements IClockCycle {
     public void run() throws Exception {
         switch(this.runmode){
             case Computer.RUNMODE_MICROSTEP: // runs one micro instruction
+                this.cpu.setRunning(true);
                 this.clockCycle();
                 break;
             case Computer.RUNMODE_STEP: // runs until instruction complete

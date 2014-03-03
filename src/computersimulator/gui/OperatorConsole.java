@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -51,6 +52,8 @@ public class OperatorConsole implements Runnable {
 
     private JPanel leftPanel;
     private JPanel rightPanel;
+    
+    private JLabel runLight;
 
     public void setComputer(Computer computer) {
         this.computer = computer;
@@ -87,6 +90,17 @@ public class OperatorConsole implements Runnable {
         title.setForeground(Color.BLACK);
         labelHolder.add(title);
         //mainWindow.add(labelHolder);
+        
+        JLabel running = new JLabel("Running:");        
+        labelHolder.add(new JSeparator(SwingConstants.VERTICAL));
+        labelHolder.add(running);
+        runLight = new JLabel();
+        runLight.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        runLight.setBackground(Color.cyan);
+        runLight.setOpaque(true);
+        runLight.setPreferredSize(new Dimension(15, 15));
+        labelHolder.add(runLight);
+        
         leftPanel.add(labelHolder);
 
         // Create grid layout for main window - main layout will include 2 columns: 
@@ -284,6 +298,8 @@ public class OperatorConsole implements Runnable {
             DataDisplayComposite widget = el.getValue();
             widget.updateDisplay();
         }
+        
+        runLight.setBackground((computer.getCpu().isRunning() ? Color.CYAN : Color.GRAY));
     }
 
 }
