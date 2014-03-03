@@ -102,8 +102,14 @@ public class Cache implements IClockCycle {
 
         return this.cache[blockID][cacheAddress];
 
-    }    
-    
+    }
+
+    /**
+     * Attempts to store a word if it is in cache, otherwise returns false but pulls into cache
+     * @param address
+     * @param value
+     * @return true/false on success
+     */
     public Boolean storeWord(Unit address, Word value){        
       Integer[] block = calculateBlockFromAddress(address);
       String tag = this.calculateTagFromBlockID(block);
@@ -131,8 +137,12 @@ public class Cache implements IClockCycle {
             return false; // queued (try again next cycle)
         } 
     }
-    
-    
+
+    /**
+     * Stores a word in cache, use for debugging, bypassing clock cycles
+     * @param address
+     * @param value
+     */
     public void engineerStoreWord(Unit address, Word value){        
       Integer[] block = calculateBlockFromAddress(address);
       String tag = this.calculateTagFromBlockID(block);
@@ -206,7 +216,10 @@ public class Cache implements IClockCycle {
         
     }   
     
-    
+    /**
+     * Cleans a block from cache and triggers a write-back if needed
+     * @param blockID 
+     */
     private void cleanBlock(Integer blockID){
         System.out.println("[Cache]: Freeing Cache Block "+blockID);
         if(dirty[blockID]){
@@ -267,6 +280,11 @@ public class Cache implements IClockCycle {
         return memory.getCacheBlockStart(address, Cache.BLOCK_SIZE);
     }
     
+    /**
+     * Calculates a tag... for now just comma delimited for debugging ease
+     * @param blockLocation
+     * @return 
+     */
     private String calculateTagFromBlockID(Integer[] blockLocation){               
         return blockLocation[0]+","+blockLocation[1];       
     }
