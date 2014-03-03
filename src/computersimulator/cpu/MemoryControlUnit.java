@@ -21,6 +21,8 @@ public class MemoryControlUnit implements IClockCycle {
     // MBR	20 bits	Memory Buffer Register: holds the word just fetched from or stored into memory
     private Word memoryBufferRegister;
     
+    private Cache cache;
+    
     
     // state is used by the fetch/store controller to determine the current operation
     private int state;
@@ -33,6 +35,8 @@ public class MemoryControlUnit implements IClockCycle {
     public MemoryControlUnit() {
         memory = new Word[MemoryControlUnit.BANK_SIZE][MemoryControlUnit.BANK_CELLS];     
         initializeMemoryToZero(); // Upon powering up, set all elements of memory to zero
+        
+        cache = new Cache(this);
         
         memoryAddressRegister = new Unit(13);
         memoryBufferRegister = new Word();
@@ -49,13 +53,11 @@ public class MemoryControlUnit implements IClockCycle {
     public void clockCycle(){
         switch(state){                                   
             case MemoryControlUnit.STATE_PRE_STORE:                
-                this.storeAddressInMemoryOperation();   
-                this.resetState();
+                this.cacheStoreAddressOperation();
                 break;
                 
             case MemoryControlUnit.STATE_PRE_FETCH:                                                     
-                this.fetchAddressOperation();
-                this.resetState();
+                this.cacheFetchAddressOperation();
                 break;
                             
             case MemoryControlUnit.STATE_NONE:
@@ -63,7 +65,7 @@ public class MemoryControlUnit implements IClockCycle {
                 
                 break;
         }
-    }
+    }   
     
 
     /**
@@ -133,6 +135,8 @@ public class MemoryControlUnit implements IClockCycle {
     
     public void signalStore(){
        this.state = MemoryControlUnit.STATE_PRE_STORE;
+       //@TODO : attempt cache write and clear the flag if successful
+       
     }
     
        
@@ -142,7 +146,7 @@ public class MemoryControlUnit implements IClockCycle {
      * @TODO: 8191 words are addressable via MAR despite only 2048 exist. (see pg 16)... means we need virtual memory?
      * @return Array{bankIndex,cellIndex}
      */
-    private int[] calculateActualMemoryLocation(Unit address) {
+    public int[] calculateActualMemoryLocation(Unit address) {
         // Load the addressRaw in MAR
         int addressRaw = address.getUnsignedValue();
                 
@@ -152,7 +156,7 @@ public class MemoryControlUnit implements IClockCycle {
         int bankIndex = (int)(addressRaw % MemoryControlUnit.BANK_SIZE);
         int cellIndex = (int)Math.floor(addressRaw /MemoryControlUnit.BANK_SIZE);
                
-        System.out.println("Calculated Memory Address: "+addressRaw+" as Bank: "+bankIndex+", Cell: "+cellIndex+")");
+        System.out.println("Calculated Memory Address: "+addressRaw+" as Bank: "+bankIndex+", Cell: "+cellIndex);
         
         if(bankIndex > MemoryControlUnit.BANK_SIZE){
             //throw new Exception("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
@@ -196,31 +200,24 @@ public class MemoryControlUnit implements IClockCycle {
         System.out.println("ENGINEER: Set Addr: "+address.getUnsignedValue()+"  ("+bankIndex+"/"+cellIndex+") to  Value: "+value);
         
         this.memory[bankIndex][cellIndex] = value;
-    }
+    }       
     
-    
-    /**
-     * fetchAddressOperation - This fetches an addressRaw specified by MAR, and
- puts the contents of that memory location into MBR. 
-     * Private because it is called by clockCycle.
-     */    
-    private void fetchAddressOperation(){
-        try {
-            // Load and Decode the Address in MAR
-            int[] addr = this.calculateActualMemoryLocation(this.memoryAddressRegister);
-            int bankIndex = addr[0]; 
-            int cellIndex = addr[1]; 
-        
-            // Copy the contents of that memory location into the MBR            
-            this.memoryBufferRegister = new Word(this.memory[bankIndex][cellIndex]);
+    private void cacheFetchAddressOperation(){
+        Word result = cache.fetchWord(memoryAddressRegister);
+        if(result!=null){
+            this.memoryBufferRegister = result;
+            this.resetState();
             System.out.println("-- Fetch MAR("+this.memoryAddressRegister.getUnsignedValue()+"): "+this.memoryBufferRegister);
-        } catch(Exception e){
-            //@TODO: Handle bad addressRaw (virtual memory?)
-            System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
-        }
-        
-        
-    }
+        } // else cache miss, try next time        
+    }    
+    
+    private void cacheStoreAddressOperation(){
+        Boolean result = cache.storeWord(memoryAddressRegister,memoryBufferRegister);
+        if(result==true){            
+            this.resetState();
+            System.out.println("-- Memory Set - MAR("+this.memoryAddressRegister.getUnsignedValue()+") to "+this.memoryBufferRegister);
+        } // else cache miss, try next time        
+    }  
     
     /**
      * storeAddressInMemoryOperation - This stores a MBR value into memory at
@@ -258,6 +255,39 @@ public class MemoryControlUnit implements IClockCycle {
             for (int i = 0; i < bank.length; i++) {
                 bank[i] = new Word(0); // set to zero
             }
+        }
+    }
+    
+    public Integer[] getCacheBlockStart(Unit address, int count){
+        int[] addr = this.calculateActualMemoryLocation(address);
+        
+        int blockID = addr[1] % count;
+        
+        Integer[] result = new Integer[2];
+        result[0] = addr[0];
+        result[1] = blockID;
+        
+        return result;
+        
+    }
+    
+    public Word[] getCacheBlock(Integer[] blockStart, int count){
+    
+        Word[] results = new Word[count];
+        
+        int j=0;
+        for(int i=blockStart[1];i<blockStart[1]+count;i++){
+            results[j] = this.memory[blockStart[0]][i];
+            j++;
+        }
+        
+        return results;
+    }
+    
+    public void writeCacheBlock(Word[] block, Integer[] blockStart){
+        int j=0;
+        for(int i=blockStart[1];i<blockStart[1]+block.length;i++){
+            this.memory[blockStart[0]][i] = block[j++];
         }
     }
     
