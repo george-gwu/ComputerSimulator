@@ -33,19 +33,18 @@ public class ComputerSimulator {
         opconsole.setComputer(computer); // pass computer instance into GUI
     
         ReadFilebyJava fileReader=new ReadFilebyJava();
-        fileReader.ReadFromFile(computer, new Unit(13,0));
+         fileReader.ReadFromFile(computer, new Unit(13,63));
         
         /***** Testing Data *****/
-        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 52), new Word(100));
-        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 100), new Word(1023));
-        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 152), new Word(255));
-        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 255), new Word(768));
-        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 223), new Word(500));
-        computer.getCpu().getControlUnit().setGeneralPurposeRegister(2, new Word(255));
-        computer.getCpu().getControlUnit().setIndexRegister(1, new Unit(13,100));
+              computer.getMemory().engineerSetMemoryLocation(new Unit(13, 128), new Word(256));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 256), new Word(1023));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 512), new Word(1024));
+        computer.getMemory().engineerSetMemoryLocation(new Unit(13, 383 ), new Word(768));
+   computer.getCpu().getControlUnit().setGeneralPurposeRegister(2, new Word(255));
+        computer.getCpu().getControlUnit().setIndexRegister(1, new Unit(13,255));
         computer.getMemory().setMAR(new Unit(13,1));
      //   computer.getMemory().setMBR(new Word(132731));
-        computer.getCpu().getControlUnit().setProgramCounter(new Unit(13, 1)); // Start at 1
+        computer.getCpu().getControlUnit().setProgramCounter(new Unit(13, 64)); // Start at 1
                 
         
         

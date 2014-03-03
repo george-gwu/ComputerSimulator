@@ -721,7 +721,7 @@ public class ControlUnit implements IClockCycle {
                     System.out.println("Micro-7: MBR <- M(MAR)");
                     // Micro 8: c(XFI) <- MBR              
                     int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
-                    this.setIndexRegister(XFI, this.memory.getMBR());
+                     this.setIndexRegister(XFI, new Unit(13,this.memory.getMBR().getUnsignedValue()));
 
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     System.out.println("COMPLETED INSTRUCTION: LDX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
@@ -750,7 +750,8 @@ public class ControlUnit implements IClockCycle {
               // Micro 7: MBR <- c(XFI)
               System.out.println("Micro 7: MBR <- c(XFI)");
               int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
-              memory.setMBR(this.getIndexRegister(XFI));
+            
+              memory.setMBR(new Word(this.getIndexRegister(XFI).getUnsignedValue()));
               memory.signalStore();            
                 
             default:
