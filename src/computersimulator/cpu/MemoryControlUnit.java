@@ -51,6 +51,7 @@ public class MemoryControlUnit implements IClockCycle {
      */
     @Override
     public void clockCycle(){
+        cache.clockCycle();
         switch(state){                                   
             case MemoryControlUnit.STATE_PRE_STORE:                
                 this.cacheStoreAddressOperation();
