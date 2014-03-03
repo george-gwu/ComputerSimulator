@@ -1460,6 +1460,11 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
      * Stop the machine
      */
     private void executeOpcodeHLT() throws HaltSystemException {        
+        
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: HLT");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
         throw new HaltSystemException();
     }   
     
