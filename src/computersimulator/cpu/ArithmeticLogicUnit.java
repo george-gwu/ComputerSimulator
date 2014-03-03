@@ -53,11 +53,15 @@ public class ArithmeticLogicUnit implements IClockCycle {
     /**
      * Clock cycle. This is the main function which causes the ALU to do work.
      *  This serves as a publicly accessible method, but delegates to other methods.
+     * @throws Exception    
      */
     @Override
-    public void clockCycle(){
+    public void clockCycle() throws Exception {
         switch(this.state){
             case ArithmeticLogicUnit.STATE_START_COMPUTATION:
+                if(this.operand1==null || this.operand2==null){
+                    throw new Exception("ALU Error Missing Operand");
+                }
                 this.compute();
                 break;
             case ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED:                

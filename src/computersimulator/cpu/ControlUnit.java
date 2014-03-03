@@ -286,11 +286,7 @@ public class ControlUnit implements IClockCycle {
      */
     @Override
     public void clockCycle() throws Exception {
-          this.instructionCycle();
-          if(this.blocked == true){
-              this.blocked=false;
-          }                         
-        
+          this.instructionCycle();                   
     }  
     
     /**
@@ -308,6 +304,7 @@ public class ControlUnit implements IClockCycle {
         if(microState==null){
             microState=0;
         }
+        this.blocked=false;             
         
         switch(this.state){
             case ControlUnit.STATE_FETCH_INSTRUCTION: // takes 2 cycles
@@ -340,9 +337,7 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("-- PC: "+pc);
                 this.memory.setMAR(pc);               
                 this.memory.signalFetch();               
-                this.microState=1;                  
-                
-                // no break, in case it was cached 
+                this.microState++; // no break in case it was cached
                 
             case 1:
                 if(!this.memory.isBusy()){ // block until memory read is ready
@@ -446,8 +441,7 @@ public class ControlUnit implements IClockCycle {
                             Unit addr = this.instructionRegisterDecoded.get("address");
                             this.memory.setMAR(addr);  
                             this.memory.signalFetch();
-                            this.microState=2;
-                            // no break in case of cache read
+                            this.microState++; // no break in case it was cached
                         case 2: // c(ADDR) from MBR, set to MAR
                             if(!this.memory.isBusy()){ // block until memory read is ready
                                 Word contentsOfAddr = this.memory.getMBR();
@@ -467,8 +461,7 @@ public class ControlUnit implements IClockCycle {
                             Unit location = new Unit(13, (contentsOfX + addr.getUnsignedValue()));
                             this.memory.setMAR(location);
                             this.memory.signalFetch();
-                            this.microState=2;    
-                            break;
+                            this.microState++; // no break in case it was cached
                         case 2:
                             if(!this.memory.isBusy()){ // block until memory read is ready
                                 Word contentsOfLocation = this.memory.getMBR();
@@ -508,7 +501,7 @@ public class ControlUnit implements IClockCycle {
             microstate (999) to signal completion. */
         if(this.microState < ControlUnit.MICROSTATE_EXECUTE_COMPLETE){
             int opcode = this.instructionRegisterDecoded.get("opcode").getUnsignedValue();
-            System.out.println("--EXECUTING OPCODE: "+ opcode);
+            System.out.println("--EXECUTING OPCODE: "+ opcode +", MicroState: "+microState);
             switch(opcode){
                 case ControlUnit.OPCODE_HLT:
                     this.executeOpcodeHLT();                    
@@ -591,7 +584,9 @@ public class ControlUnit implements IClockCycle {
                 default: // Unhandle opcode. Crash!
                     throw new Exception("Unhandled Opcode: "+opcode);                        
             }            
-            this.microState++; 
+            if(!this.blocked){ // if not blocked, move ahead
+                this.microState++; 
+            }
         } else { // MICROSTATE_EXECUTE_COMPLETE            
             if(this.nextProgramCounter==null){
                 // Micro-N: c(PC) + 1 -> PC  --- Increment PC
@@ -625,7 +620,7 @@ public class ControlUnit implements IClockCycle {
                 System.out.println("Micro-6: MAR <- EA");
                 memory.setMAR(this.effectiveAddress);  
                 memory.signalFetch();
-                // no break in case cached
+                this.microState++; // no break in case it was cached
                 
             default:
                 // Micro-7: MBR <- M(MAR)
@@ -669,7 +664,7 @@ public class ControlUnit implements IClockCycle {
            
               memory.setMBR(this.getGeneralPurposeRegister(RFI));
               memory.signalStore();
-              break;
+              this.microState++; // no break in case it was cached
                 
             default:
                 if(!memory.isBusy()){
@@ -695,7 +690,6 @@ public class ControlUnit implements IClockCycle {
        
                 // Micro-6: RF(RFI) <- EA
                 System.out.println("Micro-6: RF(RFI) <- EA");
-               // memory.setMAR(this.effectiveAddress); 
                 int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
                 this.setGeneralPurposeRegister(RFI, new Word(this.effectiveAddress.getUnsignedValue()));
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -714,7 +708,8 @@ public class ControlUnit implements IClockCycle {
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR<-EA");
               memory.setMAR(this.effectiveAddress);
-              memory.signalFetch();              
+              memory.signalFetch();  
+              this.microState++; // no break in case it was cached
                 
             default:
                 if(!memory.isBusy()){
@@ -753,7 +748,8 @@ public class ControlUnit implements IClockCycle {
               int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
             
               memory.setMBR(new Word(this.getIndexRegister(XFI).getUnsignedValue()));
-              memory.signalStore();            
+              memory.signalStore(); 
+              this.microState++; // no break in case it was cached
                 
             default:
               if(!memory.isBusy()){
@@ -783,7 +779,8 @@ public class ControlUnit implements IClockCycle {
               // Micro-6: MAR <- EA
               System.out.println("Micro-6: MAR <- EA");
               memory.setMAR(this.effectiveAddress);
-              memory.signalFetch();            
+              memory.signalFetch();  
+              this.microState++; // no break in case it was cached
                 
             case 1:              
                 if(!memory.isBusy()){
@@ -794,7 +791,6 @@ public class ControlUnit implements IClockCycle {
                     alu.setOperand2(this.memory.getMBR());  // This might be possible to run in cycle 1                    
                 } else {
                     this.signalBlockingMicroFunction();
-                    //this.microState--; // decrement to stay in place
                 }                
             break;
                 
@@ -843,6 +839,7 @@ public class ControlUnit implements IClockCycle {
               System.out.println("Micro-6: MAR <- EA");
               memory.setMAR(this.effectiveAddress);
               memory.signalFetch();
+              this.microState++; // no break in case it was cached
                 
             case 1:
                 if(!memory.isBusy()){
@@ -853,7 +850,6 @@ public class ControlUnit implements IClockCycle {
                     alu.setOperand2(this.memory.getMBR());                  
                 } else {
                     this.signalBlockingMicroFunction();
-                  //  this.microState--; // decrement to stay in place
                 } 
                 break;
             case 2:                                     
