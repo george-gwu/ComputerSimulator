@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package computersimulator.io;
 import computersimulator.components.*;
 import java.io.BufferedReader;
@@ -21,21 +15,14 @@ import java.util.logging.Logger;
 public class ReadFilebyJava {
 
     
-    public ReadFilebyJava() 
-    {
-        
-   
-        
-        
+    public ReadFilebyJava(){
     }
-    public void ReadFromFile(Computer computer,Unit addr)
-    {
+    public void ReadFromFile(String filename, Computer computer,Unit addr){
              try {
-             FileReader reader=new FileReader("src/computersimulator/io/input.txt");
+             FileReader reader=new FileReader(filename);
              BufferedReader br = new BufferedReader(reader);
              String strLine=null;
-             while((strLine=br.readLine())!=null)
-             {
+             while((strLine=br.readLine())!=null){
                  System.out.println(strLine);
                  String str=strLine.substring(0, 20);
                  addr.setValue(addr.getUnsignedValue()+1);

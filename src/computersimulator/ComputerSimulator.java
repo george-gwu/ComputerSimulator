@@ -26,13 +26,19 @@ public class ComputerSimulator {
          *      reader to memory, then transfer execution to program.
          *      The card reader is implemented as a file. (via IO Controller?)
          */
-                          
-        
+            
         OperatorConsole opconsole = new OperatorConsole();        
         opconsole.setComputer(computer); // pass computer instance into GUI
     
+        String filename = null;
+        if(args.length>0){
+            filename = args[0];
+        } else {
+            filename = "src/computersimulator/io/input.txt";
+        }
+ 
         ReadFilebyJava fileReader=new ReadFilebyJava();
-        fileReader.ReadFromFile(computer, new Unit(13,63));
+        fileReader.ReadFromFile(filename, computer, new Unit(13,63));
         
         /***** Testing Data *****/
         computer.getMemory().engineerSetMemoryLocation(new Unit(13, 128), new Word(256));
