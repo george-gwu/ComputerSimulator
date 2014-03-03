@@ -789,19 +789,19 @@ public class ControlUnit implements IClockCycle {
                     // Micro-7: MBR <- M(MAR)
                     System.out.println("Micro-7: MBR <- M(MAR)");
                     // Micro-8: OP1 <- MBR
-                    System.out.println("Micro-8: OP1 <- MBR");
-                    alu.setOperand1(this.memory.getMBR());  // This might be possible to run in cycle 1                    
+                    System.out.println("Micro-8: OP2 <- MBR");
+                    alu.setOperand2(this.memory.getMBR());  // This might be possible to run in cycle 1                    
                 } else {
                     this.signalBlockingMicroFunction();
-                    this.microState--; // decrement to stay in place
+                    //this.microState--; // decrement to stay in place
                 }                
             break;
                 
             case 2:
-              // Micro-9: OP2 <- RF(RFI)
+              // Micro-9: OP1 <- RF(RFI)
               System.out.println("Micro-9: OP2 <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
-              alu.setOperand2(this.getGeneralPurposeRegister(RFI));
+              alu.setOperand1(this.getGeneralPurposeRegister(RFI));
             break;
                 
             case 3:
@@ -848,19 +848,19 @@ public class ControlUnit implements IClockCycle {
                     // Micro-7: MBR <- M(MAR)
                     System.out.println("Micro-7: MBR <- M(MAR)");
                     // Micro-8: OP1 <- MBR
-                    System.out.println("Micro-8: OP1 <- MBR");
-                    alu.setOperand1(this.memory.getMBR());                  
+                    System.out.println("Micro-8: OP2 <- MBR");
+                    alu.setOperand2(this.memory.getMBR());                  
                 } else {
                     this.signalBlockingMicroFunction();
-                    this.microState--; // decrement to stay in place
+                  //  this.microState--; // decrement to stay in place
                 } 
                 break;
             case 2:                                     
             
               // Micro-9: OP2 <- RF(RFI)
-              System.out.println("Micro-9: OP2 <- RF(RFI)");
+              System.out.println("Micro-9: OP1 <- RF(RFI)");
               int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
-              alu.setOperand2(this.getGeneralPurposeRegister(RFI));
+              alu.setOperand1(this.getGeneralPurposeRegister(RFI));
             break;
                 
             case 3:
