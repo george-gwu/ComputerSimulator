@@ -259,7 +259,7 @@ public class MemoryControlUnit implements IClockCycle {
         int j=0;
         for(int i=blockStart[1];i<blockStart[1]+count;i++){
             results[j] = this.memory[blockStart[0]][i];
-            System.out.println("Copied("+j+"): "+results[j]);
+            //System.out.println("Copied("+j+"): "+results[j]);
             j++;
         }
         
