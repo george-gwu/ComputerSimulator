@@ -205,7 +205,7 @@ public class Cache implements IClockCycle {
         
         Integer oldest=0;
         for(int j=1;j<Cache.CACHE_SIZE;j++){
-            if(lastUsed[j] > lastUsed[oldest]){
+            if(lastUsed[j] < lastUsed[oldest]){
                 oldest = j;
             }
         }
