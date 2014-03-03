@@ -175,14 +175,9 @@ public class MemoryControlUnit implements IClockCycle {
      * @param address
      * @return Word memory value
      */
-    public Word engineerFetchByMemoryLocation(Unit address){
-        // Decode the Address
-        int[] addr = this.calculateActualMemoryLocation(address);             
-        int bankIndex = addr[0]; 
-        int cellIndex = addr[1]; 
-        
-        Word value = new Word(this.memory[bankIndex][cellIndex]);
-        System.out.println("ENGINEER: Fetch Addr: "+address.getUnsignedValue()+"  ("+bankIndex+"/"+cellIndex+") ---  Value: "+value);
+    public Word engineerFetchByMemoryLocation(Unit address){       
+        Word value = cache.engineerFetchWord(address);
+        System.out.println("ENGINEER: Fetch Addr: "+address.getUnsignedValue()+"  ---  Value: "+value);        
         
         return value;
     }
@@ -193,14 +188,8 @@ public class MemoryControlUnit implements IClockCycle {
      * @param value
      */
     public void engineerSetMemoryLocation(Unit address, Word value){
-         // Decode the Address                
-        int[] addr = this.calculateActualMemoryLocation(address);
-        int bankIndex = addr[0]; 
-        int cellIndex = addr[1];        
-        
-        System.out.println("ENGINEER: Set Addr: "+address.getUnsignedValue()+"  ("+bankIndex+"/"+cellIndex+") to  Value: "+value);
-        
-        this.memory[bankIndex][cellIndex] = value;
+        cache.engineerStoreWord(address, value);
+        System.out.println("ENGINEER: Set Addr: "+address.getUnsignedValue()+" to  Value: "+value);        
     }       
     
     private void cacheFetchAddressOperation(){

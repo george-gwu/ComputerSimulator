@@ -28,13 +28,13 @@ public class Cache implements IClockCycle {
     public Cache(MemoryControlUnit mem){
         cache = new Word[Cache.CACHE_SIZE][Cache.BLOCK_SIZE];            
         
-        tags = new String[Cache.BLOCK_SIZE];
-        dirty = new boolean[Cache.BLOCK_SIZE];
-        lastUsed = new Long[Cache.BLOCK_SIZE];
+        tags = new String[Cache.CACHE_SIZE];
+        dirty = new boolean[Cache.CACHE_SIZE];
+        lastUsed = new Long[Cache.CACHE_SIZE];
         location = new HashMap();
         
         //initialize cache table rows
-        for(int i=0; i<Cache.BLOCK_SIZE;i++){
+        for(int i=0; i<Cache.CACHE_SIZE;i++){
             tags[i]=null;
             dirty[i]=false;
             lastUsed[i]=null;
@@ -67,7 +67,7 @@ public class Cache implements IClockCycle {
             
             
             int[] rawMemoryAddress = memory.calculateActualMemoryLocation(address);           
-            int cacheAddress = rawMemoryAddress[1] % Cache.BLOCK_SIZE; //@OTODO: Test this.. does it wrap weird?
+            int cacheAddress = rawMemoryAddress[1] % Cache.BLOCK_SIZE; 
             
             lastUsed[blockID] = System.currentTimeMillis();
             
@@ -82,13 +82,38 @@ public class Cache implements IClockCycle {
         }                
     }
     
+  /**
+     * Primary interface for memory fetch, will return a word if it is a cache hit
+     * @param address
+     * @return
+     */
+    public Word engineerFetchWord(Unit address){        
+        Integer[] block = calculateBlockFromAddress(address);
+        String tag = this.calculateTagFromBlockID(block);
+        
+        if(!this.isBlockAvailable(tag)){  
+            this.fetchBlock(block);   
+        }
+        
+        int blockID = this.getBlockLocation(tag);            
+
+        int[] rawMemoryAddress = memory.calculateActualMemoryLocation(address);           
+        int cacheAddress = rawMemoryAddress[1] % Cache.BLOCK_SIZE; 
+
+        return this.cache[blockID][cacheAddress];
+
+    }    
+    
     public Boolean storeWord(Unit address, Word value){        
-      String tag = this.calculateTagFromBlockID(calculateBlockFromAddress(address));
+      Integer[] block = calculateBlockFromAddress(address);
+      String tag = this.calculateTagFromBlockID(block);
       System.out.println("[Cache]: Store requested for M("+address.getUnsignedValue()+") -> Block: "+tag);
         if(this.isBlockAvailable(tag)){  // CACHE HIT!
             System.out.println("[Cache]: HIT during store ("+tag+")");
             int blockID = this.getBlockLocation(tag);            
-            int cacheAddress = address.getUnsignedValue() % Cache.BLOCK_SIZE; //@OTODO: Test this.. does it wrap weird?
+            
+            int[] rawMemoryAddress = memory.calculateActualMemoryLocation(address);           
+            int cacheAddress = rawMemoryAddress[1] % Cache.BLOCK_SIZE;           
             
             lastUsed[blockID] = System.currentTimeMillis();
             dirty[blockID] = true;
@@ -99,14 +124,34 @@ public class Cache implements IClockCycle {
             return true;
             
         } else { // CACHE miss, do fetch for next cycle
-            System.out.println("[Cache]: MISS during store ("+tag+")");
-            Integer[] block = calculateBlockFromAddress(address);
+            System.out.println("[Cache]: MISS during store ("+tag+")");            
             
             this.fetchBlock(block);            
             
             return false; // queued (try again next cycle)
         } 
     }
+    
+    
+    public void engineerStoreWord(Unit address, Word value){        
+      Integer[] block = calculateBlockFromAddress(address);
+      String tag = this.calculateTagFromBlockID(block);
+      System.out.println("[Cache]: Store requested for M("+address.getUnsignedValue()+") -> Block: "+tag);
+        if(!this.isBlockAvailable(tag)){             
+            this.fetchBlock(block);            
+        }
+        int blockID = this.getBlockLocation(tag);            
+        
+        int[] rawMemoryAddress = memory.calculateActualMemoryLocation(address);           
+        int cacheAddress = rawMemoryAddress[1] % Cache.BLOCK_SIZE; 
+
+
+        lastUsed[blockID] = System.currentTimeMillis();
+        dirty[blockID] = true;
+
+        this.cache[blockID][cacheAddress]=value;
+            
+    }    
     
     /**
      * Test if word is in cache
