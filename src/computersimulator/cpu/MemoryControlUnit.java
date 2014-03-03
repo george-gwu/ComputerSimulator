@@ -219,26 +219,6 @@ public class MemoryControlUnit implements IClockCycle {
         } // else cache miss, try next time        
     }  
     
-    /**
-     * storeAddressInMemoryOperation - This stores a MBR value into memory at
-     * the location specified by MAR.
-     * Private because it is called by clockCycle.
-     */
-    private void storeAddressInMemoryOperation(){   
-        try {        
-            // Load and Decode the Address in MAR
-            int[] addr = this.calculateActualMemoryLocation(this.memoryAddressRegister);
-            int bankIndex = addr[0]; 
-            int cellIndex = addr[1];        
-
-            //Copy the value from MDR to Memory                
-            this.memory[bankIndex][cellIndex] = new Word(this.memoryBufferRegister);
-            System.out.println("-- Memory Set - MAR("+this.memoryAddressRegister.getUnsignedValue()+") to "+this.memoryBufferRegister);
-        } catch(Exception e){
-            //@TODO: Handle bad addressRaw (virtual memory?)
-            System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
-        }                
-    }
     
     /**
      * Reset state
