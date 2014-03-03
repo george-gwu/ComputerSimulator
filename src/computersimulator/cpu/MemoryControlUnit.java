@@ -241,8 +241,8 @@ public class MemoryControlUnit implements IClockCycle {
     
     public Integer[] getCacheBlockStart(Unit address, int count){
         int[] addr = this.calculateActualMemoryLocation(address);
-        
-        int blockID = addr[1] % count;
+
+        int blockID = (int)Math.floor(addr[1] / count);
         
         Integer[] result = new Integer[2];
         result[0] = addr[0];
@@ -259,6 +259,7 @@ public class MemoryControlUnit implements IClockCycle {
         int j=0;
         for(int i=blockStart[1];i<blockStart[1]+count;i++){
             results[j] = this.memory[blockStart[0]][i];
+            System.out.println("Copied("+j+"): "+results[j]);
             j++;
         }
         

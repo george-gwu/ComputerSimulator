@@ -44,6 +44,8 @@ public class ComputerSimulator {
         computer.getMemory().setMAR(new Unit(13,1));
         computer.getCpu().getControlUnit().setProgramCounter(new Unit(13, 1)); // Start at 1
         /**************************/
+        
+        // JMP,64  acts as our bootloader
         computer.getMemory().engineerSetMemoryLocation(new Unit(13, 1), Word.WordFromBinaryString("00110100000001000000"));
                 
         

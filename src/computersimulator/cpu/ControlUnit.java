@@ -333,6 +333,7 @@ public class ControlUnit implements IClockCycle {
         switch(this.microState){            
             case 0:
                 this.clearConditions();   // Clear CC on new instruction
+                this.nextProgramCounter=null;
                 System.out.println("Micro-0: PC -> MAR");
                 // Micro-0: PC -> MAR
                 Unit pc = this.getProgramCounter();
@@ -595,7 +596,7 @@ public class ControlUnit implements IClockCycle {
             if(this.nextProgramCounter==null){
                 // Micro-N: c(PC) + 1 -> PC  --- Increment PC
                 System.out.println("Micro-Final: c(PC) + 1 -> PC (Increment PC)");
-                this.getProgramCounter().setValue(this.getProgramCounter().getUnsignedValue() + 1); 
+                this.getProgramCounter().setValue(this.getProgramCounter().getUnsignedValue() + 1);                 
             } else { 
                 // Micro-N PC <- tempPC (internal to our simulator)
                 this.getProgramCounter().setValue(this.nextProgramCounter.getUnsignedValue());

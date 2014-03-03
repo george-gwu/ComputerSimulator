@@ -60,6 +60,7 @@ public class Cache implements IClockCycle {
     public Word fetchWord(Unit address){        
         Integer[] block = calculateBlockFromAddress(address);
         String tag = this.calculateTagFromBlockID(block);
+        System.out.println("[Cache]: Read requested for M("+address.getUnsignedValue()+") -> Block: "+tag);
         if(this.isBlockAvailable(tag)){  // CACHE HIT!
             System.out.println("[Cache]: HIT during fetch ("+tag+")");
             int blockID = this.getBlockLocation(tag);            
@@ -83,6 +84,7 @@ public class Cache implements IClockCycle {
     
     public Boolean storeWord(Unit address, Word value){        
       String tag = this.calculateTagFromBlockID(calculateBlockFromAddress(address));
+      System.out.println("[Cache]: Store requested for M("+address.getUnsignedValue()+") -> Block: "+tag);
         if(this.isBlockAvailable(tag)){  // CACHE HIT!
             System.out.println("[Cache]: HIT during store ("+tag+")");
             int blockID = this.getBlockLocation(tag);            
