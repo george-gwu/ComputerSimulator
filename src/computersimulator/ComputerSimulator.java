@@ -34,7 +34,7 @@ public class ComputerSimulator {
         if(args.length>0){
             filename = args[0];
         } else {
-            filename = "src/computersimulator/io/input.txt";
+            filename = "input.txt";
         }
  
         ReadFilebyJava fileReader=new ReadFilebyJava();
