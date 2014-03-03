@@ -1273,21 +1273,18 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
 
 
     */
-    private void executeOpcodeTRR()
-    {
-        int RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
-        int RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
-        if(this.getGeneralPurposeRegister(RFI1).getUnsignedValue()==this.getGeneralPurposeRegister(RFI2).getUnsignedValue())
-        {
-            this.setCondition(3);
-        }
-        else
-        {
-            this.unsetCondition(3);
+    private void executeOpcodeTRR(){
+        int rx=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+        int ry=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+        if(this.getGeneralPurposeRegister(rx).getBinaryString().equals(this.getGeneralPurposeRegister(ry).getBinaryString())){
+            this.setCondition(ControlUnit.CONDITION_REGISTER_EQUALORNOT);
+        } else {
+            this.unsetCondition(ControlUnit.CONDITION_REGISTER_EQUALORNOT);
         }
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("COMPLETED INSTRUCTION:TRR RF("+RFI1+")and RF("+RFI2+")is "+((this.getConditionCode(3)==1)?"equal":"unequal")+"  CC is"+this.getConditionCode(3));
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");      
+        System.out.println("COMPLETED INSTRUCTION:TRR RF("+rx+"/"+this.getGeneralPurposeRegister(rx)+") and RF("+ry+"/"+this.getGeneralPurposeRegister(ry)+") are "+((this.getConditionCode(ControlUnit.CONDITION_REGISTER_EQUALORNOT)==1)?"equal":"not equal"));
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
+        this.signalMicroStateExecutionComplete();     
     }
     
     /*
