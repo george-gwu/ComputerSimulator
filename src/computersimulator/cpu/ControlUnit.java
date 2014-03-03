@@ -1355,20 +1355,22 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
      * rx, rx+1 <- c(rx) * c(ry)
      */
     private void executeOpcodeMLT() {
+        Integer rx,ry;
         switch(this.microState){
             case 0:
                 // Micro-6: OP1 <- RF(RFI1)                
-                Integer RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
-                Unit contentOfRFI1=new Unit(13,this.getGeneralPurposeRegister(RFI1).getUnsignedValue());
-                alu.setOperand1(contentOfRFI1);
-                System.out.println("Micro-6: OP1 <- RF(RFI1) - "+alu.getOperand1());
+                rx=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+                Unit contentsOfRx=new Unit(13,this.getGeneralPurposeRegister(rx).getUnsignedValue());
+                alu.setOperand1(contentsOfRx);
+                System.out.println("Micro-6: OP1 <- c(rx) - "+alu.getOperand1());
             break;
                         
             case 1:
                 // Micro-7: OP2 <- RF(RFI2)   
-                Integer RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
-                Unit contentOfRFI2=new Unit(13,this.getGeneralPurposeRegister(RFI2).getUnsignedValue());
-                alu.setOperand2(contentOfRFI2);
+                ry=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+                Unit contentsOfRy=new Unit(13,this.getGeneralPurposeRegister(ry).getUnsignedValue());
+                alu.setOperand2(contentsOfRy);
+                System.out.println("Micro-7: OP2 <- c(ry) - "+alu.getOperand2());
             break;
                 
             case 2:
@@ -1385,19 +1387,26 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
             break;
                 
             case 4:
-                // Micro-10: RF(RFI1) <- RES
-                //           RF(RFI2) <- RES
-                System.out.println("Micro-10: RF(RFI1) <- RES - "+alu.getResult());
-                System.out.println("        : RF(RFI2) <- RES - "+alu.getResult());
-                RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
-                RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+                // Micro-10: c(RX) <- RES(HI), c(RX+1) <- RES(LOW)
+                System.out.println("Micro-10:  c(RX) <- RES(HI), c(RX+1) <- RES(LOW)");
                 
-                Integer lowBits = alu.getLowOrderBits(alu.getResult().getUnsignedValue());
-                Integer highBits = alu.getHighOrderBits(alu.getResult().getUnsignedValue());
-                this.setGeneralPurposeRegister(RFI1, new Word(lowBits));
-                this.setGeneralPurposeRegister(RFI2, new Word(highBits));
+                rx=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();              
+                Integer rxPlusOne = rx+1;
+                if(rxPlusOne>2){
+                    System.out.println("MLT: Invalid Value for RX (0-2).");
+                }
+                
+                Unit result40Bit = alu.getResult();
+                String result40String = result40Bit.getBinaryString();
+                
+                Word highBits = Word.WordFromBinaryString(result40String.substring(0,20));
+                Word lowBits = Word.WordFromBinaryString(result40String.substring(20));                               
+                
+                this.setGeneralPurposeRegister(rx, highBits);
+                this.setGeneralPurposeRegister(rxPlusOne, lowBits);
+                                
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION:MLT RF("+RFI1+"), RF("+RFI2+")is "+this.getGeneralPurposeRegister(RFI1).getBinaryString());
+                System.out.println("COMPLETED INSTRUCTION:MLT "+alu.getOperand1()+" * "+alu.getOperand2()+" = "+highBits.getBinaryString()+" "+lowBits.getBinaryString()+" ("+result40Bit+")");
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
                 this.signalMicroStateExecutionComplete();
             break;          
@@ -1409,27 +1418,28 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
      * rx, rx+1 <- c(rx) / c(ry)
      */
     private void executeOpcodeDVD() {
+        Integer rx,ry;
         switch(this.microState){
             case 0:
                 // Micro-6: OP1 <- RF(RFI1)                
-                Integer RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
-                Unit contentOfRFI1=new Unit(13,this.getGeneralPurposeRegister(RFI1).getUnsignedValue());
-                alu.setOperand1(contentOfRFI1);
-                System.out.println("Micro-6: OP1 <- RF(RFI1) - "+alu.getOperand1());
+                rx=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
+                Unit contentsOfRx=new Unit(13,this.getGeneralPurposeRegister(rx).getUnsignedValue());
+                alu.setOperand1(contentsOfRx);
+                System.out.println("Micro-6: OP1 <- c(rx) - "+alu.getOperand1());
             break;
                         
             case 1:
                 // Micro-7: OP2 <- RF(RFI2)   
-                Integer RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
-                Unit contentOfRFI2=new Unit(13,this.getGeneralPurposeRegister(RFI2).getUnsignedValue());
-                alu.setOperand2(contentOfRFI2);
+                ry=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+                Unit contentsOfRy=new Unit(13,this.getGeneralPurposeRegister(ry).getUnsignedValue());
+                alu.setOperand2(contentsOfRy);
+                System.out.println("Micro-7: OP2 <- c(ry) - "+alu.getOperand2());
             break;
                 
             case 2:
                 // Micro-8: CTRL <- OPCODE
                 System.out.println("Micro-8: CTRL <- OPCODE");
-                alu.setControl(ArithmeticLogicUnit.CONTROL_DIVIDE_QUOTIENT);
-                alu.setControl(ArithmeticLogicUnit.CONTROL_DIVIDE_REMINDER);
+                alu.setControl(ArithmeticLogicUnit.CONTROL_DIVIDE);
                 alu.signalReadyToStartComputation();
             break;
                 
@@ -1440,20 +1450,29 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
             break;
                 
             case 4:
-                // Micro-10: RF(RFI1) <- RES
-                //           RF(RFI2) <- RES
-                System.out.println("Micro-10: RF(RFI1) <- RES - "+alu.getResult());
-                System.out.println("        : RF(RFI2) <- RES - "+alu.getResult());
-                RFI1=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
-                RFI2=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
-                this.setGeneralPurposeRegister(RFI1, new Word(alu.getResult()));
-                this.setGeneralPurposeRegister(RFI2, new Word(alu.getResult()));
+                // Micro-10: c(RX) <- RES(quotient), c(RX+1) <- RES(remainder)
+                System.out.println("Micro-10:  c(RX) <- RES(QUOTIENT), c(RX+1) <- RES(REMAINDER)");
+                
+                rx=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();              
+                Integer rxPlusOne = rx+1;
+                if(rxPlusOne>2){
+                    System.out.println("DVD: Invalid Value for RX (0-2).");
+                }
+                
+                Unit result40Bit = alu.getResult();
+                String result40String = result40Bit.getBinaryString();
+                
+                Word quotient = Word.WordFromBinaryString(result40String.substring(0,20));
+                Word remainder = Word.WordFromBinaryString(result40String.substring(20));                               
+                
+                this.setGeneralPurposeRegister(rx, quotient);
+                this.setGeneralPurposeRegister(rxPlusOne, remainder);
+                                
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION:DVD RF("+RFI1+"), RF("+RFI2+")is "+this.getGeneralPurposeRegister(RFI1).getBinaryString());
+                System.out.println("COMPLETED INSTRUCTION:DVD "+alu.getOperand1()+" / "+alu.getOperand2()+" = "+quotient.getSignedValue()+"r "+remainder.getSignedValue());
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
                 this.signalMicroStateExecutionComplete();
-            break;          
-        }  
+        }
     }
         
     /**

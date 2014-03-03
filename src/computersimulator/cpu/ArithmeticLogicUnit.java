@@ -1,6 +1,7 @@
 package computersimulator.cpu;
 
 import computersimulator.components.Unit;
+import computersimulator.components.Word;
 
 /**
  * This is the ALU class. It receives 3 inputs, processes them, and sets an 
@@ -24,8 +25,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
     public final static int CONTROL_ADD=1;
     public final static int CONTROL_SUBTRACT=2;  
     public final static int CONTROL_MULTIPLY=3;
-    public final static int CONTROL_DIVIDE_QUOTIENT=4;
-    public final static int CONTROL_DIVIDE_REMINDER=5;
+    public final static int CONTROL_DIVIDE=4;
     
     
     // RES - Unit - Up to 20 Bits
@@ -95,14 +95,12 @@ public class ArithmeticLogicUnit implements IClockCycle {
             case ArithmeticLogicUnit.CONTROL_MULTIPLY:
                 this.setResult(this.multiply(operand1, operand2));                 
                 break;
-            case ArithmeticLogicUnit.CONTROL_DIVIDE_QUOTIENT:
-                this.setResult(this.divideQuotient(operand1, operand2)); 
-            case ArithmeticLogicUnit.CONTROL_DIVIDE_REMINDER:
-                this.setResult(this.divideQuotient(operand1, operand2)); 
+            case ArithmeticLogicUnit.CONTROL_DIVIDE:
+                this.setResult(this.divide(operand1, operand2)); 
             break;
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
-                //@TODO Handle error.
+                System.out.println("Unhandled ALU operation");
                 break;
         }                
         // Reset inputs & set state to finished
@@ -299,8 +297,15 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @return result of multiplication
      */
     private Unit multiply(Unit operand1, Unit operand2){
-        Integer res = operand1.getSignedValue() * operand2.getSignedValue();
-        return new Unit(operand1.getSize(), res);
+        long resultLong = (long)operand1.getSignedValue() * (long)operand2.getSignedValue();
+        String binaryResult =Long.toBinaryString(resultLong);
+        
+        String truncatedResult = binaryResult.substring(binaryResult.length()-40);     
+        String remainder = binaryResult.substring(0, binaryResult.length() - truncatedResult.length());
+        
+        System.out.println("Remainder: "+remainder);
+        
+        return Unit.UnitFromBinaryString(truncatedResult); // 40 bit result
     }
     
      /**
@@ -309,35 +314,18 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @param operand2
      * @return result of division
      */
-    private Unit divideQuotient(Unit operand1, Unit operand2){
-        Integer res = operand1.getSignedValue() / operand2.getSignedValue();
-        return new Unit(operand1.getSize(), res);
-    }
-    
-    /**
-     * Divide operation - calculates reminder
-     * @param operand1
-     * @param operand2
-     * @return result of division
-     */
-    private Unit divideReminder(Unit operand1, Unit operand2){
-        Integer res = operand1.getSignedValue() % operand2.getSignedValue();
-        return new Unit(operand1.getSize(), res);
-    }
-    
-    /**
-     * Get low order 20 bits
-     * @param index 
-     */
-    public Integer getLowOrderBits(Integer index) {
-        return index & 0xfffff;                     
-    }
-    
-    /**
-     * Get high order 20 bits
-     * @param index 
-     */
-    public Integer getHighOrderBits(Integer index) {
-        return (index >> 12) & 0xfffff;             
-    }
+    private Unit divide(Unit operand1, Unit operand2){
+        int resultQuotient = (int)Math.floor((operand1.getSignedValue() / operand2.getSignedValue()));
+        int resultRemainder = operand1.getSignedValue() % operand2.getSignedValue();
+        
+        Word quotient = new Word(resultQuotient);
+        Word remainder = new Word(resultRemainder);
+        
+        // Overload quotient & remainder into one 40 bit value
+        Unit result = new Unit(40);
+        result.setValueBinary(quotient.getBinaryString() + remainder.getBinaryString());
+        
+        
+        return result; // 40 bit result
+    }      
 }
