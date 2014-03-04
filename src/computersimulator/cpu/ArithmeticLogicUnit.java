@@ -300,10 +300,15 @@ public class ArithmeticLogicUnit implements IClockCycle {
         long resultLong = (long)operand1.getSignedValue() * (long)operand2.getSignedValue();
         String binaryResult =Long.toBinaryString(resultLong);
         
-        String truncatedResult = binaryResult.substring(binaryResult.length()-40);     
-        String remainder = binaryResult.substring(0, binaryResult.length() - truncatedResult.length());
+        do{ // sign extend result
+            binaryResult = "0" + binaryResult;
+        }while(binaryResult.length()<40);
         
-        System.out.println("Remainder: "+remainder);
+        String truncatedResult = binaryResult.substring(binaryResult.length()-40);     
+        
+        if(binaryResult.length()>40){
+            this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_OVERFLOW);
+        }        
         
         return Unit.UnitFromBinaryString(truncatedResult); // 40 bit result
     }

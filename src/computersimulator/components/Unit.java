@@ -25,8 +25,8 @@ public class Unit {
 
     
     public Unit(int Size, int Value){
-        if(Size>32 || Size<1){
-            throw new java.lang.ArithmeticException("Unit size valid range 1-32 ("+Size+")");
+        if(Size>64 || Size<1){
+            throw new java.lang.ArithmeticException("Unit size valid range 1-64 ("+Size+")");
            
         }
         this.size = Size;

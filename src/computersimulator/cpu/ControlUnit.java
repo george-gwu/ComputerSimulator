@@ -1357,7 +1357,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
             case 0:
                 // Micro-6: OP1 <- RF(RFI1)                
                 rx=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
-                Unit contentsOfRx=new Unit(13,this.getGeneralPurposeRegister(rx).getUnsignedValue());
+                Unit contentsOfRx=this.getGeneralPurposeRegister(rx);
                 alu.setOperand1(contentsOfRx);
                 System.out.println("Micro-6: OP1 <- c(rx) - "+alu.getOperand1());
             break;
@@ -1365,7 +1365,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
             case 1:
                 // Micro-7: OP2 <- RF(RFI2)   
                 ry=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
-                Unit contentsOfRy=new Unit(13,this.getGeneralPurposeRegister(ry).getUnsignedValue());
+                Unit contentsOfRy=this.getGeneralPurposeRegister(ry);
                 alu.setOperand2(contentsOfRy);
                 System.out.println("Micro-7: OP2 <- c(ry) - "+alu.getOperand2());
             break;
@@ -1403,7 +1403,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
                 this.setGeneralPurposeRegister(rxPlusOne, lowBits);
                                 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION:MLT "+alu.getOperand1()+" * "+alu.getOperand2()+" = "+highBits.getBinaryString()+" "+lowBits.getBinaryString()+" ("+result40Bit+")");
+                System.out.println("COMPLETED INSTRUCTION:MLT = "+highBits.getBinaryString()+" "+lowBits.getBinaryString()+" ("+result40Bit+")");
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
                 this.signalMicroStateExecutionComplete();
             break;          
@@ -1420,7 +1420,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
             case 0:
                 // Micro-6: OP1 <- RF(RFI1)                
                 rx=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();
-                Unit contentsOfRx=new Unit(13,this.getGeneralPurposeRegister(rx).getUnsignedValue());
+                Unit contentsOfRx=this.getGeneralPurposeRegister(rx);
                 alu.setOperand1(contentsOfRx);
                 System.out.println("Micro-6: OP1 <- c(rx) - "+alu.getOperand1());
             break;
@@ -1428,7 +1428,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
             case 1:
                 // Micro-7: OP2 <- RF(RFI2)   
                 ry=this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
-                Unit contentsOfRy=new Unit(13,this.getGeneralPurposeRegister(ry).getUnsignedValue());
+                Unit contentsOfRy=this.getGeneralPurposeRegister(ry);
                 alu.setOperand2(contentsOfRy);
                 System.out.println("Micro-7: OP2 <- c(ry) - "+alu.getOperand2());
             break;
@@ -1466,7 +1466,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
                 this.setGeneralPurposeRegister(rxPlusOne, remainder);
                                 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION:DVD "+alu.getOperand1()+" / "+alu.getOperand2()+" = "+quotient.getSignedValue()+"r "+remainder.getSignedValue());
+                System.out.println("COMPLETED INSTRUCTION:DVD = "+quotient.getSignedValue()+"r "+remainder.getSignedValue());
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
                 this.signalMicroStateExecutionComplete();
         }
