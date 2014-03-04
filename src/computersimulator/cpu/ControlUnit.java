@@ -1168,7 +1168,7 @@ public class ControlUnit implements IClockCycle {
       switch(this.microState){
             case 0:
                 // R0 <- Immed (Immed is stored in ADDR)        
-                this.setGeneralPurposeRegister(0, new Word(this.instructionRegisterDecoded.get("address")));
+                this.setGeneralPurposeRegister(0, new Word(this.instructionRegisterDecoded.get("address").getUnsignedValue()));
                 System.out.println("Micro-6: R0 <- Immediate");
             break;
                 
