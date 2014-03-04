@@ -320,17 +320,23 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * @return result of division
      */
     private Unit divide(Unit operand1, Unit operand2){
-        int resultQuotient = (int)Math.floor((operand1.getSignedValue() / operand2.getSignedValue()));
+        int resultQuotient;
+        if(operand2.getUnsignedValue()==0){
+            resultQuotient = 0;
+            this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_DIVZERO);
+        } else{
+            resultQuotient = (int)Math.floor((operand1.getSignedValue() / operand2.getSignedValue()));
+        }
         int resultRemainder = operand1.getSignedValue() % operand2.getSignedValue();
         
         Word quotient = new Word(resultQuotient);
         Word remainder = new Word(resultRemainder);
         
+        
         // Overload quotient & remainder into one 40 bit value
-        Unit result = new Unit(40);
-        result.setValueBinary(quotient.getBinaryString() + remainder.getBinaryString());
-        
-        
-        return result; // 40 bit result
+        Unit results = new Unit(40);
+        results.setValueBinary(quotient.getBinaryString() + remainder.getBinaryString());
+                
+        return results; // 40 bit result
     }      
 }
