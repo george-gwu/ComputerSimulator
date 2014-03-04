@@ -1196,29 +1196,20 @@ public class ControlUnit implements IClockCycle {
     private void executeOpcodeJSR(){
         switch(this.microState){
             case 0:
-                // RFI1 <- 3
-                System.out.println("Micro-6: RFI1 <- 3");
-                 
+                //RF(RFI1) <- PC + 1
+                this.setGeneralPurposeRegister(3, new Word(this.getProgramCounter().getUnsignedValue()+1));
+                System.out.println("Micro-7: RF(I) <- PC + 1");
             break;
                 
             case 1:
-                //RF(RFI1) <- PC + 1
-                int RFI=3;
-                this.setGeneralPurposeRegister(RFI, new Word(this.getProgramCounter().getUnsignedValue()+1));
-                System.out.println("Micro-7: RF(RFI1) <- PC + 1");
-            break;
-                
-            case 2:
-                //PC<-EA
-                 this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
-                 System.out.println("Micro-8: PC <- EA - "+this.nextProgramCounter);
-                 
-                break;
-            case 3:
-                System.out.println("Now Store the pointer of the Arguments into R0 here");
-                this.signalMicroStateExecutionComplete();
-                break;
-                
+                //PC <- EA
+                this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
+                System.out.println("Micro-8: PC <- EA - "+this.nextProgramCounter);
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("COMPLETED INSTRUCTION: JSR - Next: "+this.nextProgramCounter+", RET: "+this.getGeneralPurposeRegister(3));
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                                 
+                this.signalMicroStateExecutionComplete(); 
+                break;                
               
         }
     }
