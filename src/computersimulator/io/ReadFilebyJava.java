@@ -17,9 +17,6 @@ public class ReadFilebyJava {
     
     public ReadFilebyJava(){
     }
-    /*
-    
-    */
     public void ReadFromFile(String filename, Computer computer,Unit addr){
              try {
              FileReader reader=new FileReader(filename);
