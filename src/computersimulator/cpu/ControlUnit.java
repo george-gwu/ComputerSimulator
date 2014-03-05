@@ -1381,7 +1381,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
                 
                 rx=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();              
                 Integer rxPlusOne = rx+1;
-                if(rxPlusOne>2){
+                if(rx>2){
                     System.out.println("MLT: Invalid Value for RX (0-2).");
                 }
                 
@@ -1444,7 +1444,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
                 
                 rx=this.getIR().decomposeByOffset(6, 7).getUnsignedValue();              
                 Integer rxPlusOne = rx+1;
-                if(rxPlusOne>2){
+                if(rx>2){
                     System.out.println("DVD: Invalid Value for RX (0-2).");
                 }
                 
