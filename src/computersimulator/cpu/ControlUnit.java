@@ -1458,7 +1458,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
                 this.setGeneralPurposeRegister(rxPlusOne, remainder);
                                 
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                System.out.println("COMPLETED INSTRUCTION:DVD = "+quotient.getSignedValue()+"r "+remainder.getSignedValue());
+                System.out.println("COMPLETED INSTRUCTION:DVD = "+quotient.getSignedValue()+" r"+remainder.getSignedValue());
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
                 this.signalMicroStateExecutionComplete();
         }
