@@ -277,7 +277,11 @@ public class ControlUnit implements IClockCycle {
 
     public void setIR(Word instructionRegister) {
         this.instructionRegister = instructionRegister;
-    }    
+    }
+    
+    public void setMFR(Unit id) {
+        this.machineFaultRegister = id;
+    }
     
     /**
      * Clock cycle. This is the main function which causes the ControlUnit to do work.
@@ -582,7 +586,8 @@ public class ControlUnit implements IClockCycle {
                     this.executeOpcodeDVD();
                     break;             
                 default: // Unhandle opcode. Crash!
-                    throw new Exception("Unhandled Opcode: "+opcode);                        
+                    this.illegalOpCode();
+                    throw new Exception("Illegal Opcode: "+opcode);                        
             }            
             if(!this.blocked){ // if not blocked, move ahead
                 this.microState++; 
@@ -605,7 +610,126 @@ public class ControlUnit implements IClockCycle {
     }
    
     
-     
+    /**
+     * Handles Illegal Memory Address
+     * ID = 0, ID stored in MFR, PC stored in memory location 4, MSR stored in memory location 5.
+     * Go to memory location 1.
+     */
+    private void illegalMemoryAddress() {
+        String IDString = "0";
+        Unit id = Unit.UnitFromBinaryString(IDString);                          // Convert string to Unit.
+        
+        Unit pc = this.getProgramCounter();                                     // Get the value of the PC.
+        String memoryString1 = "4";
+        Unit memLoc4 = Unit.UnitFromBinaryString(memoryString1);                // Convert string to Unit.
+        
+        Word msr = this.getMachineStatusRegister();                             // Get the value of the MSR.
+        String memoryString2 = "5";
+        Unit memLoc5 = Unit.UnitFromBinaryString(memoryString2);                // Convert string to Unit.
+        
+        String memoryString3 = "1";
+        Unit memLoc1 = Unit.UnitFromBinaryString(memoryString3);                // Convert string to Unit.
+        
+        //Store ID in MFR.      
+        this.setMFR(id);
+    
+        //Store PC in memory location 4.        
+        memory.setMAR(memLoc4);
+        memory.setMBR(pc);
+        
+        //Store MSR in memory location 5.
+        memory.setMAR(memLoc5);
+        memory.setMBR(msr);
+        
+        //Set memory location to 1.
+        memory.setMAR(memLoc1);
+        
+        this.handleMachineFault();
+    }
+    
+    /**
+     * Handles Illegal TRAP code
+     * ID = 1, ID stored in MFR, PC stored in memory location 2, MSR stored in memory location 3.
+     * Go to memory location 0.
+     */
+    private void illegalTrapCode() {
+        String IDString = "1";
+        Unit id = Unit.UnitFromBinaryString(IDString);                          // Convert string to Unit.
+        
+        Unit pc = this.getProgramCounter();                                     // Get the value of the PC.
+        String memoryString1 = "2";
+        Unit memLoc2 = Unit.UnitFromBinaryString(memoryString1);                // Convert string to Unit.
+        
+        Word msr = this.getMachineStatusRegister();                             // Get the value of the MSR.
+        String memoryString2 = "3";
+        Unit memLoc3 = Unit.UnitFromBinaryString(memoryString2);                // Convert string to Unit.
+        
+        String memoryString3 = "0";
+        Unit memLoc0 = Unit.UnitFromBinaryString(memoryString3);                // Convert string to Unit.
+        
+        //Store ID in MFR.    
+        this.setMFR(id);
+    
+        //Store PC in memory location 2.       
+        memory.setMAR(memLoc2);
+        memory.setMBR(pc);
+        
+        //Store MSR in memory location 3.
+        memory.setMAR(memLoc3);
+        memory.setMBR(msr);
+        
+        //Set memory location to 0.
+        memory.setMAR(memLoc0);
+        
+        this.handleMachineFault();
+    }
+    
+    /**
+     * Handles Illegal Opcodes
+     * ID = 2, ID stored in MFR, PC stored in memory location 4, MSR stored in memory location 5.
+     * Go to memory location 1.
+     */
+    private void illegalOpCode() {
+        
+        System.out.print("Running void illegalOpCode.");                        // Test if this function is ever run.
+        
+        String IDString = "2";
+        Unit id = Unit.UnitFromBinaryString(IDString);                          // Convert string to Unit.
+        
+        Unit pc = this.getProgramCounter();                                     // Get the value of the PC.
+        String memoryString1 = "4";
+        Unit memLoc4 = Unit.UnitFromBinaryString(memoryString1);                // Convert string to Unit.
+        
+        Word msr = this.getMachineStatusRegister();                             // Get the value of the MSR.
+        String memoryString2 = "5";
+        Unit memLoc5 = Unit.UnitFromBinaryString(memoryString2);                // Convert string to Unit.
+        
+        String memoryString3 = "1";
+        Unit memLoc1 = Unit.UnitFromBinaryString(memoryString3);                // Convert string to Unit.
+        
+        //Store ID in MFR.      
+        this.setMFR(id);
+    
+        //Store PC in memory location 4.        
+        memory.setMAR(memLoc4);
+        memory.setMBR(pc);
+        
+        //Store MSR in memory location 5.
+        memory.setMAR(memLoc5);
+        memory.setMBR(msr);
+        
+        //Set memory location to 1.
+        memory.setMAR(memLoc1);
+                
+        this.handleMachineFault();
+    }
+    
+    /**
+     * Handles machine faults
+     */
+    private void handleMachineFault() {
+        
+    }    
 
     /***************** OPCODE IMPLEMENTATIONS BELOW ******************/
     
