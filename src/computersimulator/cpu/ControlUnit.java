@@ -97,7 +97,7 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_NOT=25;
     private static final int OPCODE_MLT=20;
     private static final int OPCODE_DVD=21;
-
+    private static final int OPCODE_TRAP=30;
 
     // Engineer: used to control micro step, defined per state
     private Integer microState = null;
@@ -537,19 +537,19 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_SIR:
                     this.executeOpcodeSIR();
                     break;
-                case ControlUnit.OPCODE_JMP:  //TESTED
+                case ControlUnit.OPCODE_JMP:  
                     this.executeOpcodeJMP();
                     break;
-                case ControlUnit.OPCODE_JZ:  //TESTED
+                case ControlUnit.OPCODE_JZ:  
                     this.executeOpcodeJZ();
                     break;
-                case ControlUnit.OPCODE_JNE: //TESTED
+                case ControlUnit.OPCODE_JNE: 
                     this.executeOpcodeJNE();
                     break;
-                case ControlUnit.OPCODE_JGE: //Tested 
+                case ControlUnit.OPCODE_JGE:  
                     this.executeOpcodeJGE();
                     break;                    
-                case ControlUnit.OPCODE_SOB: //Tested
+                case ControlUnit.OPCODE_SOB: 
                     this.executeOpcodeSOB();
                     break;
                 case ControlUnit.OPCODE_JCC:
@@ -558,7 +558,7 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_RFS:
                     this.executeOpcodeRFS();
                     break;
-                case ControlUnit.OPCODE_JSR://Partially implemented
+                case ControlUnit.OPCODE_JSR:
                     this.executeOpcodeJSR();
                     break;
                 case ControlUnit.OPCODE_SRC:
@@ -584,8 +584,11 @@ public class ControlUnit implements IClockCycle {
                     break;
                 case ControlUnit.OPCODE_DVD:
                     this.executeOpcodeDVD();
-                    break;             
-                default: // Unhandle opcode. Crash!
+                    break;
+                case ControlUnit.OPCODE_TRAP:
+                    this.executeOpcodeTRAP();
+                    break;
+                default: // Illegal opcode. Crash!
                     this.illegalOpCode();
                     throw new Exception("Illegal Opcode: "+opcode);                        
             }            
@@ -1585,6 +1588,28 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
                 System.out.println("COMPLETED INSTRUCTION:DVD = "+quotient.getSignedValue()+" r"+remainder.getSignedValue());
                 System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
                 this.signalMicroStateExecutionComplete();
+        }
+    }
+    
+    /**
+     * Execute TRAP code
+     */
+    private void executeOpcodeTRAP() {
+        int trapCode = this.getIR().decomposeByOffset(12, 19).getUnsignedValue();       // Get the TRAP code from the address bits.
+        
+        if (trapCode >= 16)                                                             // TRAP codes range from 0 - 15.
+        {
+            this.illegalTrapCode();                                                     // Call illegalTrapCode() to handle an illegal code.
+        }
+        else 
+        {
+            // Go to table with 16 user-defined instructions
+            // Execute the instruction defined by the TRAP code
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            System.out.println("COMPLETED INSTRUCTION: TRAP "+ trapCode);
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+                
+            this.signalMicroStateExecutionComplete();
         }
     }
         
