@@ -1198,10 +1198,10 @@ public class ControlUnit implements IClockCycle {
         switch(this.microState){
             case 0: // case 0, we decrement c(r)
                 System.out.println("Micro-6:RF("+RFI+")=c("+RFI+")-1");  
-                this.setGeneralPurposeRegister(RFI, new Word(this.getGeneralPurposeRegister(RFI).getUnsignedValue()-1));
+                this.setGeneralPurposeRegister(RFI, new Word(this.getGeneralPurposeRegister(RFI).getSignedValue()-1));
                 break;
             default: // case >= 1
-                if(this.getGeneralPurposeRegister(RFI).getUnsignedValue()>0)
+                if(this.getGeneralPurposeRegister(RFI).getSignedValue()>0)
                 { // c(r)>0, jump
                     this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
                     System.out.println("Micro-7: PC <- EA - "+this.nextProgramCounter);              

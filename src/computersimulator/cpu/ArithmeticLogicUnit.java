@@ -321,7 +321,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      */
     private Unit divide(Unit operand1, Unit operand2){
         int resultQuotient;
-        if(operand2.getUnsignedValue()==0){
+        if(operand2.getSignedValue()==0){
             resultQuotient = 0;
             this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_DIVZERO);
         } else{
