@@ -11,6 +11,8 @@ public class CentralProcessingUnit implements IClockCycle {
     private ControlUnit controlUnit;
     private ArithmeticLogicUnit alu;
     private MemoryControlUnit memory;
+    private InputOutputController ioController;
+    private Computer computer;
     
     private Boolean running = false;
     
@@ -22,13 +24,14 @@ public class CentralProcessingUnit implements IClockCycle {
         controlUnit = new ControlUnit(this.memory, this.alu);   
         alu.setControlUnit(controlUnit); // exchange reference
         
-        
+        ioController = new InputOutputController();
+
     }
     
     /**
      * Clock cycle. This is the main function which causes the CPU to do work.
      *  This serves as a publicly accessible method, but delegates
-     * to the ALU/ControlUnit.
+     * to the ALU/ControlUnit/IOController.
      * @throws java.lang.Exception
      */
     @Override
@@ -36,6 +39,7 @@ public class CentralProcessingUnit implements IClockCycle {
         try {
             this.controlUnit.clockCycle();
             this.alu.clockCycle();
+            this.ioController.clockCycle();
         } catch(HaltSystemException hse){
             this.running=false;
         }
@@ -49,7 +53,9 @@ public class CentralProcessingUnit implements IClockCycle {
         return alu;
     }
     
-       
+    private InputOutputController getIOController() {
+        return ioController;
+    }
     
     public Boolean isRunning() {
         return running;
