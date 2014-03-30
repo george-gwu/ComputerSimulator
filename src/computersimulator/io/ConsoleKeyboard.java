@@ -51,7 +51,11 @@ public class ConsoleKeyboard implements IIODevice {
         return (tempInput==null ? InputOutputController.STATUS_BUSY : InputOutputController.STATUS_READY);        
     }  
     
-    
+    /**
+     * buttonPress is the primary interface for the GUI. It manipulates a keyStroke
+     * buffer before pushing it to a temporary holder.
+     * @param keyCode 
+     */
     public void buttonPress(int keyCode){        
         System.out.println("[IO]: Key Press - "+keyCode);
         if(keyCode==13){ // Key Press was Enter
@@ -66,7 +70,7 @@ public class ConsoleKeyboard implements IIODevice {
             if(buffer.size()>0){
                 buffer.remove(buffer.size()-1);
             }
-        } else if(keyCode>=48 && keyCode <= 57){ // Key Press was Digit
+        } else { //if(keyCode>=48 && keyCode <= 57){ // Key Press was Digit
             buffer.add(keyCode);
         }
         
