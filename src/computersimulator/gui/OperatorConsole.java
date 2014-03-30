@@ -115,7 +115,7 @@ public class OperatorConsole implements Runnable {
         leftPanel.setLayout(leftLayout);
 
         // create grid layout - it will hold the numberic pad
-        GridLayout rightLayout = new GridLayout(4, 1);
+        GridLayout rightLayout = new GridLayout(2, 1);
         rightPanel.setLayout(rightLayout);
 
         // Create simulator components and initialize the initial state         
@@ -176,13 +176,13 @@ public class OperatorConsole implements Runnable {
         leftPanel.add(buttonPanel);
 
         // add title to right pane
-        JPanel rightLabelHolder = new JPanel();
-        // create title
-        JLabel rightTitle = new JLabel("Numeric Pad");
-        rightTitle.setFont(new Font("Verdana", Font.BOLD, 14));
-        rightTitle.setForeground(Color.BLACK);
-        rightLabelHolder.add(rightTitle);
-        rightPanel.add(rightLabelHolder);
+//        JPanel rightLabelHolder = new JPanel();
+//        // create title
+//        JLabel rightTitle = new JLabel("Numeric Pad");
+//        rightTitle.setFont(new Font("Verdana", Font.BOLD, 14));
+//        rightTitle.setForeground(Color.BLACK);
+//        rightLabelHolder.add(rightTitle);
+//        rightPanel.add(rightLabelHolder);
         
         // add text area
         JTextArea textArea = new JTextArea(5, 20);
@@ -194,11 +194,8 @@ public class OperatorConsole implements Runnable {
         pad.createComposite();
         rightPanel.add(pad.getGUI());
         
-        // add empty area
-        JLabel rightEmpty = new JLabel("");
-        rightPanel.add(rightEmpty);
 
-        //mainWindow.add(rightPanel);
+        mainWindow.add(rightPanel);
 
         // add listeners
         final OperatorConsole opconsole = this;
