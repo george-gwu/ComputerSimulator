@@ -11,12 +11,14 @@ import java.util.ArrayList;
 public class ConsoleKeyboard implements IIODevice {
     
     private ArrayList<Integer> buffer;
+    private Word tempInput;
     
     /**
      * Card Reader Constructor - Reads in a text file to an array for access via IO controller
      */
     public ConsoleKeyboard(){
         buffer = new ArrayList<>();
+        tempInput=null;
         
     }
     
@@ -25,11 +27,10 @@ public class ConsoleKeyboard implements IIODevice {
      * @return Word
      */
     @Override
-    public Word input(){
-        
-        //Word result = Word.WordFromBinaryString(firstTwentyChars);
-        
-        return new Word(0);
+    public Word input(){        
+        Word result = tempInput;        
+        tempInput = null;
+        return result;        
     }
     
     /**
@@ -43,19 +44,32 @@ public class ConsoleKeyboard implements IIODevice {
     
     /**
      * Check Status of Device
-     * @return status
+     * @return status=Busy if no value in temp
      */
     @Override
     public int checkStatus(){
-        int res = (buffer.size() > 0 ? InputOutputController.STATUS_READY : InputOutputController.STATUS_BUSY);
-        
-        return res;
+        return (tempInput==null ? InputOutputController.STATUS_BUSY : InputOutputController.STATUS_READY);        
     }  
     
     
-    public void buttonPress(int keyCode){
-        System.out.println("Key Press: "+keyCode);
-        buffer.add(keyCode);
+    public void buttonPress(int keyCode){        
+        System.out.println("[IO]: Key Press - "+keyCode);
+        if(keyCode==13){ // Key Press was Enter
+            String temp = "";
+            for(int key : buffer){
+                temp+=(char)key;                
+            }
+            tempInput = new Word(Integer.parseInt(temp));
+            buffer.clear();
+            System.out.println("[IO]: Received Value - "+tempInput);
+        } else if(keyCode==8){ // Key Press was Backspace
+            if(buffer.size()>0){
+                buffer.remove(buffer.size()-1);
+            }
+        } else if(keyCode>=48 && keyCode <= 57){ // Key Press was Digit
+            buffer.add(keyCode);
+        }
+        
     }
     
 }
