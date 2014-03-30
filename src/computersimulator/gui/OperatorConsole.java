@@ -56,7 +56,10 @@ public class OperatorConsole implements Runnable {
     private JFrame mainWindow;
 
     private JPanel leftPanel;
+    
     private JPanel rightPanel;
+    
+    private JPanel bottomPanel;
     
     private JLabel runLight;
 
@@ -84,7 +87,10 @@ public class OperatorConsole implements Runnable {
         leftPanel = new JPanel();
 
         // Create the right pane
-        rightPanel = new JPanel();     
+        rightPanel = new JPanel(); 
+        
+        // Create the bottom pane
+        bottomPanel = new JPanel();
         
         // create panel to hold all components
         JPanel labelHolder = new JPanel();
@@ -94,7 +100,6 @@ public class OperatorConsole implements Runnable {
         title.setFont(font);
         title.setForeground(Color.BLACK);
         labelHolder.add(title);
-        //mainWindow.add(labelHolder);
         
         JLabel running = new JLabel("Running:");        
         labelHolder.add(new JSeparator(SwingConstants.VERTICAL));
@@ -105,18 +110,23 @@ public class OperatorConsole implements Runnable {
         runLight.setOpaque(true);
         runLight.setPreferredSize(new Dimension(15, 15));
         labelHolder.add(runLight);
-        
-        leftPanel.add(labelHolder);         // add to leftPanel
-
+  
         // Create grid bag layout to achieve the ability of modifying the size of its
         // child elements (for example: right pane)
         GridBagLayout layout = new GridBagLayout();                     // Grid Bag Layout
-        
         //layout.setVgap(1);
         mainWindow.setLayout(layout);
-
+        
+         // add labelHolder panel to main window
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weighty = 2;
+        mainWindow.add(labelHolder, c);  
+        
         // create grid layout - each component/register will be placed as a separate line
-        GridLayout leftLayout = new GridLayout(15, 1, 15, 5);
+        GridLayout leftLayout = new GridLayout(14, 1, 15, 4);
         leftPanel.setLayout(leftLayout);
 
         // create grid layout - it will hold the numberic pad
@@ -146,13 +156,15 @@ public class OperatorConsole implements Runnable {
             System.out.println("Error: " + err);
         }
         
-        
         // add left panel to main window
-        mainWindow.add(leftPanel);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 1;
+        c.insets = new Insets(0,0,0,0);  // padding 
+        mainWindow.add(leftPanel, c);
 
         input = new DataEntryComposite(20, "Input");
-        //mainWindow.add(input.getGUI());
-        leftPanel.add(input.getGUI());          // add to left
+        bottomPanel.add(input.getGUI());        // add to bottom
 
         // create button panel with all buttons
         JPanel buttonPanel = new JPanel();
@@ -176,11 +188,7 @@ public class OperatorConsole implements Runnable {
         buttonPanel.add(spinner);
         buttonPanel.add(go);
         
-        // add button panel to frame
-        //mainWindow.add(buttonPanel);
-        leftPanel.add(buttonPanel);                 // add to Left
-        
-        // add text area for console printer
+        // add text area for console printer 
         JTextArea guiTextPrinter = new JTextArea(15, 20);
         JScrollPane scrollPane = new JScrollPane(guiTextPrinter);
         rightPanel.add(scrollPane);
@@ -188,22 +196,34 @@ public class OperatorConsole implements Runnable {
         guiTextPrinter.setEditable(false);
         consolePrinter.setDisplay(guiTextPrinter);
         
-        
         // add numeric pad component to right pane
         PadComposite pad = new PadComposite(computer);
         pad.createComposite();
         rightPanel.add(pad.getGUI());
         
         // allows to apply size, padding etc.
-        GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 1;
-        c.gridy = 0;
+        c.gridy = 1;
         c.insets = new Insets(10,10,10,10);  // padding so it looks nicer
         
         // add right panel to main window
-        mainWindow.add(rightPanel, c);       
-
+        mainWindow.add(rightPanel, c);   
+        
+        // add bottom panel
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 2;
+        c.insets = new Insets(0,0,0,0);  // padding so it looks nicer
+        c.gridwidth = 2;
+        mainWindow.add(bottomPanel, c);
+        
+        // add button panel to Main window
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 3;
+        mainWindow.add(buttonPanel, c);
+        
         // add listeners
         final OperatorConsole opconsole = this;
 
