@@ -5,7 +5,10 @@ import computersimulator.cpu.Computer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -71,7 +74,7 @@ public class OperatorConsole implements Runnable {
     public void run() {
         displayComponents = new HashMap<>();
 
-        // Create the window
+        // Create the Main window
         mainWindow = new JFrame("Group 3 Computer Simulator: Operator Console");
         mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -79,8 +82,8 @@ public class OperatorConsole implements Runnable {
         leftPanel = new JPanel();
 
         // Create the right pane
-        rightPanel = new JPanel();
-
+        rightPanel = new JPanel();     
+        
         // create panel to hold all components
         JPanel labelHolder = new JPanel();
         // create title
@@ -101,12 +104,12 @@ public class OperatorConsole implements Runnable {
         runLight.setPreferredSize(new Dimension(15, 15));
         labelHolder.add(runLight);
         
-        leftPanel.add(labelHolder);
+        leftPanel.add(labelHolder);         // add to leftPanel
 
-        // Create grid layout for main window - main layout will include 2 columns: 
-        // left column will hold components and right column will hold the numeric pad
-        //GridLayout layout = new GridLayout(15, 1, 15, 5);
-        GridLayout layout = new GridLayout(1, 2, 10, 5);
+        // Create grid bag layout to achieve the ability of modifying the size of its
+        // child elements (for example: right pane)
+        GridBagLayout layout = new GridBagLayout();                     // Grid Bag Layout
+        
         //layout.setVgap(1);
         mainWindow.setLayout(layout);
 
@@ -140,12 +143,14 @@ public class OperatorConsole implements Runnable {
         } catch (Exception err) {
             System.out.println("Error: " + err);
         }
+        
+        
         // add left panel to main window
         mainWindow.add(leftPanel);
 
         input = new DataEntryComposite(20, "Input");
         //mainWindow.add(input.getGUI());
-        leftPanel.add(input.getGUI());
+        leftPanel.add(input.getGUI());          // add to left
 
         // create button panel with all buttons
         JPanel buttonPanel = new JPanel();
@@ -169,11 +174,9 @@ public class OperatorConsole implements Runnable {
         buttonPanel.add(spinner);
         buttonPanel.add(go);
         
-        
-        
         // add button panel to frame
         //mainWindow.add(buttonPanel);
-        leftPanel.add(buttonPanel);
+        leftPanel.add(buttonPanel);                 // add to Left
 
         // add title to right pane
 //        JPanel rightLabelHolder = new JPanel();
@@ -184,18 +187,25 @@ public class OperatorConsole implements Runnable {
 //        rightLabelHolder.add(rightTitle);
 //        rightPanel.add(rightLabelHolder);
         
-        // add text area
-        JTextArea textArea = new JTextArea(5, 20);
+        // add text area   
+        JTextArea textArea = new JTextArea(15, 20);
         JScrollPane scrollPane = new JScrollPane(textArea);
         rightPanel.add(scrollPane);
-
+        
         // add numeric pad component to right pane
         PadComposite pad = new PadComposite();
         pad.createComposite();
         rightPanel.add(pad.getGUI());
         
-
-        mainWindow.add(rightPanel);
+        // allows to apply size, padding etc.
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
+        c.gridy = 0;
+        c.insets = new Insets(10,10,10,10);  // padding so it looks nicer
+        
+        // add right panel to main window
+        mainWindow.add(rightPanel, c);       
 
         // add listeners
         final OperatorConsole opconsole = this;
