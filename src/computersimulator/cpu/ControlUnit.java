@@ -69,6 +69,11 @@ public class ControlUnit implements IClockCycle {
     public final static int CONDITION_REGISTER_DIVZERO = 2;
     public final static int CONDITION_REGISTER_EQUALORNOT = 3;
     
+    // Used to identify the type of Machine Fault
+    public final static int ILLEGAL_MEMORY_ADDRESS = 0;
+    public final static int ILLEGAL_TRAP_CODE = 1;
+    public final static int ILLEGAL_OPCODE = 2;
+    
     private static final int MICROSTATE_EXECUTE_COMPLETE=999;
     
     private static final int OPCODE_HLT=0;
@@ -616,7 +621,7 @@ public class ControlUnit implements IClockCycle {
                     this.executeOpcodeCHK();
                     break;
                 default: // Illegal opcode. Crash!
-                    this.illegalOpCode();
+                    this.machineFault(2);
                     throw new Exception("Illegal Opcode: "+opcode);                        
             }            
             if(!this.blocked){ // if not blocked, move ahead
@@ -641,124 +646,96 @@ public class ControlUnit implements IClockCycle {
    
     
     /**
-     * Handles Illegal Memory Address
+     * Handles Machine Faults
      * ID = 0, ID stored in MFR, PC stored in memory location 4, MSR stored in memory location 5.
      * Go to memory location 1.
      */
-    private void illegalMemoryAddress() {
-        String IDString = "0";
-        Unit id = Unit.UnitFromBinaryString(IDString);                          // Convert string to Unit.
+    private void machineFault(int type) {
         
-        Unit pc = this.getProgramCounter();                                     // Get the value of the PC.
-        String memoryString1 = "4";
-        Unit memLoc4 = Unit.UnitFromBinaryString(memoryString1);                // Convert string to Unit.
+        int faultID = type;
+        String IDString;
+        int memLoc0 = 0, memLoc1 = 1, memLoc2 = 2, memLoc3 = 3, memLoc4 = 4, memLoc5 = 5;
+        Unit pc = this.getProgramCounter();
+        Word msr = this.getMachineStatusRegister();
         
-        Word msr = this.getMachineStatusRegister();                             // Get the value of the MSR.
-        String memoryString2 = "5";
-        Unit memLoc5 = Unit.UnitFromBinaryString(memoryString2);                // Convert string to Unit.
+        if (faultID == ILLEGAL_MEMORY_ADDRESS)
+        {
+            IDString = "0";
+            
+            // Convert string to Unit.
+            Unit id = Unit.UnitFromBinaryString(IDString);                          
+            
+            //Store ID in MFR.      
+            this.setMFR(id);
+            
+            //Store PC in memory location 4.        
+            memory.setMAR(new Unit(13, memLoc4));
+            memory.setMBR(pc);
         
-        String memoryString3 = "1";
-        Unit memLoc1 = Unit.UnitFromBinaryString(memoryString3);                // Convert string to Unit.
+            //Store MSR in memory location 5.
+            memory.setMAR(new Unit(13, memLoc5));
+            memory.setMBR(msr);
         
-        //Store ID in MFR.      
-        this.setMFR(id);
-    
-        //Store PC in memory location 4.        
-        memory.setMAR(memLoc4);
-        memory.setMBR(pc);
+            //Set memory location to 1.
+            memory.setMAR(new Unit(13, memLoc1));
+            
+            this.handleMachineFault(ILLEGAL_MEMORY_ADDRESS);
+        }
         
-        //Store MSR in memory location 5.
-        memory.setMAR(memLoc5);
-        memory.setMBR(msr);
+        else if (faultID == ILLEGAL_TRAP_CODE)
+        {
+            IDString = "1";
+            
+            // Convert string to Unit.
+            Unit id = Unit.UnitFromBinaryString(IDString);                          
+            
+            //Store ID in MFR.      
+            this.setMFR(id);
+            
+            //Store PC in memory location 2.        
+            memory.setMAR(new Unit(13, memLoc2));
+            memory.setMBR(pc);
         
-        //Set memory location to 1.
-        memory.setMAR(memLoc1);
+            //Store MSR in memory location 3.
+            memory.setMAR(new Unit(13, memLoc3));
+            memory.setMBR(msr);
         
-        this.handleMachineFault();
+            //Set memory location to 0.
+            memory.setMAR(new Unit(13, memLoc0));
+            
+            this.handleMachineFault(ILLEGAL_TRAP_CODE);
+        }
+        
+        else if (faultID == ILLEGAL_OPCODE)
+        {
+            IDString = "2";
+            
+            // Convert string to Unit.
+            Unit id = Unit.UnitFromBinaryString(IDString);                          
+            
+            //Store ID in MFR.      
+            this.setMFR(id);
+            
+            //Store PC in memory location 4.        
+            memory.setMAR(new Unit(13, memLoc4));
+            memory.setMBR(pc);
+        
+            //Store MSR in memory location 5.
+            memory.setMAR(new Unit(13, memLoc5));
+            memory.setMBR(msr);
+        
+            //Set memory location to 1.
+            memory.setMAR(new Unit(13, memLoc1));
+            
+            this.handleMachineFault(ILLEGAL_OPCODE);
+        }
     }
-    
-    /**
-     * Handles Illegal TRAP code
-     * ID = 1, ID stored in MFR, PC stored in memory location 2, MSR stored in memory location 3.
-     * Go to memory location 0.
-     */
-    private void illegalTrapCode() {
-        String IDString = "1";
-        Unit id = Unit.UnitFromBinaryString(IDString);                          // Convert string to Unit.
-        
-        Unit pc = this.getProgramCounter();                                     // Get the value of the PC.
-        String memoryString1 = "2";
-        Unit memLoc2 = Unit.UnitFromBinaryString(memoryString1);                // Convert string to Unit.
-        
-        Word msr = this.getMachineStatusRegister();                             // Get the value of the MSR.
-        String memoryString2 = "3";
-        Unit memLoc3 = Unit.UnitFromBinaryString(memoryString2);                // Convert string to Unit.
-        
-        String memoryString3 = "0";
-        Unit memLoc0 = Unit.UnitFromBinaryString(memoryString3);                // Convert string to Unit.
-        
-        //Store ID in MFR.    
-        this.setMFR(id);
-    
-        //Store PC in memory location 2.       
-        memory.setMAR(memLoc2);
-        memory.setMBR(pc);
-        
-        //Store MSR in memory location 3.
-        memory.setMAR(memLoc3);
-        memory.setMBR(msr);
-        
-        //Set memory location to 0.
-        memory.setMAR(memLoc0);
-        
-        this.handleMachineFault();
-    }
-    
-    /**
-     * Handles Illegal Opcodes
-     * ID = 2, ID stored in MFR, PC stored in memory location 4, MSR stored in memory location 5.
-     * Go to memory location 1.
-     */
-    private void illegalOpCode() {
-        
-        System.out.print("Running void illegalOpCode.");                        // Test if this function is ever run.
-        
-        String IDString = "2";
-        Unit id = Unit.UnitFromBinaryString(IDString);                          // Convert string to Unit.
-        
-        Unit pc = this.getProgramCounter();                                     // Get the value of the PC.
-        String memoryString1 = "4";
-        Unit memLoc4 = Unit.UnitFromBinaryString(memoryString1);                // Convert string to Unit.
-        
-        Word msr = this.getMachineStatusRegister();                             // Get the value of the MSR.
-        String memoryString2 = "5";
-        Unit memLoc5 = Unit.UnitFromBinaryString(memoryString2);                // Convert string to Unit.
-        
-        String memoryString3 = "1";
-        Unit memLoc1 = Unit.UnitFromBinaryString(memoryString3);                // Convert string to Unit.
-        
-        //Store ID in MFR.      
-        this.setMFR(id);
-    
-        //Store PC in memory location 4.        
-        memory.setMAR(memLoc4);
-        memory.setMBR(pc);
-        
-        //Store MSR in memory location 5.
-        memory.setMAR(memLoc5);
-        memory.setMBR(msr);
-        
-        //Set memory location to 1.
-        memory.setMAR(memLoc1);
-                
-        this.handleMachineFault();
-    }
-    
+      
     /**
      * Handles machine faults
      */
-    private void handleMachineFault() {
-        
+    private void handleMachineFault(int type) {
+        //Handle the fault according to its ID.
     }    
 
     /***************** OPCODE IMPLEMENTATIONS BELOW ******************/
@@ -1626,7 +1603,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         
         if (trapCode >= 16)                                                             // TRAP codes range from 0 - 15.
         {
-            this.illegalTrapCode();                                                     // Call illegalTrapCode() to handle an illegal code.
+            this.machineFault(2);                                                        // Call machineFault() to handle an illegal Op code.
         }
         else 
         {
