@@ -160,7 +160,7 @@ public class OperatorConsole implements Runnable {
         JButton deposit = new JButton("Deposit");
         JButton go = new JButton("Go");
         
-        // buttonPanel.add(start);
+        buttonPanel.add(start);
         buttonPanel.add(load);
         buttonPanel.add(deposit);
         buttonPanel.add(new JSeparator(SwingConstants.VERTICAL));
@@ -214,6 +214,7 @@ public class OperatorConsole implements Runnable {
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                computer.IPL();
                 opconsole.updateDisplay();
             }
         });

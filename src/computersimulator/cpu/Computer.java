@@ -2,6 +2,8 @@
 package computersimulator.cpu;
 
 import computersimulator.components.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Computer is the primary class used by the simulator. The core business logic
@@ -41,6 +43,54 @@ public class Computer implements IClockCycle {
         this.cpu.clockCycle();
         this.memory.clockCycle();
         this.io.clockCycle();                
+    }
+    
+    /** 
+     * IPL - You will need a ROM that contains the simple loader. When you press 
+     * the IPL button on the console, the ROM contents are read into memory and 
+     * control is transferred to the first instruction of the ROM Loader program. 
+     * Your ROM Loader should read a boot program from a virtual card reader and 
+     * place them into memory in a location you designate. The ROM Loader then 
+     * transfers control to the program which executes until completion or error. 
+     * The virtual card reader is implemented as a file.
+
+     */
+    public void IPL(){        
+        /*** Pseudocode for ROM bootloader 
+         * Reads a file to memory starting at M(64) to EOF
+         * 
+         * ADDR=64
+         * L1: R0 = io.readLine()
+         * memory.set(ADDR+X1, R0)
+         * X1++
+         * checkForMore = io.checkStatus()
+         * test checkForMore
+         * jcc checkForMore to L1
+         * jmp 64
+         */
+        
+        /************* Assembly for bootloader **************/
+        HashMap<Integer,String> ROM = new HashMap<>();                                
+        ROM.put(10, "011111 00 10 1 1 000 10100"); //10: SRC(2,20,1,1)  -- reset ECX to 0 (index value)        
+        ROM.put(11, "011111 00 11 1 1 000 10100"); //11: SRC(3,20,1,1)  -- reset EDX to 0 (IO Status Ready)        
+        ROM.put(12, "000010 00 10 0 0 00000110" ); //12: L1: STR(2,0,6) -- set M(6) to ECX        
+        ROM.put(13, "101001 01 00 0 0 00000110" ); //13: LDX(1, 6)      -- Set X(1) from M(6) (copied from ECX)                
+        ROM.put(14, "111101 00 00 000000 0010"  ); //14: IN(0, 2)       -- read word from CardReader to EAX        
+        ROM.put(15, "000010 01 00 0 0 01000000" ); //15: STR(0,1,64i1)  -- store EAX to ADDR+ECX (ECX=X1)  (ADDR=64)       
+        ROM.put(16, "000110 00 10 0 0 00000001" ); //16: AIR(2,1)       -- ECX++        
+        ROM.put(17, "111111 00 00 000000 0010"  ); //17: CHK(0, 2)      -- Check status of Card Reader to EAX        
+        ROM.put(18, "010110 00 11 0 0 00000000" ); //18: TRR(0, 3)      -- Test EAX against EDX (IO Status Ready -- not done)        
+        ROM.put(19, "001100 00 11 0 0 00001100" ); //19: JCC(3,x, L1)   -- JMP to L1 if EAX=EDX --- L1=12        
+        ROM.put(20, "001101 00 00 0 0 01000000" ); //20: JMP(64)        -- else: launch program by transferring control to 64
+        
+        // Read ROM contents into memory
+        for (Map.Entry romEntry : ROM.entrySet()) {            
+            this.getMemory().engineerSetMemoryLocation(new Unit(13, (int)romEntry.getKey()), Word.WordFromBinaryString((String)romEntry.getValue()));
+        }
+        
+        //Transfer Control to ROM Bootloader
+        this.getCpu().getControlUnit().setProgramCounter(new Unit(13, 10)); // Start at 10        
+        this.cpu.setRunning(true);          
     }
     
     

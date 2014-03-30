@@ -4,8 +4,6 @@ import computersimulator.components.Word;
 import computersimulator.cpu.InputOutputController;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -33,7 +31,7 @@ public class CardReader implements IIODevice {
             }
             
         } catch (IOException ex) {
-            Logger.getLogger(ReadFilebyJava.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("IO Exception in CardReader: "+ex);
         }
     }
     
@@ -70,7 +68,7 @@ public class CardReader implements IIODevice {
      */
     @Override
     public int checkStatus(){
-        int res = (this.iterator<this.data.size() ? InputOutputController.STATUS_READY : InputOutputController.STATUS_BUSY);
+        int res = (this.iterator<this.data.size() ? InputOutputController.STATUS_READY : InputOutputController.STATUS_DONE);
         
         return res;
     }   

@@ -346,7 +346,7 @@ public class ControlUnit implements IClockCycle {
         
         switch(this.microState){            
             case 0:
-                this.clearConditions();   // Clear CC on new instruction
+//                this.clearConditions();   // Clear CC on new instruction @TODO: Verify if this needs to be copied throughout. It was causing errors.
                 this.nextProgramCounter=null;
                 System.out.println("Micro-0: PC -> MAR");
                 // Micro-0: PC -> MAR
@@ -382,9 +382,9 @@ public class ControlUnit implements IClockCycle {
     private HashMap<String,Unit> decodeInstructionRegister(Word IR){
        HashMap<String,Unit> decoded = new HashMap();
        
-       decoded.put("opcode",  IR.decomposeByOffset(0, 5  ));
-       decoded.put("rfi",    IR.decomposeByOffset(6, 7  ));
-       decoded.put("xfi",    IR.decomposeByOffset(8, 9  ));
+       decoded.put("opcode",  IR.decomposeByOffset(0, 5  ));       
+       decoded.put("xfi",    IR.decomposeByOffset(6,  7  ));
+       decoded.put("rfi",    IR.decomposeByOffset(8,  9  ));
        decoded.put("index",   IR.decomposeByOffset(10    ));
        decoded.put("trace",   IR.decomposeByOffset(11    ));
        decoded.put("address", IR.decomposeByOffset(12, 19));
@@ -416,6 +416,11 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_NOT:                     
                 case ControlUnit.OPCODE_SRC:
                 case ControlUnit.OPCODE_RRC:
+                case ControlUnit.OPCODE_IN:
+                case ControlUnit.OPCODE_HLT:
+                case ControlUnit.OPCODE_OUT:
+                case ControlUnit.OPCODE_CHK:
+                case ControlUnit.OPCODE_TRAP:
                     // These instructions don't require EA calculation. Skip ahead.
                     this.microState=null;
                     this.state=ControlUnit.STATE_EXECUTE_INSTRUCTION;                                
@@ -821,7 +826,7 @@ public class ControlUnit implements IClockCycle {
                     // do nothing, done by memory in this clock cycle   
            
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    System.out.println("COMPLETED INSTRUCTION: STR - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+                    System.out.println("COMPLETED INSTRUCTION: STR - M("+this.effectiveAddress.getUnsignedValue()+") is now "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
                     this.signalMicroStateExecutionComplete();
@@ -869,7 +874,7 @@ public class ControlUnit implements IClockCycle {
                      this.setIndexRegister(XFI, new Unit(13,this.memory.getMBR().getUnsignedValue()));
 
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    System.out.println("COMPLETED INSTRUCTION: LDX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+                    System.out.println("COMPLETED INSTRUCTION: LDX - X("+XFI+") is now "+ this.getIndexRegister(XFI));
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
                     this.signalMicroStateExecutionComplete();
@@ -1299,7 +1304,7 @@ public class ControlUnit implements IClockCycle {
         } else { // not zero->PC++             CC != 1
             this.signalMicroStateExecutionComplete();
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Not Jumping.");
+            System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Not Jumping. Value was: "+this.getConditionCode(CC));
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
         }
             
@@ -1658,7 +1663,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         this.setGeneralPurposeRegister(r, received);    
         
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("COMPLETED INSTRUCTION: IN");
+        System.out.println("COMPLETED INSTRUCTION: IN - Set R"+r+" to "+received +" from device "+DEVID);
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         this.signalMicroStateExecutionComplete();
     }  
@@ -1676,7 +1681,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         ioController.output(DEVID, contentsOfR);
         
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("COMPLETED INSTRUCTION: OUT");
+        System.out.println("COMPLETED INSTRUCTION: OUT - Pushed "+contentsOfR+" to Device: "+DEVID);
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         this.signalMicroStateExecutionComplete();
     }   
