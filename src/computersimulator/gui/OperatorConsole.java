@@ -2,6 +2,8 @@ package computersimulator.gui;
 
 import computersimulator.components.*;
 import computersimulator.cpu.Computer;
+import computersimulator.cpu.InputOutputController;
+import computersimulator.io.ConsolePrinter;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -177,20 +179,15 @@ public class OperatorConsole implements Runnable {
         // add button panel to frame
         //mainWindow.add(buttonPanel);
         leftPanel.add(buttonPanel);                 // add to Left
-
-        // add title to right pane
-//        JPanel rightLabelHolder = new JPanel();
-//        // create title
-//        JLabel rightTitle = new JLabel("Numeric Pad");
-//        rightTitle.setFont(new Font("Verdana", Font.BOLD, 14));
-//        rightTitle.setForeground(Color.BLACK);
-//        rightLabelHolder.add(rightTitle);
-//        rightPanel.add(rightLabelHolder);
         
-        // add text area   
-        JTextArea textArea = new JTextArea(15, 20);
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        // add text area for console printer
+        JTextArea guiTextPrinter = new JTextArea(15, 20);
+        JScrollPane scrollPane = new JScrollPane(guiTextPrinter);
         rightPanel.add(scrollPane);
+        ConsolePrinter consolePrinter = (ConsolePrinter)computer.getIO().getDevice(InputOutputController.DEVICE_CONSOLEPRINTER);
+        guiTextPrinter.setEditable(false);
+        consolePrinter.setDisplay(guiTextPrinter);
+        
         
         // add numeric pad component to right pane
         PadComposite pad = new PadComposite(computer);

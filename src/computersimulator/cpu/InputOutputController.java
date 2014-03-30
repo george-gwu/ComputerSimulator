@@ -13,6 +13,7 @@ public class InputOutputController implements IClockCycle {
     
     private CardReader cardReader;
     private ConsoleKeyboard consoleKeyboard;
+    private ConsolePrinter consolePrinter;
     
     public static final int DEVICE_CONSOLEKEYBOARD=0;
     public static final int DEVICE_CONSOLEPRINTER=1;
@@ -24,12 +25,13 @@ public class InputOutputController implements IClockCycle {
     public final static int STATUS_DONE = 2; // EOF
 
     public InputOutputController() {
+        consolePrinter = new ConsolePrinter();
+        consoleKeyboard = new ConsoleKeyboard();
         this.resetIOController();
     }
     
-    public void resetIOController(){
+    public final void resetIOController(){
         cardReader  = new CardReader();
-        consoleKeyboard = new ConsoleKeyboard();
     }
     
     public IIODevice getDevice(int DEVID){
@@ -38,6 +40,8 @@ public class InputOutputController implements IClockCycle {
                 return cardReader;
             case DEVICE_CONSOLEKEYBOARD:
                 return consoleKeyboard;
+            case DEVICE_CONSOLEPRINTER:
+                return consolePrinter;
             default:
                 return null;
         }
