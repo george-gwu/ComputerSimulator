@@ -2,6 +2,8 @@ package computersimulator.cpu;
 
 import computersimulator.components.*;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * It is the task of the control unit to fetch the next instruction from 
@@ -647,14 +649,19 @@ public class ControlUnit implements IClockCycle {
     
     /**
      * Handles Machine Faults
-     * ID = 0, ID stored in MFR, PC stored in memory location 4, MSR stored in memory location 5.
-     * Go to memory location 1.
+     * 
+     * Fault ID              Fault Type
+     *     0            Illegal Memory Address
+     *     1            Illegal TRAP Code
+     *     2            Illegal Opcode
+     * 
+     * Halts the system if any of the above are encountered.
      */
     private void machineFault(int type) {
         
         int faultID = type;
         String IDString;
-        int memLoc0 = 0, memLoc1 = 1, memLoc2 = 2, memLoc3 = 3, memLoc4 = 4, memLoc5 = 5;
+        int memLoc1 = 1, memLoc2 = 2, memLoc3 = 3, memLoc4 = 4, memLoc5 = 5;
         Unit pc = this.getProgramCounter();
         Word msr = this.getMachineStatusRegister();
         
@@ -668,18 +675,18 @@ public class ControlUnit implements IClockCycle {
             //Store ID in MFR.      
             this.setMFR(id);
             
-            //Store PC in memory location 4.        
+            //Store current PC in memory location 4.        
             memory.setMAR(new Unit(13, memLoc4));
             memory.setMBR(pc);
         
-            //Store MSR in memory location 5.
+            //Store current MSR in memory location 5.
             memory.setMAR(new Unit(13, memLoc5));
             memory.setMBR(msr);
         
-            //Set memory location to 1.
+            //Fetch the address from memory location 1 and set it as the PC.
             memory.setMAR(new Unit(13, memLoc1));
-            
-            this.handleMachineFault(ILLEGAL_MEMORY_ADDRESS);
+            pc = memory.getMBR();
+            this.setProgramCounter(pc);
         }
         
         else if (faultID == ILLEGAL_TRAP_CODE)
@@ -692,18 +699,18 @@ public class ControlUnit implements IClockCycle {
             //Store ID in MFR.      
             this.setMFR(id);
             
-            //Store PC in memory location 2.        
+            //Store current PC in memory location 2.        
             memory.setMAR(new Unit(13, memLoc2));
             memory.setMBR(pc);
         
-            //Store MSR in memory location 3.
+            //Store current  MSR in memory location 3.
             memory.setMAR(new Unit(13, memLoc3));
             memory.setMBR(msr);
-        
-            //Set memory location to 0.
-            memory.setMAR(new Unit(13, memLoc0));
-            
-            this.handleMachineFault(ILLEGAL_TRAP_CODE);
+                  
+            //Fetch the address from memory location 1 and set it as the PC.
+            memory.setMAR(new Unit(13, memLoc1));
+            pc = memory.getMBR();
+            this.setProgramCounter(pc);
         }
         
         else if (faultID == ILLEGAL_OPCODE)
@@ -716,28 +723,21 @@ public class ControlUnit implements IClockCycle {
             //Store ID in MFR.      
             this.setMFR(id);
             
-            //Store PC in memory location 4.        
+            //Store current PC in memory location 4.        
             memory.setMAR(new Unit(13, memLoc4));
             memory.setMBR(pc);
         
-            //Store MSR in memory location 5.
+            //Store current MSR in memory location 5.
             memory.setMAR(new Unit(13, memLoc5));
             memory.setMBR(msr);
         
-            //Set memory location to 1.
+            //Fetch the address from memory location 1 and set it as the PC.
             memory.setMAR(new Unit(13, memLoc1));
-            
-            this.handleMachineFault(ILLEGAL_OPCODE);
+            pc = memory.getMBR();
+            this.setProgramCounter(pc);
         }
     }
       
-    /**
-     * Handles machine faults
-     */
-    private void handleMachineFault(int type) {
-        //Handle the fault according to its ID.
-    }    
-
     /***************** OPCODE IMPLEMENTATIONS BELOW ******************/
     
     /**
@@ -1598,15 +1598,33 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
     /**
      * Execute TRAP code
      */
-    private void executeOpcodeTRAP() {
+    private void executeOpcodeTRAP() throws HaltSystemException {
+        
+        int memLoc0 = 0, memLoc2 = 2, memLoc3 = 3;
+        Unit pc = this.getProgramCounter();
+        Word msr = this.getMachineStatusRegister();
+        
         int trapCode = this.getIR().decomposeByOffset(12, 19).getUnsignedValue();       // Get the TRAP code from the address bits.
         
         if (trapCode >= 16)                                                             // TRAP codes range from 0 - 15.
         {
-            this.machineFault(2);                                                        // Call machineFault() to handle an illegal Op code.
+            this.machineFault(2);                                                       // Call machineFault() to handle an illegal Op code.
         }
         else 
         {
+            //Store current PC in memory location 2.        
+            memory.setMAR(new Unit(13, memLoc2));
+            memory.setMBR(pc);
+        
+            //Store current  MSR in memory location 3.
+            memory.setMAR(new Unit(13, memLoc3));
+            memory.setMBR(msr);
+            
+            //Fetch the address from memory location 0 and set it as the PC.
+            memory.setMAR(new Unit(13, memLoc0));
+            pc = memory.getMBR();
+            this.setProgramCounter(pc);         
+            
             // Go to table with 16 user-defined instructions
             // Execute the instruction defined by the TRAP code
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
