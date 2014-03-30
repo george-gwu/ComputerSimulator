@@ -9,7 +9,7 @@ import computersimulator.io.*;
  * console printer and a pane that simulates a console keyboard.
  * @author george
  */
-public class InputOutputController implements IClockCycle {
+public class InputOutputController {
     
     private CardReader cardReader;
     private ConsoleKeyboard consoleKeyboard;
@@ -77,14 +77,5 @@ public class InputOutputController implements IClockCycle {
             return 0;
         }            
     }
-    
-    
-    /**
-     * Clock cycle. This is the main function which causes the IOController to do work.
-     *  This serves as a publicly accessible method, but delegates to other methods.
-     */
-    public void clockCycle(){
-        // @TODO: Stubbed until Part 3
-    }  
     
 }

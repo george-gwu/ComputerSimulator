@@ -41,8 +41,7 @@ public class Computer implements IClockCycle {
     @Override
     public final void clockCycle() throws Exception{
         this.cpu.clockCycle();
-        this.memory.clockCycle();
-        this.io.clockCycle();                
+        this.memory.clockCycle();     
     }
     
     /** 
