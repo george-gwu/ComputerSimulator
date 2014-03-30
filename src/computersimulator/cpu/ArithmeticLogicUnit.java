@@ -308,6 +308,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
         
         if(binaryResult.length()>40){
             this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_OVERFLOW);
+        } else {
+            this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_OVERFLOW);
         }        
         
         return Unit.UnitFromBinaryString(truncatedResult); // 40 bit result
@@ -325,6 +327,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
             resultQuotient = 0;
             this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_DIVZERO);
         } else{
+            this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_DIVZERO);
             resultQuotient = (int)Math.floor((operand1.getSignedValue() / operand2.getSignedValue()));
         }
         int resultRemainder = operand1.getSignedValue() % operand2.getSignedValue();
