@@ -98,6 +98,9 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_MLT=20;
     private static final int OPCODE_DVD=21;
     private static final int OPCODE_TRAP=30;
+    private static final int OPCODE_IN=61;
+    private static final int OPCODE_OUT=62;
+    private static final int OPCODE_CHK=63;
 
     // Engineer: used to control micro step, defined per state
     private Integer microState = null;
@@ -271,7 +274,7 @@ public class ControlUnit implements IClockCycle {
     /**
      * 
      * @param RFI
-     * @return R(RFI)
+     * @return Word R(RFI)
      */
     public Word getGeneralPurposeRegister(int RFI){
         return this.gpRegisters[RFI];
@@ -597,6 +600,15 @@ public class ControlUnit implements IClockCycle {
                     break;
                 case ControlUnit.OPCODE_TRAP:
                     this.executeOpcodeTRAP();
+                    break;
+                case ControlUnit.OPCODE_IN:
+                    this.executeOpcodeIN();
+                    break;
+                case ControlUnit.OPCODE_OUT:
+                    this.executeOpcodeOUT();
+                    break;
+                case ControlUnit.OPCODE_CHK:
+                    this.executeOpcodeCHK();
                     break;
                 default: // Illegal opcode. Crash!
                     this.illegalOpCode();
@@ -1633,6 +1645,59 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         this.signalMicroStateExecutionComplete();
         throw new HaltSystemException();
     }   
+    
+    /**
+     * Input Character To Register from Device, r = 0..3
+     */
+    private void executeOpcodeIN(){                
+        
+        int r = this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+        int DEVID = this.getIR().decomposeByOffset(16, 19).getUnsignedValue();
+                
+        Word received = ioController.input(DEVID);
+        this.setGeneralPurposeRegister(r, received);    
+        
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: IN");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        this.signalMicroStateExecutionComplete();
+    }  
+    
+    /**
+     * Output Character to Device from Register, r = 0..3
+     */
+    private void executeOpcodeOUT(){                
+        
+        int r = this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+        int DEVID = this.getIR().decomposeByOffset(16, 19).getUnsignedValue();
+        
+        Word contentsOfR=this.getGeneralPurposeRegister(r);
+        
+        ioController.output(DEVID, contentsOfR);
+        
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: OUT");
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        this.signalMicroStateExecutionComplete();
+    }   
+    
+    /**
+     * Check Device Status to Register, r = 0..3
+     * c(r) <- device status
+     */
+    private void executeOpcodeCHK(){                
+        
+        int r = this.getIR().decomposeByOffset(8, 9).getUnsignedValue();
+        int DEVID = this.getIR().decomposeByOffset(16, 19).getUnsignedValue();
+        
+        int status = ioController.checkStatus(DEVID);
+        this.setGeneralPurposeRegister(r, new Word(status));        
+        
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: CHK  - Status: "+status);
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        this.signalMicroStateExecutionComplete();
+    }       
     
   
 }
