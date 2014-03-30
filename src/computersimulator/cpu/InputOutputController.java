@@ -23,6 +23,10 @@ public class InputOutputController implements IClockCycle {
     public final static int STATUS_DONE = 2; // EOF
 
     public InputOutputController() {
+        this.resetIOController();
+    }
+    
+    public void resetIOController(){
         cardReader  = new CardReader();
     }
     

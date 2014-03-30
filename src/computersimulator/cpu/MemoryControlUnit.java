@@ -33,15 +33,20 @@ public class MemoryControlUnit implements IClockCycle {
     
 
     public MemoryControlUnit() {
-        memory = new Word[MemoryControlUnit.BANK_SIZE][MemoryControlUnit.BANK_CELLS];     
+        memory = new Word[MemoryControlUnit.BANK_SIZE][MemoryControlUnit.BANK_CELLS];             
+        this.resetMemory();
+    }
+    
+    
+    public final void resetMemory(){
         initializeMemoryToZero(); // Upon powering up, set all elements of memory to zero
-        
         cache = new Cache(this);
         
         memoryAddressRegister = new Unit(13);
         memoryBufferRegister = new Word();
         
-        resetState();
+        this.resetState();
+        
     }
     
     /**

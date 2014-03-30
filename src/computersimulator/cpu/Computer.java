@@ -55,7 +55,11 @@ public class Computer implements IClockCycle {
      * The virtual card reader is implemented as a file.
 
      */
-    public void IPL(){        
+    public void IPL(){     
+        
+        this.io.resetIOController();
+        this.memory.resetMemory();
+        
         /*** Pseudocode for ROM bootloader 
          * Reads a file to memory starting at M(64) to EOF
          * 
