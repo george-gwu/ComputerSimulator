@@ -14,7 +14,7 @@ public class ConsoleKeyboard implements IIODevice {
     private Word tempInput;
     
     /**
-     * Card Reader Constructor - Reads in a text file to an array for access via IO controller
+     * Console Keyboard Constructor
      */
     public ConsoleKeyboard(){
         buffer = new ArrayList<>();
