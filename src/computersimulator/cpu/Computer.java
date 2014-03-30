@@ -28,8 +28,8 @@ public class Computer implements IClockCycle {
 
     public Computer() {        
         memory = new MemoryControlUnit();  
-        cpu = new CentralProcessingUnit(memory); // contains ALU,  ControlUnit      
         io = new InputOutputController();
+        cpu = new CentralProcessingUnit(memory, io); // contains ALU,  ControlUnit      
     }   
     
     /**

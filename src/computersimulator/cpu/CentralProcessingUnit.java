@@ -11,21 +11,18 @@ public class CentralProcessingUnit implements IClockCycle {
     private ControlUnit controlUnit;
     private ArithmeticLogicUnit alu;
     private MemoryControlUnit memory;
-    private InputOutputController ioController;
-    private Computer computer;
     
     private Boolean running = false;
     
 
-    public CentralProcessingUnit(MemoryControlUnit mem) {        
+    public CentralProcessingUnit(MemoryControlUnit mem, InputOutputController io) {        
         this.memory = mem;
         alu = new ArithmeticLogicUnit();
         
         controlUnit = new ControlUnit(this.memory, this.alu);   
-        alu.setControlUnit(controlUnit); // exchange reference
-        
-        ioController = new InputOutputController();
+        alu.setControlUnit(controlUnit); // exchange reference        
 
+        controlUnit.setIOController(io); // pass reference through 
     }
     
     /**
@@ -39,7 +36,6 @@ public class CentralProcessingUnit implements IClockCycle {
         try {
             this.controlUnit.clockCycle();
             this.alu.clockCycle();
-            this.ioController.clockCycle();
         } catch(HaltSystemException hse){
             this.running=false;
         }
@@ -51,11 +47,7 @@ public class CentralProcessingUnit implements IClockCycle {
 
     public ArithmeticLogicUnit getALU() {
         return alu;
-    }
-    
-    private InputOutputController getIOController() {
-        return ioController;
-    }
+    }   
     
     public Boolean isRunning() {
         return running;

@@ -108,6 +108,9 @@ public class ControlUnit implements IClockCycle {
     // ALU Reference
     private ArithmeticLogicUnit alu;   
     
+    // IO Reference
+    private InputOutputController ioController;
+    
     // nextPC	13 bits	Next Program Counter: Interal Register Used to signal program counter was adjusted by instruction
     private Unit nextProgramCounter;
     
@@ -131,6 +134,13 @@ public class ControlUnit implements IClockCycle {
         }                         
     }
     
+    public InputOutputController getIOController() {
+        return ioController;
+    }
+    
+    public void setIOController(InputOutputController io){
+        this.ioController = io;
+    }
 
     /**
      *
