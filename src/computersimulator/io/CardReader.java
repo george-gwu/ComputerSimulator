@@ -3,6 +3,7 @@ package computersimulator.io;
 import computersimulator.components.Word;
 import computersimulator.cpu.InputOutputController;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,42 +13,53 @@ import java.util.logging.Logger;
  */
 public class CardReader implements IIODevice {
     
-    private BufferedReader br;
+    private ArrayList<String> data;
+    private int iterator;
     
+    /**
+     * Card Reader Constructor - Reads in a text file to an array for access via IO controller
+     */
     public CardReader(){
+        data = new ArrayList<>();
+        iterator=0;
+        
         try {
             FileReader reader=new FileReader("cardreader.txt");
-            br = new BufferedReader(reader);
+            BufferedReader br = new BufferedReader(reader);
             
-        } catch (FileNotFoundException ex) {
+            String strLine;
+            while((strLine=br.readLine())!=null){
+                data.add(strLine);
+            }
+            
+        } catch (IOException ex) {
             Logger.getLogger(ReadFilebyJava.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     /**
      * Input reads a word
-     * @return 
+     * @return Word
      */
+    @Override
     public Word input(){
-        String strLine="";
-        try {
-            strLine = br.readLine();
-        } catch (IOException ex) {
-            Logger.getLogger(CardReader.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+        String strLine = data.get(iterator++);
+               
         System.out.println(strLine);
         
         String firstTwentyChars=strLine.substring(0, 20);
         
         Word result = Word.WordFromBinaryString(firstTwentyChars);
         
-        return new Word(0);
+        return result;
     }
     
     /**
      * Writes a word
      * @param value 
      */
+    @Override
     public void output(Word value){
         System.out.println("ERROR: This IO device does not support writing.");
     }
@@ -56,13 +68,10 @@ public class CardReader implements IIODevice {
      * Check Status of Device
      * @return status
      */
+    @Override
     public int checkStatus(){
-        int res = 0;
-        try {
-            res = (br.ready() ? InputOutputController.STATUS_READY : InputOutputController.STATUS_BUSY);
-        } catch (IOException ex) {
-            Logger.getLogger(CardReader.class.getName()).log(Level.SEVERE, null, ex);
-        }        
+        int res = (this.iterator<this.data.size() ? InputOutputController.STATUS_READY : InputOutputController.STATUS_BUSY);
+        
         return res;
     }   
     

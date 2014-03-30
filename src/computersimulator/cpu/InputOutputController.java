@@ -20,6 +20,7 @@ public class InputOutputController implements IClockCycle {
     
     public final static int STATUS_READY = 0;
     public final static int STATUS_BUSY = 1;
+    public final static int STATUS_DONE = 2; // EOF
 
     public InputOutputController() {
         cardReader  = new CardReader();
