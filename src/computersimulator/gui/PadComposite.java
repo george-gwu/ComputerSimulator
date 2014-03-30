@@ -1,7 +1,12 @@
 package computersimulator.gui;
 
+import computersimulator.cpu.Computer;
+import computersimulator.cpu.InputOutputController;
+import computersimulator.io.ConsoleKeyboard;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -12,9 +17,13 @@ import javax.swing.JPanel;
  */
 public class PadComposite {
     private JPanel p;
+    private Computer computer;
     
-    public PadComposite() {
+    public PadComposite(Computer computer) {
+        this.computer = computer;
     }    
+    
+
     
     /**
      * 
@@ -26,17 +35,52 @@ public class PadComposite {
          
         buttonPanel.setLayout(new GridLayout(4,3));
         
+        final InputOutputController ioController = computer.getIO();
+        
         // add 10 buttons
         for (int i = 0; i < buttons.length; i++) {
-             buttons[i] = new JButton(""+i+"");
-             if(i>0)buttonPanel.add(buttons[i]);
+            buttons[i] = new JButton(""+i+"");           
+
+            buttons[i].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // This reference can change, so we must re-fetch it.
+                    ConsoleKeyboard consoleKeyboard = (ConsoleKeyboard)ioController.getDevice(InputOutputController.DEVICE_CONSOLEKEYBOARD);
+                    JButton src = (JButton)e.getSource();
+                    consoleKeyboard.buttonPress((Integer.parseInt(src.getText())+ 48));
+
+                }
+            });                  
+             
+            if(i>0)buttonPanel.add(buttons[i]);
         }
+        
+               
         
         buttonPanel.add(buttons[0]); // add 0 on the bottom row
         
         // add Enter/Clear buttons
-        buttonPanel.add(new JButton("Enter"));
-        buttonPanel.add(new JButton("Clear"));
+        
+        JButton btnEnter = new JButton("Enter");
+        buttonPanel.add(btnEnter);
+        btnEnter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ConsoleKeyboard consoleKeyboard = (ConsoleKeyboard)ioController.getDevice(InputOutputController.DEVICE_CONSOLEKEYBOARD);
+                consoleKeyboard.buttonPress(13);
+            }
+        });
+        
+        JButton btnBackspace = new JButton("<--");
+        buttonPanel.add(btnBackspace);        
+        btnBackspace.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ConsoleKeyboard consoleKeyboard = (ConsoleKeyboard)ioController.getDevice(InputOutputController.DEVICE_CONSOLEKEYBOARD);
+                consoleKeyboard.buttonPress(8);
+            }
+        });
+        
         buttonPanel.setPreferredSize(new Dimension(200, 200));
         p.add(buttonPanel);
     }

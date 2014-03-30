@@ -193,7 +193,7 @@ public class OperatorConsole implements Runnable {
         rightPanel.add(scrollPane);
         
         // add numeric pad component to right pane
-        PadComposite pad = new PadComposite();
+        PadComposite pad = new PadComposite(computer);
         pad.createComposite();
         rightPanel.add(pad.getGUI());
         

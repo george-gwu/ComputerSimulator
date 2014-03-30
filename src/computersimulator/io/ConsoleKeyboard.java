@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class ConsoleKeyboard implements IIODevice {
     
-    private ArrayList<String> buffer;
+    private ArrayList<Integer> buffer;
     
     /**
      * Card Reader Constructor - Reads in a text file to an array for access via IO controller
@@ -50,6 +50,12 @@ public class ConsoleKeyboard implements IIODevice {
         int res = (buffer.size() > 0 ? InputOutputController.STATUS_READY : InputOutputController.STATUS_BUSY);
         
         return res;
-    }   
+    }  
+    
+    
+    public void buttonPress(int keyCode){
+        System.out.println("Key Press: "+keyCode);
+        buffer.add(keyCode);
+    }
     
 }
