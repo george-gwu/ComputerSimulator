@@ -62,7 +62,7 @@ public class Computer implements IClockCycle {
         /*** Pseudocode for ROM bootloader 
          * Reads a file to memory starting at M(64) to EOF
          * 
-         * ADDR=64
+         * ADDR=64, X1=0
          * L1: R0 = io.readLine()
          * memory.set(ADDR+X1, R0)
          * X1++
