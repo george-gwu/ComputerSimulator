@@ -1,6 +1,7 @@
 package computersimulator.cpu;
 
 import computersimulator.components.Word;
+import computersimulator.io.CardReader;
 
 /**
  * InputOutputController - I/O operations communicate with peripherals attached to the computer system. 
@@ -10,27 +11,37 @@ import computersimulator.components.Word;
  */
 public class InputOutputController implements IClockCycle {
     
-    /**
-     * 
-     * DEVID	Device
-        0	Console Keyboard
-        1	Console Printer
-        2	Card Reader
-        3-16	Console Registers, switches, etc
-     */
+    CardReader cardReader;
+    
+    private static final int DEVICE_CONSOLEKEYBOARD=0;
+    private static final int DEVICE_CONSOLEPRINTER=1;
+    private static final int DEVICE_CARDREADER=2;
+    //3-16	Console Registers, switches, etc
+    
+    public final static int STATUS_READY = 0;
+    public final static int STATUS_BUSY = 1;
 
     public InputOutputController() {
-        
+        cardReader  = new CardReader();
     }
     
     
     public Word input(int DEVID){
-        // @TODO: Return Word from Device by DEVID
-        return new Word(0);
+        switch(DEVID){
+            case DEVICE_CARDREADER:
+                return cardReader.input();
+            default:
+                return new Word(0);
+        }
     }
     
     public void output(int DEVID, Word value){
-        //@TODO: Push word to IO device by DEVID
+        switch(DEVID){
+            case DEVICE_CARDREADER:
+                cardReader.output(value);
+            default:
+                
+        }
     }
     
     /**
@@ -39,9 +50,12 @@ public class InputOutputController implements IClockCycle {
      * @return status
      */
     public int checkStatus(int DEVID){
-        //@TODO: Look up status of DEVID by communicating with device, then return a code
-        // codes: 0-none, 1-busy, others?
-        return 0;
+        switch(DEVID){
+            case DEVICE_CARDREADER:
+                return cardReader.checkStatus();
+            default:
+                return 0;
+        }
     }
     
     
