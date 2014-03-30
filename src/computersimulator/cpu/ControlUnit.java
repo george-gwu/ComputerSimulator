@@ -84,6 +84,7 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_LDA=3;
     private static final int OPCODE_LDX=41;
     private static final int OPCODE_STX=42;
+    private static final int OPCODE_INX=43;
     private static final int OPCODE_AMR=4;
     private static final int OPCODE_SMR=5;
     private static final int OPCODE_AIR=6;
@@ -413,6 +414,7 @@ public class ControlUnit implements IClockCycle {
             int opcode = this.instructionRegisterDecoded.get("opcode").getUnsignedValue();  
             
             switch(opcode){
+                case ControlUnit.OPCODE_INX:
                 case ControlUnit.OPCODE_AIR:
                 case ControlUnit.OPCODE_SIR:
                 case ControlUnit.OPCODE_MLT:
@@ -424,9 +426,9 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.OPCODE_SRC:
                 case ControlUnit.OPCODE_RRC:
                 case ControlUnit.OPCODE_IN:
-                case ControlUnit.OPCODE_HLT:
                 case ControlUnit.OPCODE_OUT:
                 case ControlUnit.OPCODE_CHK:
+                case ControlUnit.OPCODE_HLT:
                 case ControlUnit.OPCODE_TRAP:
                     // These instructions don't require EA calculation. Skip ahead.
                     this.microState=null;
@@ -549,6 +551,9 @@ public class ControlUnit implements IClockCycle {
                     break;
                 case ControlUnit.OPCODE_STX:
                     this.executeOpcodeSTX();
+                    break;
+                case ControlUnit.OPCODE_INX:
+                    this.executeOpcodeINX();
                     break;
                 case ControlUnit.OPCODE_AMR:
                     this.executeOpcodeAMR();
@@ -899,6 +904,23 @@ public class ControlUnit implements IClockCycle {
             break;
         }
     }
+    
+    /**
+     * Increment Index Register - Implemented because LDX is affected by EA
+     */
+    private void executeOpcodeINX() {
+        // Micro 6: c(XFI) = c(XFI) + 1
+        System.out.println("Micro 6: c(XFI) = c(XFI) + 1");
+        int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
+
+        this.setIndexRegister(XFI, new Unit(13,this.getIndexRegister(XFI).getUnsignedValue() + 1));
+
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: INX - X("+XFI+") is now: "+this.getIndexRegister(XFI).getUnsignedValue());
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+        this.signalMicroStateExecutionComplete();
+    }    
     
     /**
      * Execute Add Memory to Register
