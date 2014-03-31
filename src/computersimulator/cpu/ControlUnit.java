@@ -853,7 +853,7 @@ public class ControlUnit implements IClockCycle {
                     System.out.println("Micro-7: MBR <- M(MAR)");
                     // Micro 8: c(XFI) <- MBR              
                     int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
-                     this.setIndexRegister(XFI, new Unit(13,this.memory.getMBR().getUnsignedValue()));
+                    this.setIndexRegister(XFI, new Unit(13,this.memory.getMBR().getSignedValue()));
 
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     System.out.println("COMPLETED INSTRUCTION: LDX - X("+XFI+") is now "+ this.getIndexRegister(XFI));
@@ -883,7 +883,7 @@ public class ControlUnit implements IClockCycle {
               System.out.println("Micro 7: MBR <- c(XFI)");
               int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
             
-              memory.setMBR(new Word(this.getIndexRegister(XFI).getUnsignedValue()));
+              memory.setMBR(new Word(this.getIndexRegister(XFI).getSignedValue()));
               memory.signalStore(); 
               this.microState++; // no break in case it was cached
                 
@@ -913,10 +913,10 @@ public class ControlUnit implements IClockCycle {
         System.out.println("Micro 6: c(XFI) = c(XFI) + 1");
         int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
 
-        this.setIndexRegister(XFI, new Unit(13,this.getIndexRegister(XFI).getUnsignedValue() + 1));
+        this.setIndexRegister(XFI, new Unit(13,this.getIndexRegister(XFI).getSignedValue() + 1));
 
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("COMPLETED INSTRUCTION: INX - X("+XFI+") is now: "+this.getIndexRegister(XFI).getUnsignedValue());
+        System.out.println("COMPLETED INSTRUCTION: INX - X("+XFI+") is now: "+this.getIndexRegister(XFI).getSignedValue());
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         this.signalMicroStateExecutionComplete();
