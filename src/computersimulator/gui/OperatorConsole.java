@@ -301,6 +301,7 @@ public class OperatorConsole implements Runnable {
                                 case Computer.RUNMODE_MICROSTEP: // runs one micro instruction
                                     computer.getCpu().setRunning(true);
                                     computer.clockCycle();
+                                    publish();
                                     break;
                                 case Computer.RUNMODE_STEP: // runs until instruction complete
                                     computer.getCpu().setRunning(true);
