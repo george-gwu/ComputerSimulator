@@ -27,6 +27,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerListModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -287,8 +288,22 @@ public class OperatorConsole implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    computer.run();
-                    opconsole.updateDisplay();                
+
+                    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+                        @Override
+                        protected Void doInBackground() throws Exception {
+                            computer.run();    
+                            return null;
+                        }
+                        
+                        @Override
+                        protected void done() {
+                            opconsole.updateDisplay(); 
+                        }
+                    };
+                    worker.execute();
+                                   
                 } catch (Exception err) {
                     System.out.println("Error: " + err);
                 }
