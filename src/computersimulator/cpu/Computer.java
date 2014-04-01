@@ -96,31 +96,16 @@ public class Computer implements IClockCycle {
         this.cpu.setRunning(true);          
     }
     
-    
-    public void run() throws Exception {
-        switch(this.runmode){
-            case Computer.RUNMODE_MICROSTEP: // runs one micro instruction
-                this.cpu.setRunning(true);
-                this.clockCycle();
-                break;
-            case Computer.RUNMODE_STEP: // runs until instruction complete
-                this.cpu.setRunning(true);
-                do {
-                    this.clockCycle();//@TODO: NOT WORKING.
-                } while(this.cpu.getControlUnit().getState() > ControlUnit.STATE_NONE && this.cpu.isRunning());
-                break;
-            case Computer.RUNMODE_RUN: // runs until halt
-                this.cpu.setRunning(true);
-                do {
-                    this.clockCycle();
-                } while(this.cpu.isRunning());                
-                break;
-        }        
-    }
 
     public void setRunmode(int runmode) {
         this.runmode = runmode;
     }    
+
+    public int getRunmode() {
+        return runmode;
+    }
+    
+    
     
     /**
      *

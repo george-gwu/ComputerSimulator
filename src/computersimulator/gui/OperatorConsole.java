@@ -2,6 +2,7 @@ package computersimulator.gui;
 
 import computersimulator.components.*;
 import computersimulator.cpu.Computer;
+import computersimulator.cpu.ControlUnit;
 import computersimulator.cpu.InputOutputController;
 import computersimulator.io.ConsolePrinter;
 import java.awt.Color;
@@ -14,6 +15,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -293,7 +295,29 @@ public class OperatorConsole implements Runnable {
 
                         @Override
                         protected Void doInBackground() throws Exception {
-                            computer.run();    
+                            
+                            
+                            switch(computer.getRunmode()){
+                                case Computer.RUNMODE_MICROSTEP: // runs one micro instruction
+                                    computer.getCpu().setRunning(true);
+                                    computer.clockCycle();
+                                    break;
+                                case Computer.RUNMODE_STEP: // runs until instruction complete
+                                    computer.getCpu().setRunning(true);
+                                    do {
+                                        computer.clockCycle();
+                                        publish();
+                                    } while(computer.getCpu().getControlUnit().getState() > ControlUnit.STATE_NONE && computer.getCpu().isRunning());
+                                    break;
+                                case Computer.RUNMODE_RUN: // runs until halt
+                                    computer.getCpu().setRunning(true);
+                                    do {
+                                        computer.clockCycle();
+                                        publish();
+                                    } while(computer.getCpu().isRunning());                
+                                    break;
+                            }                                    
+                             
                             return null;
                         }
                         
@@ -301,6 +325,13 @@ public class OperatorConsole implements Runnable {
                         protected void done() {
                             opconsole.updateDisplay(); 
                         }
+                        
+                        @Override
+                        protected void process(List<Void> chunks) {
+                            opconsole.updateDisplay(); 
+                            
+                        }
+                        
                     };
                     worker.execute();
                                    
