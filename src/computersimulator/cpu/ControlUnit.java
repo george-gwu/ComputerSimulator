@@ -821,6 +821,8 @@ public class ControlUnit implements IClockCycle {
     
     /**
      * Execute Load Register with Address
+     * Load Register with Address, r = 0..3
+     * r <− EA or r <− c(EA), if I bit set
      */
     private void executeOpcodeLDA() {
        
@@ -837,6 +839,9 @@ public class ControlUnit implements IClockCycle {
     
     /**
      * Execute Load Index Register from Memory
+     * LDX x, X’ address[,I]
+     * Load Index Register from Memory, X’ = 1..3 
+     * X(X') <- c(EA)
      */
     private void executeOpcodeLDX() {
         switch(this.microState){            
@@ -851,8 +856,8 @@ public class ControlUnit implements IClockCycle {
                 if(!memory.isBusy()){
                     // Micro-7: MBR <- M(MAR)
                     System.out.println("Micro-7: MBR <- M(MAR)");
-                    // Micro 8: c(XFI) <- MBR              
-                    int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
+                    // Micro 8: c(XFI) <- MBR                                  
+                    int XFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
                     this.setIndexRegister(XFI, new Unit(13,this.memory.getMBR().getSignedValue()));
 
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -869,6 +874,8 @@ public class ControlUnit implements IClockCycle {
     
     /**
      * Execute Store Index Register to Memory
+     * STX x, X’, address[,I]
+     * X’ = 1..3,  EA <- c(X’), C(EA) <- c(X’), if I-bit set
      */
     private void executeOpcodeSTX() {
         switch(this.microState){
@@ -881,7 +888,7 @@ public class ControlUnit implements IClockCycle {
             case 1:
               // Micro 7: MBR <- c(XFI)
               System.out.println("Micro 7: MBR <- c(XFI)");
-              int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
+              int XFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
             
               memory.setMBR(new Word(this.getIndexRegister(XFI).getSignedValue()));
               memory.signalStore(); 
@@ -906,12 +913,12 @@ public class ControlUnit implements IClockCycle {
     }
     
     /**
-     * Increment Index Register - Implemented because LDX is affected by EA
+     * Increment Index Register 
      */
     private void executeOpcodeINX() {
         // Micro 6: c(XFI) = c(XFI) + 1
         System.out.println("Micro 6: c(XFI) = c(XFI) + 1");
-        int XFI = this.instructionRegisterDecoded.get("xfi").getUnsignedValue();
+        int XFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
 
         this.setIndexRegister(XFI, new Unit(13,this.getIndexRegister(XFI).getSignedValue() + 1));
 

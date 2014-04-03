@@ -13,3 +13,4 @@
 01011000100000000000    TRR(R0, R3))   - Test EAX=ECX
 00110000110001001011    JCC(3,x,L1)    - if R0==R3, JMP to L1(75)  (loop) 
 11110100000000000000    IN(R0, DEVICE_CONSOLEKEYBOARD)  -- else read Word
+11111000000000000001    OUT(0,1)       - Output EAX (char equivalent of input)
