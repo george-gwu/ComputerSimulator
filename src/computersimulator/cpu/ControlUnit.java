@@ -1637,7 +1637,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         
         if (trapCode >= 16)                                                             // TRAP codes range from 0 - 15.
         {
-            this.machineFault(2);                                                       // Call machineFault() to handle an illegal Op code.
+            this.machineFault(1);                                                       // Call machineFault() to handle an illegal TRAP code.
         }
         else 
         {
