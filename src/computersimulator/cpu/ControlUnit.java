@@ -662,7 +662,7 @@ public class ControlUnit implements IClockCycle {
      * 
      * Halts the system if any of the above are encountered.
      */
-    private void machineFault(int type) {
+    void machineFault(int type) {
         
         int faultID = type;
         String IDString;

@@ -23,6 +23,8 @@ public class MemoryControlUnit implements IClockCycle {
     
     private Cache cache;
     
+    // ControlUnit Reference
+    private ControlUnit controlUnit;
     
     // state is used by the fetch/store controller to determine the current operation
     private int state;
@@ -167,6 +169,7 @@ public class MemoryControlUnit implements IClockCycle {
         if(bankIndex > MemoryControlUnit.BANK_SIZE){
             //throw new Exception("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
             System.out.println("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
+            controlUnit.machineFault(0);
             return null; //@TODO Switch back to exception
         }
         
