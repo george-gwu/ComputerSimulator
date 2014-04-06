@@ -203,6 +203,15 @@ public class ArithmeticLogicUnit implements IClockCycle {
         Unit resultResized = new Unit(size);        
         resultResized.setValueBinary(resultTemporary.getBinaryString());
         
+         // check underflow
+        long resultLong = (long)operand1.getSignedValue() - (long)operand2.getSignedValue();
+        if (checkUnderflow(resultLong)) {
+            this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_UNDERFLOW);
+        } else {
+            this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_UNDERFLOW);
+        } 
+
+        
         return resultResized;        
     }
     
@@ -224,6 +233,14 @@ public class ArithmeticLogicUnit implements IClockCycle {
         Unit resultTemporary = Unit.UnitFromBinaryString(finalResultStr);
         Unit resultResized = new Unit(size);        
         resultResized.setValueBinary(resultTemporary.getBinaryString());
+        
+         // check underflow
+        long resultLong = (long)operand1.getSignedValue() + (long)operand2.getSignedValue();
+        if (checkUnderflow(resultLong)) {
+            this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_UNDERFLOW);
+        } else {
+            this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_UNDERFLOW);
+        }   
           
         return resultResized;
     }      
@@ -312,6 +329,13 @@ public class ArithmeticLogicUnit implements IClockCycle {
             this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_OVERFLOW);
         }        
         
+        // check underflow
+        if (checkUnderflow(resultLong)) {
+            this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_UNDERFLOW);
+        } else {
+            this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_UNDERFLOW);
+        }   
+
         return Unit.UnitFromBinaryString(truncatedResult); // 40 bit result
     }
     
@@ -339,7 +363,44 @@ public class ArithmeticLogicUnit implements IClockCycle {
         // Overload quotient & remainder into one 40 bit value
         Unit results = new Unit(40);
         results.setValueBinary(quotient.getBinaryString() + remainder.getBinaryString());
+        
+        // check underflow
+        long resultLong = (long)operand1.getSignedValue() / (long)operand2.getSignedValue();
+        if (checkUnderflow(resultLong)) {
+            this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_UNDERFLOW);
+        } else {
+            this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_UNDERFLOW);
+        }   
+
                 
         return results; // 40 bit result
     }      
+    
+   /**
+     * Check for overflow conditions
+     * @param result
+     * @return return true if overflow occurs
+     */
+    public boolean checkOverflow(long result) {
+	boolean overflow = false;
+		
+	if (result > Integer.MAX_VALUE) {
+            overflow = true;
+	}		
+	return overflow;
+    }
+    
+    /**
+     * Check for underflow conditions
+     * @param result
+     * @return return true if underflow occurs
+     */
+    public boolean checkUnderflow(long result) {
+	boolean underflow = false;
+		
+	if (result < Integer.MIN_VALUE) {
+            underflow = true;
+	}		
+	return underflow;
+    }
 }
