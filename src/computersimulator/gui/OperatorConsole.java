@@ -176,6 +176,7 @@ public class OperatorConsole implements Runnable {
         JButton load = new JButton("Load");
         JButton deposit = new JButton("Deposit");
         JButton go = new JButton("Go");
+        JButton halt = new JButton("Halt");
         
         buttonPanel.add(start);
         buttonPanel.add(load);
@@ -187,9 +188,12 @@ public class OperatorConsole implements Runnable {
         JComponent field = ((JSpinner.DefaultEditor) spinner.getEditor());
         Dimension prefSize = field.getPreferredSize();
         prefSize = new Dimension(80, prefSize.height);
+        spinner.setValue("Run");
+        computer.setRunmode(Computer.RUNMODE_RUN);
         field.setPreferredSize(prefSize);        
         buttonPanel.add(spinner);
         buttonPanel.add(go);
+        buttonPanel.add(halt);
         
         // add text area for console printer 
         JTextArea guiTextPrinter = new JTextArea(15, 20);
@@ -238,6 +242,7 @@ public class OperatorConsole implements Runnable {
                 opconsole.updateDisplay();
             }
         });
+        
 
         // deposit
         deposit.addActionListener(new ActionListener() {
@@ -339,6 +344,15 @@ public class OperatorConsole implements Runnable {
                 } catch (Exception err) {
                     System.out.println("Error: " + err);
                 }
+            }
+        });
+        
+        
+        // Halt Button
+        halt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                computer.getCpu().setRunning(false);
             }
         });
         
