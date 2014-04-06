@@ -409,7 +409,7 @@ public class ControlUnit implements IClockCycle {
                 break;
             case 5: // transfer execution to machine fault addr
                 if(!this.memory.isBusy()){ // block until memory read is ready
-                    System.out.println("Micro-5: M(1) -> PC ["+this.memory.getMBR().getUnsignedValue()+"]");
+                    System.out.println("[FAULT] Micro-5: M(1) -> PC ["+this.memory.getMBR().getUnsignedValue()+"]");
                     this.setProgramCounter(this.memory.getMBR());                                  
                     // Set up for next major state
                     this.microState=null;
