@@ -356,8 +356,8 @@ public class ControlUnit implements IClockCycle {
      * handles the trap or machine fault. 
      */
     void handleMachineFault() {
-        
-            switch(this.microState){            
+        this.blocked=false; 
+        switch(this.microState){            
             case 0: // save pc                
                 Unit pc = this.getProgramCounter();
                 System.out.println("[FAULT] Micro-0: 4->MAR, PC("+pc.getUnsignedValue()+") -> MBR");                
@@ -406,6 +406,8 @@ public class ControlUnit implements IClockCycle {
                     this.microState=null;
                     this.state=ControlUnit.STATE_FETCH_INSTRUCTION;
                     break;
+                } else {
+                    this.signalBlockingMicroFunction();
                 }
 
         }        
@@ -1687,6 +1689,8 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                     this.signalMicroStateExecutionComplete();
                     break;
+                } else {
+                    this.signalBlockingMicroFunction();
                 }
 
         }            
