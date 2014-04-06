@@ -57,8 +57,8 @@ public class Computer implements IClockCycle {
      * Your ROM Loader should read a boot program from a virtual card reader and 
      * place them into memory in a location you designate. The ROM Loader then 
      * transfers control to the program which executes until completion or error. 
-     * The virtual card reader is implemented as a file.
-
+     * 
+     * IPL also loads the error handlers into memory.
      */
     public void IPL(){     
         
@@ -76,10 +76,11 @@ public class Computer implements IClockCycle {
          * test checkForMore
          * jcc checkForMore to L1
          * jmp 64
-         */
-        
-        /************* Assembly for bootloader **************/
+         */               
         HashMap<Integer,String> ROM = new HashMap<>();                                
+        /************* Assembly for bootloader **************/
+        ROM.put(00, "00000000000000011110");       // Trap Handler -> 30
+        ROM.put(01, "00000000000000011110");       // Machine Fault Handler -> 30
         ROM.put(10, "011111 00 10 1 1 000 10100"); //10: SRC(2,20,1,1)  -- reset ECX to 0 (index value)        
         ROM.put(11, "011111 00 11 1 1 000 10100"); //11: SRC(3,20,1,1)  -- reset EDX to 0 (IO Status Ready)        
         ROM.put(12, "000010 00 10 0 0 00000110" ); //12: STR(2,0,6)     -- set M(6) to ECX        
@@ -91,6 +92,29 @@ public class Computer implements IClockCycle {
         ROM.put(18, "010110 00 11 0 0 00000000" ); //18: TRR(0, 3)      -- Test EAX against EDX (IO Status Ready -- not done)        
         ROM.put(19, "001100 00 11 0 0 00001110" ); //19: JCC(3,x, L1)   -- JMP to L1 if EAX=EDX --- L1=14   
         ROM.put(20, "001101 00 00 0 0 01000000" ); //20: JMP(64)        -- else: launch program by transferring control to 64
+        /***************** Error Handler ************************************/               
+        ROM.put(30, "011111 00 00 1 1 000 10100"); //30: SRC(0,20,1,1)  -- reset EAX to 0
+        ROM.put(31, "011111 00 01 1 1 000 10100"); //31: SRC(1,20,1,1)  -- reset EBX to 0
+        ROM.put(32, "011111 00 10 1 1 000 10100"); //32: SRC(2,20,1,1)  -- reset ECX to 0
+        ROM.put(33, "000110 00 00 0 0 01000101");  //33: AIR(0,72)      -- Set EAX to 69 ('E')
+        ROM.put(34, "000110 00 01 0 0 01110010");  //34: AIR(1,105)     -- Set EBX to 114 ('r')
+        ROM.put(35, "000110 00 10 0 0 01101111");  //35: AIR(2,13)      -- Set ECX to 111 ('o')
+        ROM.put(36, "111110 00 00 000000 0001");   //36: OUT(0,1)       -- Output EAX ('E')
+        ROM.put(37, "111110 00 01 000000 0001");   //37: OUT(1,1)       -- Output EBX ('r')
+        ROM.put(38, "111110 00 01 000000 0001");   //38: OUT(1,1)       -- Output EBX ('r')
+        ROM.put(39, "111110 00 10 000000 0001");   //39: OUT(2,1)       -- Output ECX ('o')
+        ROM.put(40, "111110 00 01 000000 0001");   //40: OUT(1,1)       -- Output EBX ('r')
+        ROM.put(41, "00000000000000000000");       //41: HLT                        
+        
+            
+            
+            
+            
+            
+            
+            
+            
+        
         
         // Read ROM contents into memory
         for (Map.Entry romEntry : ROM.entrySet()) {            
