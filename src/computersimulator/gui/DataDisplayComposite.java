@@ -64,10 +64,21 @@ public class DataDisplayComposite {
      * Updates display
      */
     public void updateDisplay(){
-        Integer[] data = this.getSource().getBinaryArray();
-        
-        for(int i = 0; i<data.length; i++){
-            bits[i].setBackground((data[i]==1) ? Color.red : Color.gray);
+        Unit src = this.getSource();
+        if(src!=null){
+            Integer[] data = src.getBinaryArray();
+
+            if(data.length != bits.length){
+                System.out.println("ERROR: Data size ("+data.length+") does not match intended size ("+bits.length+") of "+this.getName()+". This should never happen. Wrong Unit size Used.");
+                System.exit(0);
+            }
+
+            for(int i = 0; i<data.length; i++){
+                bits[i].setBackground((data[i]==1) ? Color.red : Color.gray);
+            }
+        } else {
+            System.out.println("MAJOR ERROR: A register "+this.getName() +" was set to NULL. This should never happen.");    
+            System.exit(0);
         }
     }   
     

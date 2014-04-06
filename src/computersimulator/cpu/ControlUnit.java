@@ -1667,6 +1667,9 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         int DEVID = this.getIR().decomposeByOffset(16, 19).getUnsignedValue();
                 
         Word received = ioController.input(DEVID);
+        if(received==null){
+            received = new Word(0);
+        }
         this.setGeneralPurposeRegister(r, received);    
         
         System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
