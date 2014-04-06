@@ -1681,19 +1681,17 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
                     this.nextProgramCounter = new Unit(13, newLoc);
                     
                     System.out.println("Micro-5: M(0) ["+this.memory.getMBR().getUnsignedValue()+"] +TC ["+trapCode+"] -> PC ["+newLoc+"]");
+                    
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println("COMPLETED INSTRUCTION: TRAP "+ trapCode);
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                     this.signalMicroStateExecutionComplete();
                     break;
                 }
 
         }            
         
-        // Go to table with 16 user-defined instructions
-        // Execute the instruction defined by the TRAP code
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("COMPLETED INSTRUCTION: TRAP "+ trapCode);
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
-
-        this.signalMicroStateExecutionComplete();
+        
         
     }
         
