@@ -176,8 +176,7 @@ public class OperatorConsole implements Runnable {
         JButton load = new JButton("Load");
         JButton deposit = new JButton("Deposit");
         JButton go = new JButton("Go");
-        final JButton halt = new JButton("Halt");
-        halt.setEnabled(false);
+        JButton halt = new JButton("Halt");
         
         buttonPanel.add(start);
         buttonPanel.add(load);
@@ -190,8 +189,8 @@ public class OperatorConsole implements Runnable {
         Dimension prefSize = field.getPreferredSize();
         prefSize = new Dimension(80, prefSize.height);
         spinner.setValue("Run");
-        computer.setRunmode(Computer.RUNMODE_RUN)
-;        field.setPreferredSize(prefSize);        
+        computer.setRunmode(Computer.RUNMODE_RUN);
+        field.setPreferredSize(prefSize);        
         buttonPanel.add(spinner);
         buttonPanel.add(go);
         buttonPanel.add(halt);
@@ -317,7 +316,6 @@ public class OperatorConsole implements Runnable {
                                     } while(computer.getCpu().getControlUnit().getState() > ControlUnit.STATE_NONE && computer.getCpu().isRunning());
                                     break;
                                 case Computer.RUNMODE_RUN: // runs until halt
-                                    halt.setEnabled(true);
                                     computer.getCpu().setRunning(true);
                                     do {
                                         computer.clockCycle();
@@ -355,7 +353,6 @@ public class OperatorConsole implements Runnable {
             @Override
             public void actionPerformed(ActionEvent e) {
                 computer.getCpu().setRunning(false);
-                halt.setEnabled(false);
             }
         });
         
