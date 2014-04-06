@@ -1,6 +1,7 @@
 
 package computersimulator.cpu;
 
+import computersimulator.components.MachineFaultException;
 import computersimulator.components.Unit;
 import computersimulator.components.Word;
 import java.util.HashMap;
@@ -56,8 +57,9 @@ public class Cache implements IClockCycle {
      * Primary interface for memory fetch, will return a word if it is a cache hit
      * @param address
      * @return
+     * @throws computersimulator.components.MachineFaultException
      */
-    public Word fetchWord(Unit address){        
+    public Word fetchWord(Unit address) throws MachineFaultException{        
         Integer[] block = calculateBlockFromAddress(address);
         String tag = this.calculateTagFromBlockID(block);
         System.out.println("[Cache]: Read requested for M("+address.getUnsignedValue()+") -> Block: "+tag);
@@ -86,8 +88,9 @@ public class Cache implements IClockCycle {
      * Primary interface for memory fetch, will return a word if it is a cache hit
      * @param address
      * @return
+     * @throws computersimulator.components.MachineFaultException
      */
-    public Word engineerFetchWord(Unit address){        
+    public Word engineerFetchWord(Unit address) throws MachineFaultException{        
         Integer[] block = calculateBlockFromAddress(address);
         String tag = this.calculateTagFromBlockID(block);
         
@@ -110,8 +113,9 @@ public class Cache implements IClockCycle {
      * @param address
      * @param value
      * @return true/false on success
+     * @throws computersimulator.components.MachineFaultException
      */
-    public Boolean storeWord(Unit address, Word value){        
+    public Boolean storeWord(Unit address, Word value) throws MachineFaultException{        
       Integer[] block = calculateBlockFromAddress(address);
       String tag = this.calculateTagFromBlockID(block);
       System.out.println("[Cache]: Store requested for M("+address.getUnsignedValue()+") -> Block: "+tag);
@@ -143,8 +147,9 @@ public class Cache implements IClockCycle {
      * Stores a word in cache, use for debugging, bypassing clock cycles
      * @param address
      * @param value
+     * @throws computersimulator.components.MachineFaultException
      */
-    public void engineerStoreWord(Unit address, Word value){        
+    public void engineerStoreWord(Unit address, Word value) throws MachineFaultException{        
       Integer[] block = calculateBlockFromAddress(address);
       String tag = this.calculateTagFromBlockID(block);
       System.out.println("[Cache]: Store requested for M("+address.getUnsignedValue()+") -> Block: "+tag);
@@ -167,8 +172,9 @@ public class Cache implements IClockCycle {
      * Test if word is in cache
      * @param address
      * @return
+     * @throws computersimulator.components.MachineFaultException
      */
-    public Boolean testWord(Unit address){
+    public Boolean testWord(Unit address) throws MachineFaultException{
         String tag = this.calculateTagFromBlockID(calculateBlockFromAddress(address));
         return this.isBlockAvailable(tag);
     }
@@ -263,15 +269,16 @@ public class Cache implements IClockCycle {
      * Test whether an address is in cache already
      * @param address
      * @return 
+     * @throws computersimulator.components.MachineFaultException 
      */    
-    public boolean isWordAvailable(Unit address){
+    public boolean isWordAvailable(Unit address) throws MachineFaultException{
         String tag = this.calculateTagFromBlockID(calculateBlockFromAddress(address));
                 
         return isBlockAvailable(tag);
     } 
     
     
-    private Integer[] calculateBlockFromAddress(Unit address){
+    private Integer[] calculateBlockFromAddress(Unit address) throws MachineFaultException{
         /*        
             FETCH(34)  ——  M[1][4]  —— cache block 1,0
             FETCH(27)  ——  M[2][3]  —— cache block 2,0

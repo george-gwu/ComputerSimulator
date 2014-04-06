@@ -4,6 +4,8 @@ package computersimulator.cpu;
 import computersimulator.components.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Computer is the primary class used by the simulator. The core business logic
@@ -39,9 +41,13 @@ public class Computer implements IClockCycle {
      * @throws Exception 
      */
     @Override
-    public final void clockCycle() throws Exception{
-        this.cpu.clockCycle();
-        this.memory.clockCycle();     
+    public final void clockCycle() throws Exception {
+        try {
+            this.cpu.clockCycle();
+            this.memory.clockCycle();                        
+        } catch(MachineFaultException e){
+            this.cpu.getControlUnit().signalMachineFault(e.getFaultID());
+        }
     }
     
     /** 
@@ -88,7 +94,11 @@ public class Computer implements IClockCycle {
         
         // Read ROM contents into memory
         for (Map.Entry romEntry : ROM.entrySet()) {            
-            this.getMemory().engineerSetMemoryLocation(new Unit(13, (int)romEntry.getKey()), Word.WordFromBinaryString((String)romEntry.getValue()));
+            try {
+                this.getMemory().engineerSetMemoryLocation(new Unit(13, (int)romEntry.getKey()), Word.WordFromBinaryString((String)romEntry.getValue()));
+            } catch (MachineFaultException ex) {
+                Logger.getLogger(Computer.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
         //Transfer Control to ROM Bootloader

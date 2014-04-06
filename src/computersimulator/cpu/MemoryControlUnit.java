@@ -55,9 +55,10 @@ public class MemoryControlUnit implements IClockCycle {
      * Clock cycle. This is the main function which causes the Memory
      * Unit to do work. This serves as a publicly accessible method, but delegates
      * to the fetch/store controller.
+     * @throws computersimulator.components.MachineFaultException
      */
     @Override
-    public void clockCycle(){
+    public void clockCycle() throws MachineFaultException{
         cache.clockCycle();
         switch(state){                                   
             case MemoryControlUnit.STATE_PRE_STORE:                
@@ -154,7 +155,7 @@ public class MemoryControlUnit implements IClockCycle {
      * @TODO: 8191 words are addressable via MAR despite only 2048 exist. (see pg 16)... means we need virtual memory?
      * @return Array{bankIndex,cellIndex}
      */
-    public int[] calculateActualMemoryLocation(Unit address) {
+    public int[] calculateActualMemoryLocation(Unit address) throws MachineFaultException {
         // Load the addressRaw in MAR
         int addressRaw = address.getUnsignedValue();
                 
@@ -167,10 +168,8 @@ public class MemoryControlUnit implements IClockCycle {
         System.out.println("Calculated Memory Address: "+addressRaw+" as Bank: "+bankIndex+", Cell: "+cellIndex);
         
         if(bankIndex > MemoryControlUnit.BANK_SIZE){
-            //throw new Exception("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
             System.out.println("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
-            controlUnit.machineFault(0);
-            return null; //@TODO Switch back to exception
+            throw new MachineFaultException(MachineFaultException.ILLEGAL_MEMORY_ADDRESS);       
         }
         
         // Return the result index array
@@ -182,8 +181,9 @@ public class MemoryControlUnit implements IClockCycle {
      * Engineering console function to read directly from memory
      * @param address
      * @return Word memory value
+     * @throws computersimulator.components.MachineFaultException
      */
-    public Word engineerFetchByMemoryLocation(Unit address){       
+    public Word engineerFetchByMemoryLocation(Unit address) throws MachineFaultException{       
         Word value = cache.engineerFetchWord(address);
         System.out.println("ENGINEER: Fetch Addr: "+address.getUnsignedValue()+"  ---  Value: "+value);        
         
@@ -194,13 +194,14 @@ public class MemoryControlUnit implements IClockCycle {
      * Engineering console function to write directly to memory
      * @param address
      * @param value
+     * @throws computersimulator.components.MachineFaultException
      */
-    public void engineerSetMemoryLocation(Unit address, Word value){
+    public void engineerSetMemoryLocation(Unit address, Word value) throws MachineFaultException{
         cache.engineerStoreWord(address, value);
         System.out.println("ENGINEER: Set Addr: "+address.getUnsignedValue()+" to  Value: "+value);        
     }       
     
-    private void cacheFetchAddressOperation(){
+    private void cacheFetchAddressOperation() throws MachineFaultException{
         Word result = cache.fetchWord(memoryAddressRegister);
         if(result!=null){
             this.memoryBufferRegister = result;
@@ -209,7 +210,7 @@ public class MemoryControlUnit implements IClockCycle {
         } // else cache miss, try next time        
     }    
     
-    private void cacheStoreAddressOperation(){
+    private void cacheStoreAddressOperation() throws MachineFaultException{
         Boolean result = cache.storeWord(memoryAddressRegister,memoryBufferRegister);
         if(result==true){            
             this.resetState();
@@ -236,7 +237,7 @@ public class MemoryControlUnit implements IClockCycle {
         }
     }
     
-    public Integer[] getCacheBlockStart(Unit address, int count){
+    public Integer[] getCacheBlockStart(Unit address, int count) throws MachineFaultException{
         int[] addr = this.calculateActualMemoryLocation(address);
 
         int blockID = (int)Math.floor(addr[1] / count);
