@@ -350,19 +350,10 @@ public class ControlUnit implements IClockCycle {
      /**
      * Handles Machine Faults
      * a machine fault occurs, the processor saves the current PC and MSR contents 
-     * to the locations specified below, then fetches the address from Location 
+     * to the locations(4,5) then fetches the address from Location 
      * 1 (Machine Fault) into the PC which becomes the next instruction to be 
      * executed. This address will be the first instruction of a routine which 
-     * handles the trap or machine fault.
-     * 
-     * 4,5			Store PC, MSR for a Machine Fault
-     * 
-     * Fault ID              Fault Type
-     *     0            Illegal Memory Address
-     *     1            Illegal TRAP Code
-     *     2            Illegal Opcode
-     * 
-     * Halts the system if any of the above are encountered.
+     * handles the trap or machine fault. 
      */
     void handleMachineFault() {
         

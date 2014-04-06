@@ -3,6 +3,10 @@ package computersimulator.components;
 
 /**
  * Special exception for handling a Machine Fault
+    * Fault ID              Fault Type
+    *     0            Illegal Memory Address
+    *     1            Illegal TRAP Code
+    *     2            Illegal Opcode
  */
 public class MachineFaultException extends Exception {
             
