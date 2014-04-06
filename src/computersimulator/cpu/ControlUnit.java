@@ -703,7 +703,9 @@ public class ControlUnit implements IClockCycle {
                     throw new MachineFaultException(MachineFaultException.ILLEGAL_OPCODE);
             }            
             if(!this.blocked){ // if not blocked, move ahead
-                this.microState++; 
+                if(opcode!=ControlUnit.OPCODE_TRAP){ // trap increments its own state
+                    this.microState++; 
+                }
             }
         } else { // MICROSTATE_EXECUTE_COMPLETE            
             if(this.nextProgramCounter==null){
@@ -1612,40 +1614,87 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
     }
     
     /**
-     * Execute TRAP code
+     * Execute TRAP.
+     * Traps to memory address 0, which contains the address of a table in 
+     * memory. The table can have a maximum of 16 entries representing 16 
+     * routines for user-specified instructions stored elsewhere in memory. Trap
+     * code (in Address field) contains an index into the table, e.g. it takes 
+     * values 0 – 15. When a TRAP instruction is executed, it goes to the 
+     * routine, executes those instructions, and returns to the instruction 
+     * after the TRAP instruction. If the value of code is greater than 15, 
+     * a machine fault occurs.
      */
-    private void executeOpcodeTRAP() throws Exception {
+    private void executeOpcodeTRAP() throws MachineFaultException {
         
-        int memLoc0 = 0, memLoc2 = 2, memLoc3 = 3;
-        Unit pc = this.getProgramCounter();
-        Word msr = this.getMachineStatusRegister();
+        // Get the TRAP code from the address bits.
+        int trapCode = this.getIR().decomposeByOffset(12, 19).getUnsignedValue();        
         
-        int trapCode = this.getIR().decomposeByOffset(12, 19).getUnsignedValue();       // Get the TRAP code from the address bits.
-        
-        if (trapCode >= 16){                                                             // TRAP codes range from 0 - 15.
+        if (trapCode >= 16){   // TRAP codes range from 0 - 15.
             throw new MachineFaultException(MachineFaultException.ILLEGAL_TRAP_CODE);
-        } else  {
-            //Store current PC in memory location 2.        
-            memory.setMAR(new Unit(13, memLoc2));
-            memory.setMBR(pc);
-        
-            //Store current  MSR in memory location 3.
-            memory.setMAR(new Unit(13, memLoc3));
-            memory.setMBR(msr);
-            
-            //Fetch the address from memory location 0 and set it as the PC.
-            memory.setMAR(new Unit(13, memLoc0));
-            pc = memory.getMBR();
-            this.setProgramCounter(pc);         
-            
-            // Go to table with 16 user-defined instructions
-            // Execute the instruction defined by the TRAP code
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("COMPLETED INSTRUCTION: TRAP "+ trapCode);
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
-                
-            this.signalMicroStateExecutionComplete();
         }
+        
+        switch(this.microState){            
+            case 0: // save pc                
+                Unit pc = this.getProgramCounter();
+                System.out.println("Micro-0: 2->MAR, PC("+pc.getUnsignedValue()+") -> MBR");                
+                this.memory.setMAR(new Unit(13,2));     
+                this.memory.setMBR(pc);
+                this.memory.signalStore();               
+                this.microState++; // no break in case it was cached                                
+            case 1: // wait for save pc
+                if(!this.memory.isBusy()){ // block until memory read is ready
+                    System.out.println("Micro-1: PC -> M(2)");
+                    this.microState++; 
+                    // bleed through to case 2
+                } else {
+                    this.signalBlockingMicroFunction();
+                    break;
+                }                
+            case 2: // save msr
+                Word msr = this.getMachineStatusRegister();
+                System.out.println("Micro-2: 3->MAR, MSR("+msr+") -> MBR");                
+                this.memory.setMAR(new Unit(13,3));     
+                this.memory.setMBR(msr);
+                this.memory.signalStore();               
+                this.microState++; // no break in case it was cached                    
+                break;
+            case 3: // wait for save msr
+                if(!this.memory.isBusy()){ // block until memory read is ready
+                    System.out.println("Micro-3: MSR -> M(3)");
+                    this.microState++; 
+                    // bleed through to case 4
+                } else {
+                    this.signalBlockingMicroFunction();
+                    break;
+                }                       
+                break;
+            case 4: // fetch machine fault address
+                System.out.println("Micro-4: 0->MAR (Fetch)");
+                this.memory.setMAR(new Unit(13,0));                     
+                this.memory.signalFetch();               
+                this.microState++; // no break in case it was cached                     
+                break;
+            case 5: // transfer execution to machine fault addr
+                if(!this.memory.isBusy()){ // block until memory read is ready                    
+                    Word offset = this.memory.getMBR();
+                    int newLoc = offset.getUnsignedValue() + trapCode;
+                    this.nextProgramCounter = new Unit(13, newLoc);
+                    
+                    System.out.println("Micro-5: M(0) ["+this.memory.getMBR().getUnsignedValue()+"] +TC ["+trapCode+"] -> PC ["+newLoc+"]");
+                    this.signalMicroStateExecutionComplete();
+                    break;
+                }
+
+        }            
+        
+        // Go to table with 16 user-defined instructions
+        // Execute the instruction defined by the TRAP code
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("COMPLETED INSTRUCTION: TRAP "+ trapCode);
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
+
+        this.signalMicroStateExecutionComplete();
+        
     }
         
     /**
@@ -1715,5 +1764,4 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         this.signalMicroStateExecutionComplete();
     }       
     
-  
 }
