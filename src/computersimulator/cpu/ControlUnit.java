@@ -286,7 +286,7 @@ public class ControlUnit implements IClockCycle {
     }
 
     public void setProgramCounter(Unit programCounter) {
-        this.programCounter = programCounter;
+        this.programCounter = new Unit(13,programCounter.getUnsignedValue());
     }
 
     public Word getIR() {
@@ -359,9 +359,9 @@ public class ControlUnit implements IClockCycle {
         
             switch(this.microState){            
             case 0: // save pc                
-                System.out.println("[FAULT] Micro-0: 4->MAR, PC -> MBR");
                 Unit pc = this.getProgramCounter();
-                this.memory.setMAR(new Word(4));     
+                System.out.println("[FAULT] Micro-0: 4->MAR, PC("+pc.getUnsignedValue()+") -> MBR");                
+                this.memory.setMAR(new Unit(13,4));     
                 this.memory.setMBR(pc);
                 this.memory.signalStore();               
                 this.microState++; // no break in case it was cached                                
@@ -375,9 +375,9 @@ public class ControlUnit implements IClockCycle {
                     break;
                 }                
             case 2: // save msr
-                System.out.println("[FAULT] Micro-2: 5->MAR, MSR -> MBR");
                 Word msr = this.getMachineStatusRegister();
-                this.memory.setMAR(new Word(5));     
+                System.out.println("[FAULT] Micro-2: 5->MAR, MSR("+msr+") -> MBR");                
+                this.memory.setMAR(new Unit(13,5));     
                 this.memory.setMBR(msr);
                 this.memory.signalStore();               
                 this.microState++; // no break in case it was cached                    
@@ -394,7 +394,7 @@ public class ControlUnit implements IClockCycle {
                 break;
             case 4: // fetch machine fault address
                 System.out.println("[FAULT] Micro-4: 1->MAR (Fetch)");
-                this.memory.setMAR(new Word(1));                     
+                this.memory.setMAR(new Unit(13,1));                     
                 this.memory.signalFetch();               
                 this.microState++; // no break in case it was cached                     
                 break;
@@ -413,6 +413,7 @@ public class ControlUnit implements IClockCycle {
     
     public void signalMachineFault(int faultID){
         this.setMFR(new Unit(4,faultID));
+        System.out.println("[FAULT]: Machine Fault Occurred! ["+faultID+"]");
         
         this.state=ControlUnit.STATE_MACHINE_FAULT;
         this.microState=0;
