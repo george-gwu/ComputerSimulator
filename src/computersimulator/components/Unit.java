@@ -363,4 +363,20 @@ public class Unit {
         return "Unit("+this.size+"){" + "b10S=" + this.getSignedValue() +", b10U=" + this.getUnsignedValue() +" v:["+this.MIN_UNSIGNED_VALUE+"to"+this.MAX_SIGNED_VALUE+"]), b2=" + this.getBinaryString() + '}';
     }
     
+    /**
+     * Get the value of MIN_SIGNED_VALUE
+     * @return 
+     */
+    public int getMinSignedValue() {
+        return this.MIN_SIGNED_VALUE;
+    }
+    
+    /**
+     * Get the value of MAX_SIGNED_VALUE
+     * @return 
+     */
+    public int getMaxSignedValue() {
+        return this.MAX_SIGNED_VALUE;
+    }
+    
 }
