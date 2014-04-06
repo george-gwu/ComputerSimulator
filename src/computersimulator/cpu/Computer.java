@@ -79,7 +79,7 @@ public class Computer implements IClockCycle {
          */               
         HashMap<Integer,String> ROM = new HashMap<>();                                
         /************* Assembly for bootloader **************/
-        ROM.put(00, "00000000000000011110");       // Trap Handler -> 30
+        ROM.put(00, "00000000000000101111");       // Trap Handler Table Start Position -> 47
         ROM.put(01, "00000000000000101010");       // Machine Fault Handler -> 42
         
         ROM.put(10, "011111 00 10 1 1 000 10100"); //10: SRC(2,20,1,1)  -- reset ECX to 0 (index value)        
@@ -111,15 +111,11 @@ public class Computer implements IClockCycle {
         ROM.put(43, "000110 00 00 0 0 01001101");  //43: AIR(0,72)      -- Set EAX to 77 ('M')    
         ROM.put(44, "111110 00 00 000000 0001");   //44: OUT(0,1)       -- Output EAX ('M')
         ROM.put(45, "001101 00 00 0 0 00011110" ); //20: JMP(30)        -- Jump to 30 "MError"
-            
-            
-            
-            
-            
-            
-            
         
-        
+        for(int i=47;i<=63;i++){
+            ROM.put(i, "00000000000000011110"); // Set TRAP table locs all to 30 by default
+        }
+            
         // Read ROM contents into memory
         for (Map.Entry romEntry : ROM.entrySet()) {            
             try {
