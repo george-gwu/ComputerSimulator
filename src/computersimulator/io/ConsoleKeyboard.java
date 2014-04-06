@@ -2,7 +2,6 @@ package computersimulator.io;
 
 import computersimulator.components.Word;
 import computersimulator.cpu.InputOutputController;
-import java.util.ArrayList;
 
 /**
  *
@@ -10,15 +9,13 @@ import java.util.ArrayList;
  */
 public class ConsoleKeyboard implements IIODevice {
     
-    private ArrayList<Integer> buffer;
-    private Word tempInput;
+    private Word buffer;
     
     /**
      * Console Keyboard Constructor
      */
     public ConsoleKeyboard(){
-        buffer = new ArrayList<>();
-        tempInput=null;
+        buffer = null;
         
     }
     
@@ -28,8 +25,8 @@ public class ConsoleKeyboard implements IIODevice {
      */
     @Override
     public Word input(){        
-        Word result = tempInput;        
-        tempInput = null;
+        Word result = buffer;        
+        buffer = null;
         return result;        
     }
     
@@ -48,7 +45,7 @@ public class ConsoleKeyboard implements IIODevice {
      */
     @Override
     public int checkStatus(){
-        return (tempInput==null ? InputOutputController.STATUS_BUSY : InputOutputController.STATUS_READY);        
+        return (buffer==null ? InputOutputController.STATUS_BUSY : InputOutputController.STATUS_READY);        
     }  
     
     /**
@@ -58,22 +55,7 @@ public class ConsoleKeyboard implements IIODevice {
      */
     public void buttonPress(int keyCode){        
         System.out.println("[IO]: Key Press - "+keyCode);
-        if(keyCode==13){ // Key Press was Enter
-            String temp = "";
-            for(int key : buffer){
-                temp+=(char)key;                
-            }
-            tempInput = new Word(Integer.parseInt(temp));
-            buffer.clear();
-            System.out.println("[IO]: Received Value - "+tempInput);
-        } else if(keyCode==8){ // Key Press was Backspace
-            if(buffer.size()>0){
-                buffer.remove(buffer.size()-1);
-            }
-        } else { //if(keyCode>=48 && keyCode <= 57){ // Key Press was Digit
-            buffer.add(keyCode);
-        }
-        
+        buffer = new Word(keyCode);        
     }
     
 }
