@@ -296,6 +296,7 @@ public class Unit {
             do { // extend sign until bitsize matches
                 binary = binary.substring(0,1) + binary;
             } while(binary.length() < this.size);
+            this.data=binary;
         } else {
             this.data = binary.substring(binary.length()-this.size); // cut from end (overflow left)
             System.out.println("!!!!!overflow in set value -- this should never happen!!!!!");

@@ -360,9 +360,10 @@ public class ControlUnit implements IClockCycle {
         switch(this.microState){            
             case 0: // save pc                
                 Unit pc = this.getProgramCounter();
-                System.out.println("[FAULT] Micro-0: 4->MAR, PC("+pc.getUnsignedValue()+") -> MBR");                
+                Unit pcPlusOne = new Unit(13, pc.getUnsignedValue()+1);
+                System.out.println("[FAULT] Micro-0: 4->MAR, PC("+pcPlusOne.getUnsignedValue()+") -> MBR");                
                 this.memory.setMAR(new Unit(13,4));     
-                this.memory.setMBR(pc);
+                this.memory.setMBR(pcPlusOne);
                 this.memory.signalStore();               
                 this.microState++; // no break in case it was cached                                
             case 1: // wait for save pc
@@ -1638,9 +1639,10 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         switch(this.microState){            
             case 0: // save pc                
                 Unit pc = this.getProgramCounter();
+                Unit pcPlusOne = new Unit(13, pc.getUnsignedValue()+1);
                 System.out.println("Micro-0: 2->MAR, PC("+pc.getUnsignedValue()+") -> MBR");                
                 this.memory.setMAR(new Unit(13,2));     
-                this.memory.setMBR(pc);
+                this.memory.setMBR(pcPlusOne);
                 this.memory.signalStore();               
                 this.microState++; // no break in case it was cached                                
             case 1: // wait for save pc

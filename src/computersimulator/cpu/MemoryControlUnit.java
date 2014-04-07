@@ -84,7 +84,7 @@ public class MemoryControlUnit implements IClockCycle {
     public void setMBR(Unit dataUnit){
         Word res = new Word();
         res.setValueBinary(dataUnit.getBinaryString());
-        setMBR(res);
+        this.setMBR(res);
     }
     
     /**
@@ -94,6 +94,8 @@ public class MemoryControlUnit implements IClockCycle {
     public void setMBR(Word dataWord){
         this.state = MemoryControlUnit.STATE_WAITING;
         this.memoryBufferRegister = dataWord; 
+        System.out.println("set mbr:"+ this.memoryBufferRegister);
+        
     }
     
     /**
@@ -139,13 +141,10 @@ public class MemoryControlUnit implements IClockCycle {
     
     public void signalFetch(){      
        this.state = MemoryControlUnit.STATE_PRE_FETCH;
-       //@TODO : attempt cache read and clear the flag if successful
     }
     
     public void signalStore(){
-       this.state = MemoryControlUnit.STATE_PRE_STORE;
-       //@TODO : attempt cache write and clear the flag if successful
-       
+       this.state = MemoryControlUnit.STATE_PRE_STORE;       
     }
     
        
