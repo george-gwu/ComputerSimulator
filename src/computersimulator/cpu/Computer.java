@@ -107,7 +107,7 @@ public class Computer implements IClockCycle {
         ROM.put(38, "111110 00 10 000000 0001");   //38: OUT(2,1)       -- Output ECX ('o')
         ROM.put(39, "111110 00 01 000000 0001");   //39: OUT(1,1)       -- Output EBX ('r')
         ROM.put(40, "000010 00 11 0 0 00000110");  // 40: STR(3,0,6)    -- Store EDX to M(6)
-        ROM.put(41, "001101 01 00 0 0 00000110");  // 41: JMP(0,6)      -- JMP to c(M(6))
+        ROM.put(41, "001101 00 00 1 0 00000110");  // 41: JMP(0,6)      -- JMP to c(M(6))
         // Machine error entry point
         ROM.put(42, "000001 00 11 0 0 00000100"); // 42: LDR(3, 0, 4)  -- restore PC to EDX (used on 41)
         ROM.put(43, "011111 00 00 1 1 000 10100"); //43: SRC(0,20,1,1)  -- reset EAX to 0
