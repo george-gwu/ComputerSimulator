@@ -94,7 +94,6 @@ public class MemoryControlUnit implements IClockCycle {
     public void setMBR(Word dataWord){
         this.state = MemoryControlUnit.STATE_WAITING;
         this.memoryBufferRegister = dataWord; 
-        System.out.println("set mbr:"+ this.memoryBufferRegister);
         
     }
     
