@@ -147,6 +147,8 @@ public class MemoryControlUnit implements IClockCycle {
     
     /**
      * Calculates relative addressRaw for memory location from MAR
+     * @param address
+     * @throws computersimulator.components.MachineFaultException
      * @TODO: 8191 words are addressable via MAR despite only 2048 exist. (see pg 16)... means we need virtual memory?
      * @return Array{bankIndex,cellIndex}
      */
@@ -196,6 +198,10 @@ public class MemoryControlUnit implements IClockCycle {
         System.out.println("ENGINEER: Set Addr: "+address.getUnsignedValue()+" to  Value: "+value);        
     }       
     
+    /**
+     * Proxy to cache in order to fetch an address
+     * @throws MachineFaultException 
+     */
     private void cacheFetchAddressOperation() throws MachineFaultException{
         Word result = cache.fetchWord(memoryAddressRegister);
         if(result!=null){
@@ -205,6 +211,10 @@ public class MemoryControlUnit implements IClockCycle {
         } // else cache miss, try next time        
     }    
     
+    /**
+     * Proxy to cache in order to store a word
+     * @throws MachineFaultException 
+     */
     private void cacheStoreAddressOperation() throws MachineFaultException{
         Boolean result = cache.storeWord(memoryAddressRegister,memoryBufferRegister);
         if(result==true){            
@@ -232,6 +242,13 @@ public class MemoryControlUnit implements IClockCycle {
         }
     }
     
+    /**
+     * Get the start address of a block based off the address and count
+     * @param address
+     * @param count
+     * @return location
+     * @throws MachineFaultException 
+     */
     public Integer[] getCacheBlockStart(Unit address, int count) throws MachineFaultException{
         int[] addr = this.calculateActualMemoryLocation(address);
 
@@ -245,6 +262,12 @@ public class MemoryControlUnit implements IClockCycle {
         
     }
     
+    /**
+     * Get an actual cache block from the blockStart position
+     * @param blockStart
+     * @param count
+     * @return cache block
+     */
     public Word[] getCacheBlock(Integer[] blockStart, int count){
     
         Word[] results = new Word[count];
@@ -252,13 +275,17 @@ public class MemoryControlUnit implements IClockCycle {
         int j=0;
         for(int i=blockStart[1];i<blockStart[1]+count;i++){
             results[j] = this.memory[blockStart[0]][i];
-            //System.out.println("Copied("+j+"): "+results[j]);
             j++;
         }
         
         return results;
     }
     
+    /**
+     * Write a cache block to memory using a block location
+     * @param block
+     * @param blockStart 
+     */
     public void writeCacheBlock(Word[] block, Integer[] blockStart){
         int j=0;
         for(int i=blockStart[1];i<blockStart[1]+block.length;i++){
