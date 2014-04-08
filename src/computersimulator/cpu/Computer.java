@@ -116,7 +116,7 @@ public class Computer implements IClockCycle {
         ROM.put(46, "001101 00 00 0 0 00011101" ); //46: JMP(29)        -- Jump to 29 "MError"
         // Create Trap Table Defaults
         for(int i=47;i<=63;i++){
-            ROM.put(i, "00000000000000011100"); // Set TRAP table locs all to 28 by default
+            ROM.put(i, "001101 00 00 0 0 00011100"); // Set TRAP table locs all to 28 by default
         }
             
         // Read ROM contents into memory
