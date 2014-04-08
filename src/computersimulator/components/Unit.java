@@ -308,14 +308,14 @@ public class Unit {
      * @return Unit Inverted
      */
     public Unit logicalNOT(){        
-        Integer[] data = this.getBinaryArray();
+        Integer[] ref = this.getBinaryArray();
         
-        for (int i = 0; i < data.length; i++){
-            data[i] = 1 - data[i];
+        for (int i = 0; i < ref.length; i++){
+            ref[i] = 1 - ref[i];
         }
         
         Unit inverted = new Unit(this.size);
-        inverted.setValueBinaryArray(data);
+        inverted.setValueBinaryArray(ref);
         
         return inverted;
     }
@@ -326,15 +326,15 @@ public class Unit {
      * @return Unit result
      */
     public Unit logicalOR(Unit operand2){
-        Integer[] data = this.getBinaryArray();
-        Integer[] data2 = operand2.getBinaryArray();
+        Integer[] left = this.getBinaryArray();
+        Integer[] right = operand2.getBinaryArray();
         
-        for (int i = 0; i < data.length; i++){
-            data[i] = (data[i] == data2[i]) ? 0 : 1;
+        for (int i = 0; i < left.length; i++){
+            left[i] = left[i] | right[i];
         }
         
         Unit result = new Unit(this.size);
-        result.setValueBinaryArray(data);
+        result.setValueBinaryArray(left);
         
         return result;
     }
@@ -345,15 +345,15 @@ public class Unit {
      * @return Unit result
      */
     public Unit logicalAND(Unit operand2){
-        Integer[] data = this.getBinaryArray();
-        Integer[] data2 = operand2.getBinaryArray();
+        Integer[] left = this.getBinaryArray();
+        Integer[] right = operand2.getBinaryArray();
         
-        for (int i = 0; i < data.length; i++){
-            data[i] = data[i] & data[2];
+        for (int i = 0; i < left.length; i++){
+            left[i] = left[i] & right[i];
         }
         
         Unit result = new Unit(this.size);
-        result.setValueBinaryArray(data);
+        result.setValueBinaryArray(left);
         
         return result;
     }
