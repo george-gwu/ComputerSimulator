@@ -529,7 +529,7 @@ public class ControlUnit implements IClockCycle {
             switch(this.eaState){
                 case ControlUnit.EA_DIRECT: //EA <- ADDR                    
                     System.out.println("Absolute/Direct:" + this.instructionRegisterDecoded.get("address"));
-                    this.effectiveAddress = this.instructionRegisterDecoded.get("address");                    
+                    this.effectiveAddress = new Unit(13,this.instructionRegisterDecoded.get("address").getUnsignedValue());                    
                     break;
                 case ControlUnit.EA_REGISTER_INDIRECT: //EA <- c(Xi) + ADDR
                     switch(this.microState){
