@@ -11,7 +11,6 @@ import java.util.logging.Logger;
  *   execute it by issuing the appropriate command to the ALU, memory, and the 
  *   I/O controllers.
  * 
- * @TODO We need some way to ensure that registers don't get converted to different size units. I accidentally cast PC to 4 and no error happened immediately.
  */
 public class ControlUnit implements IClockCycle {
 
@@ -272,7 +271,7 @@ public class ControlUnit implements IClockCycle {
     public void setGeneralPurposeRegister(int RFI,Word GeneralPurposeRegisterValue){
         if(RFI<4&&RFI>=0) // GPR 0-3
         {
-            this.gpRegisters[RFI]=GeneralPurposeRegisterValue;
+            this.gpRegisters[RFI]=new Word(GeneralPurposeRegisterValue);
         }
     }
     
@@ -429,7 +428,6 @@ public class ControlUnit implements IClockCycle {
         
         switch(this.microState){            
             case 0:
-//                this.clearConditions();   // Clear CC on new instruction @TODO: Verify if this needs to be copied throughout. It was causing errors.
                 this.nextProgramCounter=null;
                 System.out.println("Micro-0: PC -> MAR");
                 // Micro-0: PC -> MAR
@@ -956,7 +954,7 @@ public class ControlUnit implements IClockCycle {
             case 3:
               // Micro-10: CTRL <- OPCODE
               System.out.println("Micro-10: CTRL <- OPCODE");  
-              alu.setControl(ArithmeticLogicUnit.CONTROL_ADD); // @TODO: Should this come from IR somehow?
+              alu.setControl(ArithmeticLogicUnit.CONTROL_ADD);
               alu.signalReadyToStartComputation();
             break;
                 
@@ -1015,7 +1013,7 @@ public class ControlUnit implements IClockCycle {
             case 3:
               // Micro-10: CTRL <- OPCODE
               System.out.println("Micro-10: CTRL <- OPCODE");  
-              alu.setControl(ArithmeticLogicUnit.CONTROL_SUBTRACT); // @TODO: Should this come from IR somehow?
+              alu.setControl(ArithmeticLogicUnit.CONTROL_SUBTRACT);
               alu.signalReadyToStartComputation();
             break;
                 
