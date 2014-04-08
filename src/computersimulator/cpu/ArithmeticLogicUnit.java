@@ -19,7 +19,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
     // OP2 - Unit - Up to 20 Bits
     private Unit operand2;
     
-    //CTRL - Unit - ? Bits      // @TODO Verify states are correct. I used placeholders 0,1,2.
+    //CTRL - Used to signal operation
     private int control;
     public final static int CONTROL_NONE=0;
     public final static int CONTROL_ADD=1;
