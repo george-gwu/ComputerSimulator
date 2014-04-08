@@ -21,10 +21,7 @@ public class MemoryControlUnit implements IClockCycle {
     // MBR	20 bits	Memory Buffer Register: holds the word just fetched from or stored into memory
     private Word memoryBufferRegister;
     
-    private Cache cache;
-    
-    // ControlUnit Reference
-    private ControlUnit controlUnit;
+    private Cache cache;    
     
     // state is used by the fetch/store controller to determine the current operation
     private int state;
