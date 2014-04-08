@@ -1228,25 +1228,20 @@ public class ControlUnit implements IClockCycle {
                 Word rNew = new Word(rCurrent.getUnsignedValue()-1);
                 this.setGeneralPurposeRegister(RFI, rNew);
                 break;
-            default: // case >= 1
-                if(this.getGeneralPurposeRegister(RFI).getSignedValue()>0)
-                { // c(r)>0, jump
+            case 2:
+                if(this.getGeneralPurposeRegister(RFI).getUnsignedValue()>0){ // c(r)>0, jump back
                     this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
-                    System.out.println("Micro-7: PC <- EA - "+this.nextProgramCounter);              
-                    this.signalMicroStateExecutionComplete();
+                    System.out.println("Micro-7: PC <- EA - "+this.nextProgramCounter);                                  
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    System.out.println("COMPLETED INSTRUCTION: SOB - R("+RFI+") was GREATER than Zero after minus 1 -- JUMPING: "+this.nextProgramCounter);
+                    System.out.println("COMPLETED INSTRUCTION: SOB - R("+RFI+") was "+this.getGeneralPurposeRegister(RFI).getUnsignedValue()+", GREATER than Zero after minus 1 -- JUMPING: "+this.nextProgramCounter);
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
-           
-                }
-                else
-                {
-                    // not zero->PC++
                     this.signalMicroStateExecutionComplete();
+                } else {
+                    // equal to zero->PC++                    
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    System.out.println("COMPLETED INSTRUCTION: SOB - R("+RFI+") was NOT GREATER than Zero after minus 1  -- Continuing.");
-                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
-            
+                    System.out.println("COMPLETED INSTRUCTION: SOB - R("+RFI+") was "+this.getGeneralPurposeRegister(RFI).getUnsignedValue()+", NOT GREATER than Zero after minus 1  -- Continuing.");
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");              
+                    this.signalMicroStateExecutionComplete();
                 }
                 
         }
