@@ -41,7 +41,7 @@ import javax.swing.event.ChangeListener;
           * Current Memory Address
           * Various Registers (as mentioned above)
           * Sense Switches (?) to inmainWindoworm the program  (relates to I/O). One DEVID accesses one sense switch.
- * An IPL button (to start the simulation)  @TODO: IPL will be added once we're in part 2
+ * An IPL button (to start the simulation) 
  * Switches (simulated as checkboxes) to load data into registers, select displays, and initiate certain conditions in the machine.
  * Numeric pad 
  */
