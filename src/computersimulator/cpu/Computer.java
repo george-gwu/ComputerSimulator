@@ -86,20 +86,21 @@ public class Computer implements IClockCycle {
         ROM.put(11, "000011 00 11 0 0 00000000");  //11: LDA(3,0,0,0)   -- reset EDX to 0 (IO Status Ready)        
         ROM.put(12, "000001 00 01 0 0 00001001");  //12: LDR(1,0,9)     -- LOAD M(9) to EBX (SECTION_TAG)
         ROM.put(13, "000010 00 10 0 0 00000110" ); //13: STR(2,0,6)     -- set M(6) to ECX        
-        ROM.put(14, "101001 00 01 0 0 00000110" ); //14: LDX(0, 1, 6)   -- Set X(1) from M(6) (copied from ECX)                
-        ROM.put(15, "111101 00 00 000000 0010"  ); //15: L1: IN(0, 2)   -- read word from CardReader to EAX                
-        ROM.put(16, "010110 00 01 0 0 00000000" ); //16: TRR(0, 1)      -- Test EAX against EBX (SECTION_TAG)        
-        ROM.put(17, "001100 00 11 0 0 00011000" ); //17: JCC(3,x, L2)   -- JMP to L2 if EAX=EBX --- L2=24 
-        ROM.put(18, "000010 01 00 0 0 01000000" ); //18: L3: STR(0,1,64i1)  -- store EAX to ADDR+X1 (ADDR=64)       
-        ROM.put(19, "101011 00 01 0 0 00000000" ); //19: INX(1)         -- X(1)++
-        ROM.put(20, "111111 00 00 000000 0010"  ); //20: CHK(0, 2)      -- Check status of Card Reader to EAX        
-        ROM.put(21, "010110 00 11 0 0 00000000" ); //21: TRR(0, 3)      -- Test EAX against EDX (IO Status Ready -- not done)        
-        ROM.put(22, "001100 00 11 0 0 00001111" ); //22: JCC(3,x, L1)   -- JMP to L1 if EAX=EDX --- L1=15  
-        ROM.put(23, "001101 00 00 0 0 01000000" ); //23: JMP(64)        -- else: launch program by transferring control to 64        
-        ROM.put(24, "000011 01 10 0 0 01000000" ); //24: L2: LDA(1,1,64i1)  -- Load ADDR+X1 to ECX
-        ROM.put(25, "000010 10 10 0 0 00001000" ); //25: STR(1,2,8)     -- Store ECX to 8+X2
-        ROM.put(26, "101011 00 10 0 0 00000000" ); //26: INX(2)         -- X(2)++
-        ROM.put(27, "001101 00 00 0 0 00010010" ); //27: JMP(18)        -- JMP(l3)        
+        ROM.put(14, "101001 00 10 0 0 00000110" ); //14: LDX(0, 2, 6)   -- Set X(2) from M(6) (copied from ECX/0)                
+        ROM.put(15, "101001 00 01 0 0 00000110" ); //15: LDX(0, 1, 6)   -- Set X(1) from M(6) (copied from ECX)                
+        ROM.put(16, "111101 00 00 000000 0010"  ); //16: L1: IN(0, 2)   -- read word from CardReader to EAX                
+        ROM.put(17, "010110 00 01 0 0 00000000" ); //17: TRR(0, 1)      -- Test EAX against EBX (SECTION_TAG)        
+        ROM.put(18, "001100 00 11 0 0 00011001" ); //18: JCC(3,x, L2)   -- JMP to L2 if EAX=EBX --- L2=25 
+        ROM.put(19, "000010 01 00 0 0 01000000" ); //19: L3: STR(0,1,64i1)  -- store EAX to ADDR+X1 (ADDR=64)       
+        ROM.put(20, "101011 00 01 0 0 00000000" ); //20: INX(1)         -- X(1)++
+        ROM.put(21, "111111 00 00 000000 0010"  ); //21: CHK(0, 2)      -- Check status of Card Reader to EAX        
+        ROM.put(22, "010110 00 11 0 0 00000000" ); //22: TRR(0, 3)      -- Test EAX against EDX (IO Status Ready -- not done)        
+        ROM.put(23, "001100 00 11 0 0 00010000" ); //23: JCC(3,x, L1)   -- JMP to L1 if EAX=EDX --- L1=16  
+        ROM.put(24, "001101 00 00 0 0 01000000" ); //24: JMP(64)        -- else: launch program by transferring control to 64        
+        ROM.put(25, "000011 01 10 0 0 01000000" ); //25: L2: LDA(1,1,64i1)  -- Load ADDR+X1 to ECX
+        ROM.put(26, "000010 10 10 0 0 00001000" ); //26: STR(1,2,8)     -- Store ECX to 8+X2
+        ROM.put(27, "101011 00 10 0 0 00000000" ); //27: INX(2)         -- X(2)++
+        ROM.put(28, "001101 00 00 0 0 00010011" ); //28: JMP(19)        -- JMP(L3)        
         /***************** Error Handler ************************************/               
         ROM.put(32, "000001 00 11 0 0 00000010");  //32: LDR(3, 0, 2)  -- restore PC to EDX (used on 41)        
         ROM.put(33, "000011 00 00 0 0 01000101");  //33: LDA(0,72)      -- Set EAX to 69 ('E')
