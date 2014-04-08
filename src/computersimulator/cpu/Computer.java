@@ -82,8 +82,8 @@ public class Computer implements IClockCycle {
         ROM.put(00, "00000000000000101111");       // Trap Handler Table Start Position -> 47
         ROM.put(01, "00000000000000101010");       // Machine Fault Handler -> 42
         ROM.put( 9, "11001100110011001100");       // SECTION_TAG (Used for finding sections)
-        ROM.put(10, "011111 00 10 1 1 000 10100"); //10: SRC(2,20,1,1)  -- reset ECX to 0 (index value)          
-        ROM.put(11, "011111 00 11 1 1 000 10100"); //11: SRC(3,20,1,1)  -- reset EDX to 0 (IO Status Ready)        
+        ROM.put(10, "000011 00 10 0 0 00000000");  //10: LDA(2,0,0,0)   -- reset ECX to 0 (index value)          
+        ROM.put(11, "000011 00 11 0 0 00000000");  //11: LDA(3,0,0,0)   -- reset EDX to 0 (IO Status Ready)        
         ROM.put(12, "000001 00 01 0 0 00001001");  //12: LDR(1,0,9)     -- LOAD M(9) to EBX (SECTION_TAG)
         ROM.put(13, "000010 00 10 0 0 00000110" ); //13: STR(2,0,6)     -- set M(6) to ECX        
         ROM.put(14, "101001 00 01 0 0 00000110" ); //14: LDX(0, 1, 6)   -- Set X(1) from M(6) (copied from ECX)                
@@ -101,26 +101,22 @@ public class Computer implements IClockCycle {
         ROM.put(26, "101011 00 10 0 0 00000000" ); //26: INX(2)         -- X(2)++
         ROM.put(27, "001101 00 00 0 0 00010010" ); //27: JMP(18)        -- JMP(l3)        
         /***************** Error Handler ************************************/               
-        ROM.put(28, "000001 00 11 0 0 00000010"); // 28: LDR(3, 0, 2)  -- restore PC to EDX (used on 41)
-        ROM.put(29, "011111 00 00 1 1 000 10100"); //29: SRC(0,20,1,1)  -- reset EAX to 0
-        ROM.put(30, "011111 00 01 1 1 000 10100"); //30: SRC(1,20,1,1)  -- reset EBX to 0
-        ROM.put(31, "011111 00 10 1 1 000 10100"); //31: SRC(2,20,1,1)  -- reset ECX to 0
-        ROM.put(32, "000110 00 00 0 0 01000101");  //32: AIR(0,72)      -- Set EAX to 69 ('E')
-        ROM.put(33, "000110 00 01 0 0 01110010");  //33: AIR(1,105)     -- Set EBX to 114 ('r')
-        ROM.put(34, "000110 00 10 0 0 01101111");  //34: AIR(2,13)      -- Set ECX to 111 ('o')
-        ROM.put(35, "111110 00 00 000000 0001");   //35: OUT(0,1)       -- Output EAX ('E')
+        ROM.put(28, "000001 00 11 0 0 00000010");  //28: LDR(3, 0, 2)  -- restore PC to EDX (used on 41)        
+        ROM.put(29, "000011 00 00 0 0 01000101");  //29: LDA(0,72)      -- Set EAX to 69 ('E')
+        ROM.put(30, "000011 00 01 0 0 01110010");  //30: LDA(1,105)     -- Set EBX to 114 ('r')
+        ROM.put(31, "000011 00 10 0 0 01101111");  //31: LDA(2,13)      -- Set ECX to 111 ('o')
+        ROM.put(32, "111110 00 00 000000 0001");   //32: OUT(0,1)       -- Output EAX ('E')
+        ROM.put(33, "111110 00 01 000000 0001");   //33: OUT(1,1)       -- Output EBX ('r')
+        ROM.put(34, "111110 00 01 000000 0001");   //34: OUT(1,1)       -- Output EBX ('r')
+        ROM.put(35, "111110 00 10 000000 0001");   //35: OUT(2,1)       -- Output ECX ('o')
         ROM.put(36, "111110 00 01 000000 0001");   //36: OUT(1,1)       -- Output EBX ('r')
-        ROM.put(37, "111110 00 01 000000 0001");   //37: OUT(1,1)       -- Output EBX ('r')
-        ROM.put(38, "111110 00 10 000000 0001");   //38: OUT(2,1)       -- Output ECX ('o')
-        ROM.put(39, "111110 00 01 000000 0001");   //39: OUT(1,1)       -- Output EBX ('r')
-        ROM.put(40, "000010 00 11 0 0 00000110");  // 40: STR(3,0,6)    -- Store EDX to M(6)
-        ROM.put(41, "001101 00 00 1 0 00000110");  // 41: JMP(0,6)      -- JMP to c(M(6))
+        ROM.put(37, "000010 00 11 0 0 00000110");  //37: STR(3,0,6)    -- Store EDX to M(6)
+        ROM.put(38, "001101 00 00 1 0 00000110");  //38: JMP(0,6)      -- JMP to c(M(6))
         // Machine error entry point
-        ROM.put(42, "000001 00 11 0 0 00000100"); // 42: LDR(3, 0, 4)  -- restore PC to EDX (used on 41)
-        ROM.put(43, "011111 00 00 1 1 000 10100"); //43: SRC(0,20,1,1)  -- reset EAX to 0
-        ROM.put(44, "000110 00 00 0 0 01001101");  //44: AIR(0,72)      -- Set EAX to 77 ('M')    
-        ROM.put(45, "111110 00 00 000000 0001");   //45: OUT(0,1)       -- Output EAX ('M') 
-        ROM.put(46, "001101 00 00 0 0 00011101" ); //46: JMP(29)        -- Jump to 29 "MError"
+        ROM.put(42, "000001 00 11 0 0 00000100"); // 42: LDR(3, 0, 4)  -- restore PC to EDX (used on 41)        
+        ROM.put(43, "000011 00 00 0 0 01001101");  //44: LDA(0,72)      -- Set EAX to 77 ('M')    
+        ROM.put(44, "111110 00 00 000000 0001");   //45: OUT(0,1)       -- Output EAX ('M') 
+        ROM.put(45, "001101 00 00 0 0 00011101" ); //46: JMP(29)        -- Jump to 29 "MError"
         // Create Trap Table Defaults
         for(int i=47;i<=63;i++){
             ROM.put(i, "001101 00 00 0 0 00011100"); // Set TRAP table locs all to 28 by default
