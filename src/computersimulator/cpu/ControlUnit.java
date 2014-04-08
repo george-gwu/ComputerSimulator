@@ -542,7 +542,7 @@ public class ControlUnit implements IClockCycle {
                 case ControlUnit.EA_INDEXED: //EA <- c(ADDR)                         
                     switch(this.microState){
                         case 1: // Set ADDR onto MAR
-                            Unit addr = this.instructionRegisterDecoded.get("address");
+                            Unit addr = new Unit(13,this.instructionRegisterDecoded.get("address").getUnsignedValue());
                             this.memory.setMAR(addr);  
                             this.memory.signalFetch();
                             this.microState++; // no break in case it was cached
@@ -1224,7 +1224,9 @@ public class ControlUnit implements IClockCycle {
         switch(this.microState){
             case 0: // case 0, we decrement c(r)
                 System.out.println("Micro-6:RF("+RFI+")=c("+RFI+")-1");  
-                this.setGeneralPurposeRegister(RFI, new Word(this.getGeneralPurposeRegister(RFI).getSignedValue()-1));
+                Word rCurrent = this.getGeneralPurposeRegister(RFI);
+                Word rNew = new Word(rCurrent.getUnsignedValue()-1);
+                this.setGeneralPurposeRegister(RFI, rNew);
                 break;
             default: // case >= 1
                 if(this.getGeneralPurposeRegister(RFI).getSignedValue()>0)
