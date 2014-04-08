@@ -299,7 +299,7 @@ public class Unit {
             this.data=binary;
         } else {
             this.data = binary.substring(binary.length()-this.size); // cut from end (overflow left)
-            System.out.println("!!!!!overflow in set value -- this should never happen!!!!!");
+            System.out.println("ERROR: overflow in set value -- this should never happen!!!!!");
         }
             
     }
