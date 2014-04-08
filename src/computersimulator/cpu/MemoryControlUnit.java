@@ -93,7 +93,7 @@ public class MemoryControlUnit implements IClockCycle {
      */
     public void setMBR(Word dataWord){
         this.state = MemoryControlUnit.STATE_WAITING;
-        this.memoryBufferRegister = dataWord; 
+        this.memoryBufferRegister = new Word(dataWord); 
         
     }
     
@@ -102,7 +102,7 @@ public class MemoryControlUnit implements IClockCycle {
      * @return memoryBufferRegister
      */
     public Word getMBR(){
-        return this.memoryBufferRegister;
+        return new Word(this.memoryBufferRegister);
     }
     
     /**
@@ -111,7 +111,7 @@ public class MemoryControlUnit implements IClockCycle {
      */    
     public void setMAR(Unit addressUnit){
         this.state = MemoryControlUnit.STATE_WAITING;
-        this.memoryAddressRegister = addressUnit;          
+        this.memoryAddressRegister = new Unit(addressUnit);          
     }   
 
     /**
@@ -119,7 +119,7 @@ public class MemoryControlUnit implements IClockCycle {
      * @return memoryAddressRegister
      */
     public Unit getMAR(){
-        return this.memoryAddressRegister;
+        return new Unit(this.memoryAddressRegister);
     }
     
     
