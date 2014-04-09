@@ -72,7 +72,7 @@ public class PadComposite {
         });
         
         JButton btnBackspace = new JButton("<--");
-        buttonPanel.add(btnBackspace);        
+        //buttonPanel.add(btnBackspace);        
         btnBackspace.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
