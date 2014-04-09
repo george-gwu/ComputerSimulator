@@ -2,6 +2,9 @@ Welcome to Program 1.
 Please use the virtual keypad to 
 input 20 numbers.
 |
->|Thank you!
-Now please enter one additional number to search for:
->
+>|
+Thank you!
+Now please enter one additional
+number to search for:
+
+>|
