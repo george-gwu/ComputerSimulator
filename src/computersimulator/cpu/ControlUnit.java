@@ -1257,7 +1257,7 @@ public class ControlUnit implements IClockCycle {
    private void executeOpcodeJGE()
    {
         int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
-        if(this.getGeneralPurposeRegister(RFI).getUnsignedValue()>=0)
+        if(this.getGeneralPurposeRegister(RFI).getSignedValue()>=0)
         { // c(r)>=0, jump
          this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
          System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);              
