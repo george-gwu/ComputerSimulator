@@ -8,7 +8,6 @@ $data = split("\|", $rawfile);
 $outdata = array();
 
 foreach($data as $line){
-	$line=trim($line);
 	$line.=chr(0);
 	if(strlen($line)%2==1) $line.=chr(0);
 	for($i=0; $i<strlen($line);$i++){
