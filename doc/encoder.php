@@ -2,16 +2,8 @@
 
 $data = array();
 
-$handle = @fopen("strings.txt", "r");
-if ($handle) {
-    while (($buffer = fgets($handle, 4096)) !== false) {
-        $data[] = $buffer;
-    }
-    if (!feof($handle)) {
-        echo "Error: unexpected fgets() fail\n";
-    }
-    fclose($handle);
-}
+$rawfile = file_get_contents("strings.txt");
+$data = split("\|", $rawfile);
 
 $outdata = array();
 
@@ -26,9 +18,10 @@ foreach($data as $line){
 		$bin7 = str_pad($bin,7,"0",STR_PAD_LEFT);
 		$outdata[] = compact('char','int','bin','bin7');
 	}
+	if(count($outdata)%2==1) $outdata[] =array('char'=>'0', 'int'=>0, 'bin'=>'0000000', 'bin7'=>'0000000');
 }
 
-if(count($outdata)%2==1) $outdata[] =array('char'=>'0', 'int'=>0, 'bin'=>'0000000', 'bin7'=>'0000000');
+
 
 $final = array();
 
@@ -37,6 +30,8 @@ $buffer=array();
 $finalC = 0;
 
 do {
+	$buffer[] = array_shift($outdata);
+
 	if(count($buffer)==2){
 		$encoded = str_pad($buffer[0]['bin7'] . $buffer[1]['bin7'], 20, "0", STR_PAD_LEFT);  // encode 2 chars to 20 bytes, little endian		
 		$line = $encoded .'    '. str_pad(strval($finalC), 4, "0", STR_PAD_LEFT) .': '; 
@@ -46,9 +41,6 @@ do {
 		$final[$finalC++] = $line.PHP_EOL;
 		$buffer=array();
 	}
-
-	$buffer[] = array_shift($outdata);
-
 } while(count($outdata)>0);
 	
 	if(count($buffer)==2){

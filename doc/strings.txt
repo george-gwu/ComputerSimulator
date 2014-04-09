@@ -1,3 +1,4 @@
-Hello World
-What is new?
-This is a test!
+Please Input 20 Numbers:
+>|Thank you!
+|Now, input one number:
+>
