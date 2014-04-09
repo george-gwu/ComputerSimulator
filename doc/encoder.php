@@ -27,7 +27,7 @@ $final = array();
 
 $buffer=array();
 
-$finalC = 0;
+$finalC = 1;
 
 do {
 	$buffer[] = array_shift($outdata);
