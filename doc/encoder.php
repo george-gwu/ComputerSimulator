@@ -33,22 +33,21 @@ do {
 	$buffer[] = array_shift($outdata);
 
 	if(count($buffer)==2){
-		$encoded = str_pad($buffer[0]['bin7'] . $buffer[1]['bin7'], 20, "0", STR_PAD_LEFT);  // encode 2 chars to 20 bytes, little endian		
+		$encoded = str_pad($buffer[1]['bin7'] . $buffer[0]['bin7'], 20, "0", STR_PAD_LEFT);  // encode 2 chars to 20 bytes, little endian		
 		$line = $encoded .'    '. str_pad(strval($finalC), 4, "0", STR_PAD_LEFT) .': '; 
-		$line .= ($buffer[0]['int']>20 ? $buffer[0]['char'] : ' ');
-		$line .= ($buffer[1]['int']>20 ? $buffer[1]['char'] : ' ') .' ';
-		$line .= '\\' . $buffer[0]['int'] . '\\' . $buffer[1]['int'];
+		$line .= ($buffer[1]['int']>20 ? $buffer[1]['char'] : ' ');
+		$line .= ($buffer[0]['int']>20 ? $buffer[0]['char'] : ' ') .' ';
+		$line .= '\\' . $buffer[1]['int'] . '\\' . $buffer[0]['int'];
 		$final[$finalC++] = $line.PHP_EOL;
 		$buffer=array();
 	}
 } while(count($outdata)>0);
-	
 	if(count($buffer)==2){
-		$encoded = str_pad($buffer[0]['bin7'] . $buffer[1]['bin7'], 20, "0", STR_PAD_LEFT);  // encode 2 chars to 20 bytes, little endian		
+		$encoded = str_pad($buffer[1]['bin7'] . $buffer[0]['bin7'], 20, "0", STR_PAD_LEFT);  // encode 2 chars to 20 bytes, little endian		
 		$line = $encoded .'    '. str_pad(strval($finalC), 4, "0", STR_PAD_LEFT) .': '; 
-		$line .= ($buffer[0]['int']>20 ? $buffer[0]['char'] : ' ');
-		$line .= ($buffer[1]['int']>20 ? $buffer[1]['char'] : ' ') .' ';
-		$line .= '\\' . $buffer[0]['int'] . '\\' . $buffer[1]['int'];
+		$line .= ($buffer[1]['int']>20 ? $buffer[1]['char'] : ' ');
+		$line .= ($buffer[0]['int']>20 ? $buffer[0]['char'] : ' ') .' ';
+		$line .= '\\' . $buffer[1]['int'] . '\\' . $buffer[0]['int'];
 		$final[$finalC++] = $line.PHP_EOL;
 		$buffer=array();
 	}
