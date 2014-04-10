@@ -1,11 +1,11 @@
 00000000000000000000    64: HLT
-00001100000000000001    65: LDA(R0,1)  # Pass String 1 to printstr
+00001100000000000001   *65: LDA(R0,1)  # Pass String 1 to printstr
 00111000000001100100    66: JSR(100)   # Call printstr
 00001100100000000100    67: LDA(R3,20) # Pass 20 (10100) to ECX    *** SET TO 4 for testing ****
 00001000100000000111  --68: STR(2,0,7) # Set M(7) to ECX  (used in LDX below)  
 10100100110000000111    69: LDX(0,3,7) # Set X(3) from M(7) (copied from ECX above, used in SOB loop)  
 00001100000000100111    70: LDA(R0,39) # Pass String 2 (39) to PrintStr
-00111000000001100100    71: JSR(100)   # Call printstr     
+00111000000001100100   *71: JSR(100)   # Call printstr     
 00111000000001110100    72: JSR(116)   # Call readnum, returns via EBX
 10101000110000000111    73: STX(3,7)   # Store X(3) to M(7)
 00000100100000000111    74: LDR(3,7)   # Load m(7) to ECX (used in SOB)
@@ -15,15 +15,15 @@
 00001000011000000110    78: STR(EBX,IX:1,I:0 6) # Set EA of c(6) which is a storage space to EBX (ret from readnum)
 01000000100001000100    79: SOB(3, 68) # Decrement ECX and JMP back (which holds it in X(3)) JMP to ***68***
 00001100000000101001    80: LDA(R0,41) # Pass String 2 to printstr
-00111000000001100100    81: JSR(100)   # Call printstr     
+00111000000001100100   *81: JSR(100)   # Call printstr     
 00111000000001110100    82: JSR(116)   # Call readnum, returns via EBX
-00000000000000000000    83: HLT
-00000000000000000000    84: HLT
-00000000000000000000    85: HLT
-00000000000000000000    86: HLT
-00000000000000000000    87: HLT
-00000000000000000000    88: HLT
-00000000000000000000    89: HLT
+00001000010000000111    83: STR(1,0,7) # Set M(7) to EBX   M(7) is now the search number
+00001100100000000100    84: LDA(R3,20) # Pass 20 (10100) to ECX    *** SET TO 4 for testing ****
+00001100000000000000    85: LDA(R0, 0) # Clear EAX
+01100000100000000000    86: ORR(R0,R3) # Copy ECX to EAX
+00010000000000001001    87: AMR(EAX,9) # Set EAX = EAX + C(9)  M(9) contains 2nd offset below
+00001000000000000110    88: STR(EAX,6) # Set M(6) to EAX (used below)
+00000100011000000110    89: LDR(EBX,IX:1,I:0 6) # Load EBX with c(6) which is the ECX-th digit from the array 
 00000000000000000000    90: HLT
 00000000000000000000    91: HLT
 00000000000000000000    92: HLT
