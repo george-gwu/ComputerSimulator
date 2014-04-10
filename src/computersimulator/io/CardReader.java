@@ -37,8 +37,8 @@ public class CardReader implements IIODevice {
     
     /**
      * Input reads a word
-     * @return Word
-     */
+     * @return Word 
+    */
     @Override
     public Word input(){
         
