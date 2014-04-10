@@ -8,3 +8,4 @@ Now please enter one additional
 number to search for:
 
 >|
+The closest number is: |

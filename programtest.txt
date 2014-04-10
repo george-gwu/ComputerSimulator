@@ -1,4 +1,4 @@
-00000000000000000000    64: HLT
+00011000000000000000    64: AIR(R0,0)  # NOOP
 00001100000000000001   *65: LDA(R0,1)  # Pass String 1 to printstr
 00111000000001100100    66: JSR(100)   # Call printstr
 00001100100000000100    67: LDA(R3,20) # Pass 20 (10100) to ECX    *** SET TO 4 for testing ****
@@ -19,19 +19,19 @@
 01100101000000000000    82: NOT(EBX)    # Set EBX to all 1s
 01111100011000000001    83: SRC(1,1,0,1)# Shift EBX right by 1 (EBX=MAX_INT)
 00001000010000011101    84: STR(EBX,29) # Store MAX_INT to M(29) which holds the current min distance (used in testnum)
-00111000000001100100   *85: JSR(100)   # Call printstr     
-00111000000001110100    86: JSR(116)   # Call readnum, returns via EBX
-00001000010000000111    87: STR(1,0,7) # Set M(7) to EBX   M(7) is now the search number
-00001100100000000100    88: LDA(R3,20) # Pass 20 (10100) to ECX  (n)  *** SET TO 4 for testing ****
-00001100000000000000    89: nloop: LDA(R0, 0) # Clear EAX
-01100000100000000000    90: ORR(R0,R3) # Copy ECX to EAX (n)
-00010000000000001001    91: AMR(EAX,9) # Set EAX = EAX + C(9) (n+2nd_offset)
-00001000000000000110    92: STR(EAX,6) # Set M(6) to EAX (used below)
-00111000000010001101    93: JSR(141)   # Call testnum
-01000000100001011001    94: SOB(3,nloop) # Decrement ECX and JMP back -- JMP to ***89***
-00111000000010000111    95: JSR(135)   # Call printnum(EAX)
-00000000000000000000    96: HLT
-00000000000000000000    97: HLT
+00111000000001100100   *85: JSR(100)    # Call printstr     
+00111000000001110100    86: JSR(116)    # Call readnum, returns via EBX
+00001000010000000111    87: STR(1,0,7)  # Set M(7) to EBX   M(7) is now the search number
+00001100100000000100    88: LDA(R3,20)  # Pass 20 (10100) to ECX  (n)  *** SET TO 4 for testing ****
+00111000000010001101    89: JSR(141)   # Call findclosest(ECX=cnt,EBX=search) ret to m30  ***141***
+00001100000001001100    90: LDA(R0,76) # Pass String 76 to printstr
+00111000000001100100   *91: JSR(100)   # Call printstr
+00000000000000000000    92: HLT
+00000100000000011110    93: LDR(EAX,30)                  # Restore diff from M(30)
+00010000000000001001    94: AMR(EAX,9)                   # Set EAX = EAX + C(9) (EAX is now address of winning digit)
+00001000000000000110    95: STR(EAX,6)                   # Set M(6) to EAX (Store EAX to M6 for loading value next)
+00000100001000000110    96: LDR(EAX,IX:1,I:0 6)          # Load EAX with c(6) which is the n value from the array 
+00111000000010000111   *97: JSR(135)                     # Call printnum(EAX)
 00000000000000000000    98: HLT
 00000000000000000000    99: HLT
 00001100010000000000 ***100: printstr: LDA(R1, 0)  # Set R1 to 0   -----     R0 is # to add
@@ -75,8 +75,26 @@
 11111000010000000001    138: OUT(EBX,PRINTER)       # Print remainder
 00101100000010000111    139: JNE(EAX,loopdiv)       # If quotient>0, more digits to go loopdiv=135
 00111100000000000000  --140: RFS
-00000100001000000110 ***141: testnum: LDR(EAX,IX:1,I:0 6) # Load EAX with c(6) which is the n value from the array 
-00000000000000000000 notes EAX=curr, ECX=n
+00001100000000000000 ***141: findclosest: LDA(R0, 0)      # Clear EAX    findclosest(ECX=cnt,EBX=search,m29=MAX_INT)
+01100000100000000000    142: ORR(EAX,ECX)                 # Copy ECX to EAX (n)
+00010000000000001001    143: AMR(EAX,9)                   # Set EAX = EAX + C(9) (EAX is now addr of digit n--n+2nd_offset)
+00001000000000000110    144: STR(EAX,6)                   # Set M(6) to EAX (Store EAX to M6 for loading value next)
+00000100001000000110    145: LDR(EAX,IX:1,I:0 6)          # Load EAX with c(6) which is the n value from the array 
+00010100000000000111    146: SMR(EAX,7)                   # Subtract current(EAX)-SEARCH(m7), EAX=diff
+01000100000010010110    147: JGE(EAX, testdiff)           # if EAX>=0, jump to ****150***
+00000100000000000111    148: LDR(EAX,7)                   # else, flip operands and diff again - Set EAX = SEARCH
+00010100001000000110    149: SMR(EAX,IX:1,I:0 6)          # Subtract search(EAX)-current(m6), EAX=diff
+00001000000000011111  --150: testdiff: STR(EAX,31)        # Store diff(EAX) to m31
+00000100000000011101    151: LDR(EAX,29)                  # Load current min to EAX
+00010100000000011111    152: SMR(EAX,31)                  # Subtract current min(3/eax) - diff(5/m31)     9999999 - 5
+01000100000010011100    153: JGE(EAX,finish)              # Diff is the new min, jmp to finish = ****156****
+01000000100010001101    154: SOB(3,findclosest)           # Diff is not the new min; Decrement ECX and JMP back -- JMP to ***141***
+00111100000000000000    155: RFS                          # if was last, return
+00001000100000011110  --156: finish: STR(ECX,30)          # Store current index to current winner index
+00000100000000011111    157: LDR(EAX,31)                  # Restore diff from M(31)
+00001000000000011101    158: STR(EAX,29)                  # Store new diff to m29 (new low diff)
+01000000100010001101    159: SOB(3,findclosest)           # Decrement ECX and JMP back -- JMP to ***141***
+00111100000000000000  --160: RFS
 11001100110011001100    SECTION_TAG: Everything below here is .data and is generated by my string compiler
 00000011001011010111    0001: eW \101\87
 00000011000111101100    0002: cl \99\108
@@ -153,4 +171,17 @@
 00000000010100111010    0073:  : \10\58
 00000001111100001010    0074: >  \62\10
 00000000000000000000    0075:    \0\0
+00000010101000001010    0076: T  \84\10
+00000011001011101000    0077: eh \101\104
+00000011000110100000    0078: c  \99\32
+00000011011111101100    0079: ol \111\108
+00000011001011110011    0080: es \101\115
+00000011101001110011    0081: ts \116\115
+00000011011100100000    0082: n  \110\32
+00000011011011110101    0083: mu \109\117
+00000011001011100010    0084: eb \101\98
+00000001000001110010    0085:  r \32\114
+00000011100111101001    0086: si \115\105
+00000001000000111010    0087:  : \32\58
+00000000000000000000    0088:    \0\0
 11001100110011001100    SECTION_TAG: Everything below here is free space
