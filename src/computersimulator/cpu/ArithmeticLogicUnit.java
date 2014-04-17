@@ -114,19 +114,19 @@ public class ArithmeticLogicUnit implements IClockCycle {
     
     
     public Unit getOperand1() {
-        return operand1;
+        return Unit.cloneUnit(operand1);
     }
 
     public void setOperand1(Unit oper1) {
-        this.operand1 = new Unit(oper1);
+        this.operand1 = Unit.cloneUnit(oper1);
     }
 
     public Unit getOperand2() {
-        return operand2;
+        return Unit.cloneUnit(operand2);
     }
 
     public void setOperand2(Unit oper2) {
-        this.operand2 = new Unit(oper2);
+        this.operand2 = Unit.cloneUnit(oper2);
     }
 
     public int getControl() {
@@ -147,7 +147,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     public Unit getResult() {
         if(this.getState() == ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED){
-            return result;
+            return new Unit(result);
         } else {
             return null;
         }

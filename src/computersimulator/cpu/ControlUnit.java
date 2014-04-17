@@ -243,7 +243,7 @@ public class ControlUnit implements IClockCycle {
     public void setIndexRegister(int ixid,Unit IndexRegister)
     {
         if(ixid<4&&ixid>0){ // IX1-3, stored internally at 0-2
-            this.indexRegisters[ixid-1].setValueBinary(IndexRegister.getBinaryString());
+            this.indexRegisters[ixid-1] = IndexRegister;
         }
     }
     

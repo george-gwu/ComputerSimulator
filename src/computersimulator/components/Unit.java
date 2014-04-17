@@ -48,7 +48,7 @@ public class Unit {
      * Copy constructor
      * @param c
      */
-    public Unit(Unit c){
+    public Unit(Unit c){        
         this.data = c.data;
         this.size = c.size;
         
@@ -58,6 +58,19 @@ public class Unit {
         this.MIN_SIGNED_VALUE = c.MIN_SIGNED_VALUE;
         this.MIN_UNSIGNED_VALUE = c.MIN_UNSIGNED_VALUE;        
     }    
+    
+    /**
+     * Clone static (supports null clone)
+     * @param c
+     * @return 
+     */
+    public static Unit cloneUnit(Unit c){
+        if(c==null){
+            return null;
+        } else {
+            return new Unit(c);
+        }
+    }
 
     /** 
      * Creates a Unit from a Binary String. This method allows for spacing which is trimmed for readability.

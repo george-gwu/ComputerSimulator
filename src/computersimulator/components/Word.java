@@ -35,6 +35,20 @@ public class Word extends Unit {
     }
     
     
+    /**
+     * Clone static (supports null clone)
+     * @param c
+     * @return 
+     */
+    public static Word cloneWord(Word c){
+        if(c==null){
+            return null;
+        } else {
+            return new Word(c);
+        }
+    }
+       
+    
     /** 
      * Creates a Word from a Binary String. This method allows for spacing which is trimmed for readability.
      * @param binaryReadable Binary String
