@@ -147,14 +147,14 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     public Unit getResult() {
         if(this.getState() == ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED){
-            return new Unit(result);
+            return Unit.cloneUnit(result);
         } else {
             return null;
         }
     }
 
     private void setResult(Unit res) {
-        this.result = new Unit(res);
+        this.result = Unit.cloneUnit(res);
     }
     
  
