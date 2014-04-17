@@ -85,6 +85,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * Used internally on the clock cycle when start computation is set.
      */
     private void compute(){
+        System.out.println("[ALU]: Starting Computation.");
         switch(this.control){
             case ArithmeticLogicUnit.CONTROL_ADD:
                 this.setResult(this.add(operand1, operand2));
@@ -100,13 +101,14 @@ public class ArithmeticLogicUnit implements IClockCycle {
             break;
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
-                System.out.println("Unhandled ALU operation");
+                System.out.println("[ALU]: Unhandled ALU operation");
                 break;
         }                
+               
         // Reset inputs & set state to finished
-        this.setControl(ArithmeticLogicUnit.CONTROL_NONE);
+        this.control = ArithmeticLogicUnit.CONTROL_NONE;
         this.operand1=null;
-        this.operand2=null;
+        this.operand2=null;       
         this.setState(ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED);
     }
         
@@ -119,22 +121,25 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     public void setOperand1(Unit oper1) {
         this.operand1 = Unit.cloneUnit(oper1);
+        System.out.println("[ALU]: OP1<-"+this.operand1);
     }
 
     public Unit getOperand2() {
         return Unit.cloneUnit(operand2);
     }
 
-    public void setOperand2(Unit oper2) {
+    public void setOperand2(Unit oper2) {        
         this.operand2 = Unit.cloneUnit(oper2);
+        System.out.println("[ALU]: OP2<-"+this.operand2);
     }
 
     public int getControl() {
         return control;
     }
 
-    public void setControl(int controlState) {
+    public void setControl(int controlState) {        
         this.control = controlState;
+        System.out.println("[ALU]: CNTRL<-"+this.control);
     }
 
     public int getState() {
@@ -142,6 +147,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
     }
 
     private void setState(int state) {
+        System.out.println("[ALU]: State Change: "+state);
         this.state = state;
     }    
 
@@ -155,6 +161,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     private void setResult(Unit res) {
         this.result = Unit.cloneUnit(res);
+        System.out.println("[ALU]: Result: "+this.result);
     }
     
  
