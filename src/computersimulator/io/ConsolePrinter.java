@@ -44,6 +44,7 @@ public class ConsolePrinter implements IIODevice {
         Integer integerValue = value.getUnsignedValue();
         int intValue = (int)integerValue;       
         guiDisplay.append(String.valueOf((char)intValue));        
+        guiDisplay.setCaretPosition(guiDisplay.getDocument().getLength());
     }
     
     /**
