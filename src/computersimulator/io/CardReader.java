@@ -22,7 +22,7 @@ public class CardReader implements IIODevice {
         iterator=0;
         
         try {
-            FileReader reader=new FileReader("program1.txt");
+            FileReader reader=new FileReader("programtest.txt");
             BufferedReader br = new BufferedReader(reader);
             
             String strLine;
