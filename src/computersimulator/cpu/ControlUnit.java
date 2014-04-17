@@ -243,7 +243,7 @@ public class ControlUnit implements IClockCycle {
     public void setIndexRegister(int ixid,Unit IndexRegister)
     {
         if(ixid<4&&ixid>0){ // IX1-3, stored internally at 0-2
-            this.indexRegisters[ixid-1] = IndexRegister;
+            this.indexRegisters[ixid-1] = Unit.cloneUnit(IndexRegister);
         }
     }
     
@@ -254,7 +254,7 @@ public class ControlUnit implements IClockCycle {
      */
     public Unit getIndexRegister(int ixid){
         if(ixid<4&&ixid>0){ // IX1-3, stored internally at 0-2
-            return this.indexRegisters[ixid-1];
+            return Unit.cloneUnit(this.indexRegisters[ixid-1]);
         } else {
             return null;
         }
@@ -271,7 +271,7 @@ public class ControlUnit implements IClockCycle {
     public void setGeneralPurposeRegister(int RFI,Word GeneralPurposeRegisterValue){
         if(RFI<4&&RFI>=0) // GPR 0-3
         {
-            this.gpRegisters[RFI]=new Word(GeneralPurposeRegisterValue);
+            this.gpRegisters[RFI]=Word.cloneWord(GeneralPurposeRegisterValue);
         }
     }
     
