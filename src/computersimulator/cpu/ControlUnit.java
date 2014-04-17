@@ -888,7 +888,7 @@ public class ControlUnit implements IClockCycle {
 
                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     try {
-                        System.out.println("COMPLETED INSTRUCTION: STX - M(MAR): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
+                        System.out.println("COMPLETED INSTRUCTION: STX - M("+this.effectiveAddress.getUnsignedValue()+"): "+ this.memory.engineerFetchByMemoryLocation(this.effectiveAddress));
                     } catch (MachineFaultException ex) {
                         Logger.getLogger(ControlUnit.class.getName()).log(Level.SEVERE, null, ex);
                     }
