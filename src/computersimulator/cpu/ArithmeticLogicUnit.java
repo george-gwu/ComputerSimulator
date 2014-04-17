@@ -105,8 +105,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
         }                
         // Reset inputs & set state to finished
         this.setControl(ArithmeticLogicUnit.CONTROL_NONE);
-        this.setOperand1(null);
-        this.setOperand2(null);
+        this.operand1=null;
+        this.operand2=null;
         this.setState(ArithmeticLogicUnit.STATE_COMPUTATION_FINISHED);
     }
         
@@ -117,16 +117,16 @@ public class ArithmeticLogicUnit implements IClockCycle {
         return operand1;
     }
 
-    public void setOperand1(Unit operand1) {
-        this.operand1 = operand1;
+    public void setOperand1(Unit oper1) {
+        this.operand1 = new Unit(oper1);
     }
 
     public Unit getOperand2() {
         return operand2;
     }
 
-    public void setOperand2(Unit operand2) {
-        this.operand2 = operand2;
+    public void setOperand2(Unit oper2) {
+        this.operand2 = new Unit(oper2);
     }
 
     public int getControl() {
@@ -153,8 +153,8 @@ public class ArithmeticLogicUnit implements IClockCycle {
         }
     }
 
-    private void setResult(Unit result) {
-        this.result = result;
+    private void setResult(Unit res) {
+        this.result = new Unit(res);
     }
     
  
