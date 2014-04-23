@@ -17,7 +17,7 @@ public class MemoryControlUnit implements IClockCycle {
     private final static int BANK_CELLS = 256;
     
     
-    private final static Boolean ENABLE_CACHE = false;  
+    private final static Boolean ENABLE_CACHE = true;  
     
     // MAR	13 bits	Memory Address Register: holds the addressRaw of the word to be fetched from memory
     private Unit memoryAddressRegister;
@@ -311,7 +311,8 @@ public class MemoryControlUnit implements IClockCycle {
     public void writeCacheBlock(Word[] block, Integer[] blockStart){
         int j=0;
         for(int i=blockStart[1];i<blockStart[1]+block.length;i++){
-            this.memory[blockStart[0]][i] = new Word(block[j++]);
+            this.memory[blockStart[0]][i] = new Word(block[j]);
+            j++;
         }
     }
     

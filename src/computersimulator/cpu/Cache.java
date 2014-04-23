@@ -20,7 +20,7 @@ public class Cache implements IClockCycle {
     private String[] tags;    
     private boolean[] dirty;
     private Long[] lastUsed;
-    private HashMap<String,Integer[]> location;
+    private HashMap<String,Integer[]> location; // maps tags back to memory location
     
     
     private MemoryControlUnit memory;
@@ -39,6 +39,7 @@ public class Cache implements IClockCycle {
             tags[i]=null;
             dirty[i]=false;
             lastUsed[i]=null;
+            this.cache[i]=null;
         }
         
         this.memory=mem;
@@ -168,31 +169,21 @@ public class Cache implements IClockCycle {
             
     }    
     
-    /**
-     * Test if word is in cache
-     * @param address
-     * @return
-     * @throws computersimulator.components.MachineFaultException
-     */
-    public Boolean testWord(Unit address) throws MachineFaultException{
-        String tag = this.calculateTagFromBlockID(calculateBlockFromAddress(address));
-        return this.isBlockAvailable(tag);
-    }
     
     /**
-     * Fetch a block from memory and store it into the least recently used location
-     * @param block 
+     * Fetch a blockLocation from memory and store it into the least recently used location
+     * @param blockLocation 
      */
-    private void fetchBlock(Integer[] block){
+    private void fetchBlock(Integer[] blockLocation){
         int freeBlockID = this.getFreeBlock();
         
-        Word[] newBlock = memory.getCacheBlock(block, Cache.BLOCK_SIZE);
+        Word[] newBlock = memory.getCacheBlock(blockLocation, Cache.BLOCK_SIZE);
         
         cache[freeBlockID] = newBlock;
         lastUsed[freeBlockID] = System.currentTimeMillis();
         dirty[freeBlockID] = false;
-        tags[freeBlockID] = calculateTagFromBlockID(block);
-        location.put(tags[freeBlockID], block);        
+        tags[freeBlockID] = calculateTagFromBlockID(blockLocation);
+        location.put(tags[freeBlockID], blockLocation);        
         
         System.out.println("[Cache]: Fetched Block "+tags[freeBlockID]+" into location: "+freeBlockID);
         
@@ -229,12 +220,13 @@ public class Cache implements IClockCycle {
     private void cleanBlock(Integer blockID){
         System.out.println("[Cache]: Freeing Cache Block "+blockID);
         if(dirty[blockID]){
-            memory.writeCacheBlock(cache[blockID], location.get(tags[blockID]));            
-            dirty[blockID]=false;
+            memory.writeCacheBlock(cache[blockID], location.get(tags[blockID]));                        
             System.out.println("[Cache]: Wrote back to memory because it was dirty.");
         } 
+        this.cache[blockID]=null;
+        dirty[blockID]=false;
         lastUsed[blockID] = null;
-        location.put(tags[blockID], null); 
+        location.remove(tags[blockID]);
         tags[blockID] = null;
         
     }
