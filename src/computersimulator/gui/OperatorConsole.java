@@ -177,6 +177,7 @@ public class OperatorConsole implements Runnable {
         JButton deposit = new JButton("Deposit");
         JButton go = new JButton("Go");
         JButton halt = new JButton("Halt");
+        JButton console = new JButton("Engineer Console");
         
         buttonPanel.add(start);
         buttonPanel.add(load);
@@ -194,7 +195,15 @@ public class OperatorConsole implements Runnable {
         buttonPanel.add(spinner);
         buttonPanel.add(go);
         buttonPanel.add(halt);
+        buttonPanel.add(console);
         
+        console.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new FieldEngineerConsole().getJFrame();
+                }
+        });
+       
         // add text area for console printer 
         JTextArea guiTextPrinter = new JTextArea(15, 20);
         JScrollPane scrollPane = new JScrollPane(guiTextPrinter);
