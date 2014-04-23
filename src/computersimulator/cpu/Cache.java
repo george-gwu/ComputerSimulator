@@ -73,7 +73,7 @@ public class Cache implements IClockCycle {
             
             lastUsed[blockID] = System.currentTimeMillis();
             
-            return this.cache[blockID][cacheAddress];
+            return new Word(this.cache[blockID][cacheAddress]);
             
         } else { // CACHE miss, do fetch for next cycle
             System.out.println("[Cache]: MISS during fetch ("+tag+")");            
@@ -104,7 +104,7 @@ public class Cache implements IClockCycle {
         int[] rawMemoryAddress = memory.calculateActualMemoryLocation(address);           
         int cacheAddress = rawMemoryAddress[1] % Cache.BLOCK_SIZE; 
 
-        return this.cache[blockID][cacheAddress];
+        return new Word(this.cache[blockID][cacheAddress]);
 
     }
 
@@ -129,7 +129,7 @@ public class Cache implements IClockCycle {
             lastUsed[blockID] = System.currentTimeMillis();
             dirty[blockID] = true;
             
-            this.cache[blockID][cacheAddress]=value;
+            this.cache[blockID][cacheAddress]=new Word(value);
             
             
             return true;
@@ -164,7 +164,7 @@ public class Cache implements IClockCycle {
         lastUsed[blockID] = System.currentTimeMillis();
         dirty[blockID] = true;
 
-        this.cache[blockID][cacheAddress]=value;
+        this.cache[blockID][cacheAddress]=new Word(value);
             
     }    
     

@@ -16,6 +16,9 @@ public class MemoryControlUnit implements IClockCycle {
     private final static int BANK_SIZE = 8;
     private final static int BANK_CELLS = 256;
     
+    
+    private final static Boolean ENABLE_CACHE = false;  
+    
     // MAR	13 bits	Memory Address Register: holds the addressRaw of the word to be fetched from memory
     private Unit memoryAddressRegister;
     // MBR	20 bits	Memory Buffer Register: holds the word just fetched from or stored into memory
@@ -58,12 +61,20 @@ public class MemoryControlUnit implements IClockCycle {
     public void clockCycle() throws MachineFaultException{
         cache.clockCycle();
         switch(state){                                   
-            case MemoryControlUnit.STATE_PRE_STORE:                
-                this.cacheStoreAddressOperation();
+            case MemoryControlUnit.STATE_PRE_STORE: 
+                if(MemoryControlUnit.ENABLE_CACHE){
+                    this.cacheStoreAddressOperation();
+                } else {
+                    this.storeAddressInMemoryOperation();
+                }
                 break;
                 
             case MemoryControlUnit.STATE_PRE_FETCH:                                                     
-                this.cacheFetchAddressOperation();
+                if(MemoryControlUnit.ENABLE_CACHE){
+                    this.cacheFetchAddressOperation();
+                } else {
+                    this.fetchAddressOperation();
+                }
                 break;
                             
             case MemoryControlUnit.STATE_NONE:
@@ -181,7 +192,13 @@ public class MemoryControlUnit implements IClockCycle {
      * @throws computersimulator.components.MachineFaultException
      */
     public Word engineerFetchByMemoryLocation(Unit address) throws MachineFaultException{       
-        Word value = cache.engineerFetchWord(address);
+        Word value;
+        if(MemoryControlUnit.ENABLE_CACHE){
+            value = cache.engineerFetchWord(address);
+        } else {
+            int[] addr = this.calculateActualMemoryLocation(address);
+            value = new Word(this.memory[addr[0]][addr[1]]);        
+        }
         System.out.println("ENGINEER: Fetch Addr: "+address.getUnsignedValue()+"  ---  Value: "+value);        
         
         return value;
@@ -194,7 +211,12 @@ public class MemoryControlUnit implements IClockCycle {
      * @throws computersimulator.components.MachineFaultException
      */
     public void engineerSetMemoryLocation(Unit address, Word value) throws MachineFaultException{
-        cache.engineerStoreWord(address, value);
+        if(MemoryControlUnit.ENABLE_CACHE){
+            cache.engineerStoreWord(address, value);
+        } else {
+            int[] addr = this.calculateActualMemoryLocation(address);    
+            this.memory[addr[0]][addr[1]] = new Word(value);
+        }
         System.out.println("ENGINEER: Set Addr: "+address.getUnsignedValue()+" to  Value: "+value);        
     }       
     
@@ -274,7 +296,7 @@ public class MemoryControlUnit implements IClockCycle {
         
         int j=0;
         for(int i=blockStart[1];i<blockStart[1]+count;i++){
-            results[j] = this.memory[blockStart[0]][i];
+            results[j] = new Word(this.memory[blockStart[0]][i]);
             j++;
         }
         
@@ -289,8 +311,55 @@ public class MemoryControlUnit implements IClockCycle {
     public void writeCacheBlock(Word[] block, Integer[] blockStart){
         int j=0;
         for(int i=blockStart[1];i<blockStart[1]+block.length;i++){
-            this.memory[blockStart[0]][i] = block[j++];
+            this.memory[blockStart[0]][i] = new Word(block[j++]);
         }
     }
+    
+    
+    /**
+     * fetchAddressOperation - This fetches an addressRaw specified by MAR, and
+ puts the contents of that memory location into MBR. 
+     * Private because it is called by clockCycle.
+     */    
+    private void fetchAddressOperation(){
+        try {
+            // Load and Decode the Address in MAR
+            int[] addr = this.calculateActualMemoryLocation(this.memoryAddressRegister);
+            int bankIndex = addr[0]; 
+            int cellIndex = addr[1]; 
+        
+            // Copy the contents of that memory location into the MBR            
+            this.memoryBufferRegister = new Word(this.memory[bankIndex][cellIndex]);            
+            System.out.println("-- Fetch MAR("+this.memoryAddressRegister.getUnsignedValue()+"): "+this.memoryBufferRegister);
+            this.resetState();
+        } catch(Exception e){
+            //@TODO: Handle bad addressRaw (virtual memory?)
+            System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
+        }
+        
+        
+    }
+    
+    /**
+     * storeAddressInMemoryOperation - This stores a MBR value into memory at
+     * the location specified by MAR.
+     * Private because it is called by clockCycle.
+     */
+    private void storeAddressInMemoryOperation(){   
+        try {        
+            // Load and Decode the Address in MAR
+            int[] addr = this.calculateActualMemoryLocation(this.memoryAddressRegister);
+            int bankIndex = addr[0]; 
+            int cellIndex = addr[1];        
+
+            //Copy the value from MDR to Memory                
+            this.memory[bankIndex][cellIndex] = new Word(this.memoryBufferRegister);
+            System.out.println("-- Memory Set - MAR("+this.memoryAddressRegister.getUnsignedValue()+") to "+this.memoryBufferRegister);
+            this.resetState();
+        } catch(Exception e){
+            //@TODO: Handle bad addressRaw (virtual memory?)
+            System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
+        }                
+    }    
     
 }

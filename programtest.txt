@@ -1,7 +1,7 @@
 00011000000000000000    64: AIR(R0,0)  # NOOP
 00001100000000000001   *65: LDA(R0,1)  # Pass String 1 to printstr
 00111000000001100100    66: JSR(100)   # Call printstr
-00001100100000000110    67: LDA(R3,20) # Pass 20 (10100) to ECX    *** SET TO 4 for testing ****
+00001100100000010100    67: LDA(R3,20) # Pass 20 (10100) to ECX    *** SET TO 4 for testing ****
 00001000100000000111  --68: STR(2,0,7) # Set M(7) to ECX  (used in LDX below)  
 10100100110000000111    69: LDX(0,3,7) # Set X(3) from M(7) (copied from ECX above, used in SOB loop)  
 00001100000000100111    70: LDA(R0,39) # Pass String 2 (39) to PrintStr
@@ -22,7 +22,7 @@
 00111000000001100100   *85: JSR(100)    # Call printstr     
 00111000000001110100    86: JSR(116)    # Call readnum, returns via EBX
 00001000010000000111    87: STR(1,0,7)  # Set M(7) to EBX   M(7) is now the search number
-00001100100000000110    88: LDA(R3,20)  # Pass 20 (10100) to ECX  (n)  *** SET TO 4 for testing ****
+00001100100000010100    88: LDA(R3,20)  # Pass 20 (10100) to ECX  (n)  *** SET TO 4 for testing ****
 00111000000010001101    89: JSR(141)   # Call findclosest(ECX=cnt,EBX=search) ret to m30  ***141***
 00000000000000000000    92: NOOP
 00001100000001001100    90: LDA(R0,76) # Pass String 76 to printstr
