@@ -36,7 +36,7 @@ public class FieldEngineerConsole extends JFrame {
         buttonPanel = new JPanel();
         close = new JButton("Close");
         buttonPanel.add(close);
-        
+
         memory = new JTextArea("Memory Inspection");
         cache = new JTextArea("Cache Inspection");
         cache.setBackground(Color.gray);
@@ -48,8 +48,8 @@ public class FieldEngineerConsole extends JFrame {
         engineerConsole.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         pack();
         engineerConsole.setVisible(true);
+        engineerConsole.setLocation(730, 0);
         
-       
         GridLayout layout = new GridLayout(3, 1, 5, 5);
         panel.setLayout(layout);
         panel.add(memory);       
