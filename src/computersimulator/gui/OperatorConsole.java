@@ -197,6 +197,7 @@ public class OperatorConsole implements Runnable {
         buttonPanel.add(halt);
         buttonPanel.add(console);
         
+        // engineer console button
         console.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
