@@ -42,7 +42,6 @@ public class FieldEngineerConsole extends JFrame {
         cache.setBackground(Color.gray);
         inspection = new JTextArea("Speculative Excecution Inspection");
         
-        
         engineerConsole = new JFrame("Field Engineer Console");
         engineerConsole.setSize(400, 250);
         engineerConsole.add(mainPanel);
