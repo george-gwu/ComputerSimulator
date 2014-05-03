@@ -392,12 +392,11 @@ public class OperatorConsole implements Runnable {
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
               if (e.getID() == KeyEvent.KEY_PRESSED) {
-                int keyCode = (int)e.getKeyChar();
+                int keyCode = (int)e.getKeyCode();
                 if(keyCode==10){ keyCode=13; } // convert \n to \r 
-                // Filter input to alphanumeric only
+                // Filter input to lowercase alphanumeric only
                 if( (keyCode >= 48 && keyCode <= 57) || // numbers
-                    (keyCode >= 65 && keyCode <= 90) || // uppercase
-                    (keyCode >= 97 && keyCode <= 122)|| // lowercase
+                    (keyCode >= 65 && keyCode <= 90) || // lowercase
                     (keyCode == 13) ){              
                         // Delegate the physical keypress to the virtual keyboard
                         ConsoleKeyboard consoleKeyboard = (ConsoleKeyboard)ioController.getDevice(InputOutputController.DEVICE_CONSOLEKEYBOARD);                
