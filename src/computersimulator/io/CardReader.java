@@ -17,12 +17,12 @@ public class CardReader implements IIODevice {
     /**
      * Card Reader Constructor - Reads in a text file to an array for access via IO controller
      */
-    public CardReader(){
+    public CardReader(String filename){
         data = new ArrayList<>();
         iterator=0;
         
         try {
-            FileReader reader=new FileReader("programtest.txt");
+            FileReader reader=new FileReader(filename);
             BufferedReader br = new BufferedReader(reader);
             
             String strLine;

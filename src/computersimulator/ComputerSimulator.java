@@ -1,8 +1,8 @@
 package computersimulator;
 
-import javax.swing.SwingUtilities;
 import computersimulator.cpu.Computer;
 import computersimulator.gui.OperatorConsole;
+import javax.swing.SwingUtilities;
 
 /**
  * Computer Simulator Program - This controls the GUI and instantiates a 
@@ -21,6 +21,15 @@ public class ComputerSimulator {
                            
         OperatorConsole opconsole = new OperatorConsole();        
         opconsole.setComputer(computer); // pass computer instance into GUI
+                
+        String filename = "programtest.txt";
+        if(args.length>0){
+            filename = args[0];
+        }       
+        
+        // Pass file from command line to IO Controller        
+        computer.getIO().setFilename(filename);
+                
         
         SwingUtilities.invokeLater(opconsole);
     }

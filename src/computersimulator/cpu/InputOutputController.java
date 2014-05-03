@@ -15,6 +15,13 @@ public class InputOutputController {
     private ConsoleKeyboard consoleKeyboard;
     private ConsolePrinter consolePrinter;
     
+    private String filename;
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+        this.resetIOController();
+    }
+    
     public static final int DEVICE_CONSOLEKEYBOARD=0;
     public static final int DEVICE_CONSOLEPRINTER=1;
     public static final int DEVICE_CARDREADER=2;
@@ -27,11 +34,10 @@ public class InputOutputController {
     public InputOutputController() {
         consolePrinter = new ConsolePrinter();
         consoleKeyboard = new ConsoleKeyboard();
-        this.resetIOController();
     }
     
     public final void resetIOController(){
-        cardReader  = new CardReader();
+        cardReader  = new CardReader(filename);
     }
     
     public IIODevice getDevice(int DEVID){
