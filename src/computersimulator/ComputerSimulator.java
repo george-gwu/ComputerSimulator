@@ -22,7 +22,7 @@ public class ComputerSimulator {
         OperatorConsole opconsole = new OperatorConsole();        
         opconsole.setComputer(computer); // pass computer instance into GUI
                 
-        String filename = "programtest.txt";
+        String filename = "program2.txt";
         if(args.length>0){
             filename = args[0];
         }       
