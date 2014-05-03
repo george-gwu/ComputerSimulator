@@ -4,6 +4,7 @@ import computersimulator.components.*;
 import computersimulator.cpu.Computer;
 import computersimulator.cpu.ControlUnit;
 import computersimulator.cpu.InputOutputController;
+import computersimulator.io.ConsoleKeyboard;
 import computersimulator.io.ConsolePrinter;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,8 +13,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -382,6 +386,27 @@ public class OperatorConsole implements Runnable {
                }
            }                      
         });
+        
+        final InputOutputController ioController = computer.getIO();
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher( new KeyEventDispatcher() {
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent e) {
+              if (e.getID() == KeyEvent.KEY_PRESSED) {
+                int keyCode = (int)e.getKeyChar();
+                if(keyCode==10){ keyCode=13; } // convert \n to \r 
+                // Filter input to alphanumeric only
+                if( (keyCode >= 48 && keyCode <= 57) || // numbers
+                    (keyCode >= 65 && keyCode <= 90) || // uppercase
+                    (keyCode >= 97 && keyCode <= 122)|| // lowercase
+                    (keyCode == 13) ){              
+                        // Delegate the physical keypress to the virtual keyboard
+                        ConsoleKeyboard consoleKeyboard = (ConsoleKeyboard)ioController.getDevice(InputOutputController.DEVICE_CONSOLEKEYBOARD);                
+                        consoleKeyboard.buttonPress(keyCode);                    
+                }                    
+              }
+              return false;
+            }
+        });        
 
         this.updateDisplay();
 

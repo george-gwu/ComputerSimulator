@@ -17,7 +17,7 @@ public class MemoryControlUnit implements IClockCycle {
     private final static int BANK_CELLS = 256;
     
     
-    private final static Boolean ENABLE_CACHE = true;  
+    private final static Boolean ENABLE_CACHE = false;  
     
     // MAR	13 bits	Memory Address Register: holds the addressRaw of the word to be fetched from memory
     private Unit memoryAddressRegister;
