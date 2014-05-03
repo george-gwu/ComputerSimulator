@@ -105,12 +105,6 @@ public class ControlUnit implements IClockCycle {
     private static final int OPCODE_IN=61;
     private static final int OPCODE_OUT=62;
     private static final int OPCODE_CHK=63;
-    
-    private int branchHistory [][] = { {OPCODE_JZ, 1},
-                                      {OPCODE_JNE, 1},
-                                      {OPCODE_JCC, 1},
-                                      {OPCODE_JGE, 1}
-    };
 
     // Engineer: used to control micro step, defined per state
     private Integer microState = null;
@@ -428,28 +422,6 @@ public class ControlUnit implements IClockCycle {
     }
     
     /**
-     * Check the branching history of the instruction and speculate whether to preemptively execute it.
-     * @param x
-     * @return 
-     */
-    public boolean speculate (int x) {
-        int opCode = x;
-        //Get the branch history of this opCode
-        
-        if (branchHistory[opCode][] < 3)
-        {
-            //Speculate that this jump won't be taken.
-            return false;
-        }
-        else
-        {
-            //Speculate that this jump will be taken.
-            //Maybe display a message to signal this.
-            return true;
-        }
-    }
-    
-    /**
      * fetch the next instruction from memory to be executed
      */
     private void fetchNextInstructionFromMemory(){
@@ -512,12 +484,7 @@ public class ControlUnit implements IClockCycle {
             this.instructionRegisterDecoded = this.decodeInstructionRegister(this.getIR());     
             System.out.println("-- IR Decoded: "+this.instructionRegisterDecoded);
                         
-            int opcode = this.instructionRegisterDecoded.get("opcode").getUnsignedValue();
-            
-            if (opcode == 10 || opcode == 11 || opcode == 12 || opcode == 17)
-            {
-                this.speculate(opcode);
-            }
+            int opcode = this.instructionRegisterDecoded.get("opcode").getUnsignedValue();  
             
             switch(opcode){
                 case ControlUnit.OPCODE_INX:
@@ -1194,14 +1161,6 @@ public class ControlUnit implements IClockCycle {
          this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
          System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);              
          this.signalMicroStateExecutionComplete();
-         
-         /**
-         if (int x < 4)
-         *{
-         *  this.branchHistory[OPCODE_JZ][x] = {OPCODE_JZ, (x + 1)};
-         *}
-         */
-         
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
          System.out.println("COMPLETED INSTRUCTION: JZ - R("+RFI+") was Zero -- JUMPING: "+this.nextProgramCounter);
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
@@ -1211,14 +1170,6 @@ public class ControlUnit implements IClockCycle {
         {
              // not zero->PC++
             this.signalMicroStateExecutionComplete();
-            
-            /**
-            if (int x > 0)
-            *{
-            *  this.branchHistory[OPCODE_JZ][x] = {OPCODE_JZ, (x - 1)};
-            *}
-            */
-            
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             System.out.println("COMPLETED INSTRUCTION: JZ - R("+RFI+") was NOT Zero -- Continuing.");
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
@@ -1242,14 +1193,6 @@ public class ControlUnit implements IClockCycle {
          this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
          System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);              
          this.signalMicroStateExecutionComplete();
-         
-         /**
-         if (int x < 4)
-         *{
-         *  this.branchHistory[OPCODE_JNE][x] = {OPCODE_JNE, (x + 1)};
-         *}
-         */
-         
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
          System.out.println("COMPLETED INSTRUCTION: JNE - R("+RFI+") was NOT Zero -- JUMPING: "+this.nextProgramCounter);
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
@@ -1259,14 +1202,6 @@ public class ControlUnit implements IClockCycle {
         {
              // not zero->PC++
             this.signalMicroStateExecutionComplete();
-            
-            /**
-            if (int x > 0)
-            *{
-            *  this.branchHistory[OPCODE_JNE][x] = {OPCODE_JNE, (x - 1)};
-            *}
-            */
-            
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             System.out.println("COMPLETED INSTRUCTION: JNE - R("+RFI+") was  Zero -- Continuing.");
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
@@ -1327,14 +1262,6 @@ public class ControlUnit implements IClockCycle {
          this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
          System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);              
          this.signalMicroStateExecutionComplete();
-         
-         /**
-         if (int x < 4)
-         *{
-         *  this.branchHistory[OPCODE_JGE][x] = {OPCODE_JGE, (x + 1)};
-         *}
-         */
-         
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
          System.out.println("COMPLETED INSTRUCTION: JGE - R("+RFI+") was NOT LESS than Zero -- JUMPING: "+this.nextProgramCounter);
          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
@@ -1344,14 +1271,6 @@ public class ControlUnit implements IClockCycle {
         {
              // not zero->PC++
             this.signalMicroStateExecutionComplete();
-            
-            /**
-            if (int x > 0)
-            *{
-            *  this.branchHistory[OPCODE_JGE][x] = {OPCODE_JGE, (x - 1)};
-            *}
-            */
-            
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             System.out.println("COMPLETED INSTRUCTION: JGE - R("+RFI+") was LESS Zero -- Continuing.");
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
@@ -1372,27 +1291,11 @@ public class ControlUnit implements IClockCycle {
             this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
             System.out.println("Micro-6: PC <- EA - "+this.nextProgramCounter);              
             this.signalMicroStateExecutionComplete();
-            
-            /**
-            if (int x < 4)
-            *{
-            *  this.branchHistory[OPCODE_JCC][x] = {OPCODE_JCC, (x + 1)};
-            *}
-            */
-            
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Jumping: "+this.nextProgramCounter);
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");              
         } else { // not zero->PC++             CC != 1
             this.signalMicroStateExecutionComplete();
-            
-            /**
-            if (int x > 0)
-            *{
-            *  this.branchHistory[OPCODE_JCC][x] = {OPCODE_JCC, (x - 1)};
-            *}
-            */
-            
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             System.out.println("COMPLETED INSTRUCTION: JCC("+CC+") - Not Jumping. Value was: "+this.getConditionCode(CC));
             System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
