@@ -1,0 +1,13 @@
+Welcome to Program 2.
+Please use your keyboard to input
+ten words:
+>|
+>|
+Thank you! The ten words you
+inputted are:
+|After sorting, they are:
+|Now, input a substring to search
+for:
+>|The following words contain 
+your substring:
+|
