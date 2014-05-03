@@ -16,6 +16,7 @@ public class CardReader implements IIODevice {
     
     /**
      * Card Reader Constructor - Reads in a text file to an array for access via IO controller
+     * @param filename
      */
     public CardReader(String filename){
         data = new ArrayList<>();
