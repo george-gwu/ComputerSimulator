@@ -2,6 +2,8 @@ package computersimulator.cpu;
 
 import computersimulator.components.Unit;
 import computersimulator.components.Word;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This is the ALU class. It receives 3 inputs, processes them, and sets an 
@@ -85,7 +87,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
      * Used internally on the clock cycle when start computation is set.
      */
     private void compute(){
-        System.out.println("[ALU]: Starting Computation.");
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: Starting Computation.");
         switch(this.control){
             case ArithmeticLogicUnit.CONTROL_ADD:
                 this.setResult(this.add(operand1, operand2));
@@ -101,7 +103,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
             break;
             case ArithmeticLogicUnit.CONTROL_NONE:
             default:
-                System.out.println("[ALU]: Unhandled ALU operation");
+                Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: Unhandled ALU operation");
                 break;
         }                
                
@@ -121,7 +123,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     public void setOperand1(Unit oper1) {
         this.operand1 = Unit.cloneUnit(oper1);
-        System.out.println("[ALU]: OP1<-"+this.operand1);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: OP1<-"+this.operand1);
     }
 
     public Unit getOperand2() {
@@ -130,7 +132,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     public void setOperand2(Unit oper2) {        
         this.operand2 = Unit.cloneUnit(oper2);
-        System.out.println("[ALU]: OP2<-"+this.operand2);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: OP2<-"+this.operand2);
     }
 
     public int getControl() {
@@ -139,7 +141,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     public void setControl(int controlState) {        
         this.control = controlState;
-        System.out.println("[ALU]: CNTRL<-"+this.control);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: CNTRL<-"+this.control);
     }
 
     public int getState() {
@@ -147,7 +149,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
     }
 
     private void setState(int state) {
-        System.out.println("[ALU]: State Change: "+state);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: State Change: "+state);
         this.state = state;
     }    
 
@@ -161,7 +163,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     private void setResult(Unit res) {
         this.result = Unit.cloneUnit(res);
-        System.out.println("[ALU]: Result: "+this.result);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: Result: "+this.result);
     }
     
  
@@ -303,7 +305,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
         // check if overflow occurred
         if (carry == 1) {
-            System.out.println("****overflow occured**** ");
+            Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "****overflow occured**** ");
             this.controlUnit.setCondition(ControlUnit.CONDITION_REGISTER_OVERFLOW);
         } else {
             this.controlUnit.unsetCondition(ControlUnit.CONDITION_REGISTER_OVERFLOW);

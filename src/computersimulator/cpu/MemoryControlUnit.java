@@ -1,6 +1,8 @@
 package computersimulator.cpu;
 
 import computersimulator.components.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * MemoryControlUnit - MemoryControlUnit implements a single port memory. 
@@ -139,8 +141,8 @@ public class MemoryControlUnit implements IClockCycle {
         switch(state){          
             case MemoryControlUnit.STATE_NONE:
                 return false;        
-            case MemoryControlUnit.STATE_WAITING:
-                System.out.println("Memory error. Likely forgot to signal which operation.");
+            case MemoryControlUnit.STATE_WAITING: 
+                Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "Memory error. Likely forgot to signal which operation.");
             default:
                 return true;
         }    
@@ -173,10 +175,10 @@ public class MemoryControlUnit implements IClockCycle {
         int bankIndex = (int)(addressRaw % MemoryControlUnit.BANK_SIZE);
         int cellIndex = (int)Math.floor(addressRaw /MemoryControlUnit.BANK_SIZE);
                
-        System.out.println("Calculated Memory Address: "+addressRaw+" as Bank: "+bankIndex+", Cell: "+cellIndex);
+        Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "Calculated Memory Address: "+addressRaw+" as Bank: "+bankIndex+", Cell: "+cellIndex);
         
         if(bankIndex > MemoryControlUnit.BANK_SIZE){
-            System.out.println("Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "Memory index["+bankIndex+"]["+cellIndex+"] out of bounds. (Memory Size: ["+MemoryControlUnit.BANK_SIZE+"]["+MemoryControlUnit.BANK_CELLS+"])");
             throw new MachineFaultException(MachineFaultException.ILLEGAL_MEMORY_ADDRESS);       
         }
         
@@ -199,7 +201,7 @@ public class MemoryControlUnit implements IClockCycle {
             int[] addr = this.calculateActualMemoryLocation(address);
             value = new Word(this.memory[addr[0]][addr[1]]);        
         }
-        System.out.println("ENGINEER: Fetch Addr: "+address.getUnsignedValue()+"  ---  Value: "+value);        
+        Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "ENGINEER: Fetch Addr: "+address.getUnsignedValue()+"  ---  Value: "+value);        
         
         return value;
     }
@@ -217,7 +219,7 @@ public class MemoryControlUnit implements IClockCycle {
             int[] addr = this.calculateActualMemoryLocation(address);    
             this.memory[addr[0]][addr[1]] = new Word(value);
         }
-        System.out.println("ENGINEER: Set Addr: "+address.getUnsignedValue()+" to  Value: "+value);        
+        Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "ENGINEER: Set Addr: "+address.getUnsignedValue()+" to  Value: "+value);        
     }       
     
     /**
@@ -229,7 +231,7 @@ public class MemoryControlUnit implements IClockCycle {
         if(result!=null){
             this.memoryBufferRegister = result;
             this.resetState();
-            System.out.println("-- Fetch MAR("+this.memoryAddressRegister.getUnsignedValue()+"): "+this.memoryBufferRegister);
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Fetch MAR("+this.memoryAddressRegister.getUnsignedValue()+"): "+this.memoryBufferRegister);
         } // else cache miss, try next time        
     }    
     
@@ -241,7 +243,7 @@ public class MemoryControlUnit implements IClockCycle {
         Boolean result = cache.storeWord(memoryAddressRegister,memoryBufferRegister);
         if(result==true){            
             this.resetState();
-            System.out.println("-- Memory Set - MAR("+this.memoryAddressRegister.getUnsignedValue()+") to "+this.memoryBufferRegister);
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Memory Set - MAR("+this.memoryAddressRegister.getUnsignedValue()+") to "+this.memoryBufferRegister);
         } // else cache miss, try next time        
     }  
     
@@ -331,11 +333,11 @@ public class MemoryControlUnit implements IClockCycle {
         
             // Copy the contents of that memory location into the MBR            
             this.memoryBufferRegister = new Word(this.memory[bankIndex][cellIndex]);            
-            System.out.println("-- Fetch MAR("+this.memoryAddressRegister.getUnsignedValue()+"): "+this.memoryBufferRegister);
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Fetch MAR("+this.memoryAddressRegister.getUnsignedValue()+"): "+this.memoryBufferRegister);
             this.resetState();
         } catch(Exception e){
             //@TODO: Handle bad addressRaw (virtual memory?)
-            System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
         }
         
         
@@ -355,11 +357,11 @@ public class MemoryControlUnit implements IClockCycle {
 
             //Copy the value from MDR to Memory                
             this.memory[bankIndex][cellIndex] = new Word(this.memoryBufferRegister);
-            System.out.println("-- Memory Set - MAR("+this.memoryAddressRegister.getUnsignedValue()+") to "+this.memoryBufferRegister);
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Memory Set - MAR("+this.memoryAddressRegister.getUnsignedValue()+") to "+this.memoryBufferRegister);
             this.resetState();
         } catch(Exception e){
             //@TODO: Handle bad addressRaw (virtual memory?)
-            System.out.println("-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Bad Address: "+this.memoryAddressRegister+" -> "+e.getMessage());
         }                
     }    
     

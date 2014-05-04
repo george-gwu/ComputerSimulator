@@ -4,6 +4,8 @@ import computersimulator.components.Word;
 import computersimulator.cpu.InputOutputController;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,7 +34,7 @@ public class CardReader implements IIODevice {
             }
             
         } catch (IOException ex) {
-            System.out.println("IO Exception in CardReader: "+ex);
+            Logger.getLogger(CardReader.class.getName()).log(Level.SEVERE, "IO Exception in CardReader: "+ex);
         }
     }
     
@@ -45,7 +47,7 @@ public class CardReader implements IIODevice {
         
         String strLine = data.get(iterator++);
                
-        System.out.println(strLine);
+        Logger.getLogger(CardReader.class.getName()).log(Level.FINEST, strLine);
         
         String firstTwentyChars=strLine.substring(0, 20);
         
@@ -60,7 +62,7 @@ public class CardReader implements IIODevice {
      */
     @Override
     public void output(Word value){
-        System.out.println("ERROR: This IO device does not support writing.");
+        Logger.getLogger(CardReader.class.getName()).log(Level.SEVERE, "ERROR: This IO device does not support writing.");
     }
     
     /**

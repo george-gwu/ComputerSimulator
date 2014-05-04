@@ -2,6 +2,8 @@ package computersimulator.io;
 
 import computersimulator.components.Word;
 import computersimulator.cpu.InputOutputController;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,7 +38,7 @@ public class ConsoleKeyboard implements IIODevice {
      */
     @Override
     public void output(Word value){
-        System.out.println("ERROR: This IO device does not support writing.");
+        Logger.getLogger(CardReader.class.getName()).log(Level.SEVERE, "ERROR: This IO device does not support writing.");
     }
     
     /**
@@ -54,7 +56,7 @@ public class ConsoleKeyboard implements IIODevice {
      * @param keyCode 
      */
     public void buttonPress(int keyCode){        
-        System.out.println("[IO]: Key Press - "+keyCode);
+        Logger.getLogger(CardReader.class.getName()).log(Level.FINER, "[IO]: Key Press - "+keyCode);
         buffer = new Word(keyCode);        
     }
     

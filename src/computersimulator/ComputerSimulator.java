@@ -1,8 +1,11 @@
 package computersimulator;
 
 import computersimulator.cpu.Computer;
+import computersimulator.cpu.ControlUnit;
 import computersimulator.gui.OperatorConsole;
+import java.util.logging.Level;
 import javax.swing.SwingUtilities;
+import java.util.logging.Logger;
 
 /**
  * Computer Simulator Program - This controls the GUI and instantiates a 
@@ -29,6 +32,8 @@ public class ComputerSimulator {
         
         // Pass file from command line to IO Controller        
         computer.getIO().setFilename(filename);
+        
+        Logger.getLogger("").setLevel(Level.INFO);
                 
         
         SwingUtilities.invokeLater(opconsole);
