@@ -58,9 +58,12 @@ public class SpeculativeExecutionUnit implements IClockCycle {
      * Scans memory
      */
     public void scanMemory() throws MachineFaultException {
- 
-        Word word = memory.engineerFetchByMemoryLocation(memory.getMAR());
-        HashMap<String,Unit> hashmap = controlUnit.decodeInstructionRegister(word);
+        
+        for(int m=0;m<MemoryControlUnit.getMemoryMaxSize();m++){
+            Word cell = memory.engineerFetchByMemoryLocation(new Word(m));
+            
+            HashMap<String,Unit> hashmap = controlUnit.decodeInstructionRegister(cell);
+        }                
         
         // TODO: iterate hashmap
 

@@ -41,6 +41,10 @@ public class MemoryControlUnit implements IClockCycle {
         this.resetMemory();
     }
     
+    public static int getMemoryMaxSize(){
+        return MemoryControlUnit.BANK_CELLS * MemoryControlUnit.BANK_SIZE;
+    }
+    
     
     public final void resetMemory(){
         initializeMemoryToZero(); // Upon powering up, set all elements of memory to zero
