@@ -61,9 +61,17 @@ public class SpeculativeExecutionUnit {
             Word cell = memory.engineerFetchByMemoryLocation(new Word(m));
             
             HashMap<String,Unit> hashmap = controlUnit.decodeInstructionRegister(cell);
+            
+            if (hashmap.containsKey("JZ") 
+                    || hashmap.containsKey("JNE") 
+                    || hashmap.containsKey("JCC") 
+                    || hashmap.containsKey("SOB") 
+                    || hashmap.containsKey("JGE"))  {
+                
+                jumpTaken(cell);
+            } else {
+                jumpNotTaken(cell);
+            }
         }                
-        
-        // TODO: iterate hashmap
-
     }
 }
