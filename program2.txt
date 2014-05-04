@@ -72,7 +72,7 @@
 00111100000000000000  --135: RFS     
 00001000110000000110 ***136: readword: STR(EDX, 6)               # Store return address to M(6)  readword(&loc(EBX)) returns length(ECX)  -- uses EAX,EBX,ECX,EDX, X1, m6, m7, m9, m10
 00001100100000000000    137: LDA(ECX,0,0,0)                      # Set ECX = 0 (length)
-00001000001000000111    138: STR(1,0,7)                          # Set M(7) to ECX  
+00001000100000000111    138: STR(1,0,7)                          # Set M(7) to ECX  
 10100100010000000111    139: LDX(0, 1, 7)                        # Set X(1) from M(7) (copied from ECX)                
 00001100110000000001  --140: LDA(EDX,0,0,1)                      # EDX=STATUS_BUSY
 11111100000000000000    141: L1: CHK(R0, DEVICE_CONSOLEKEYBOARD) # Get status of keyboard to R0
