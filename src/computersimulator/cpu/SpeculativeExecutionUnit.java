@@ -1,15 +1,27 @@
 package computersimulator.cpu;
 
+import computersimulator.components.MachineFaultException;
+import computersimulator.components.Unit;
+import computersimulator.components.Word;
+import java.util.HashMap;
+
 /**
  * Unit for speculative execution
  *
  */
-public class SpeculativeExecutionUnit {
+public class SpeculativeExecutionUnit implements IClockCycle {
     
     private MemoryControlUnit memory;
+    private ControlUnit controlUnit;
     
-    public SpeculativeExecutionUnit(MemoryControlUnit memory) {
+    public SpeculativeExecutionUnit(MemoryControlUnit memory, ControlUnit controlUnit) {
         this.memory = memory;
+        this.controlUnit = controlUnit;
+    }
+    
+    @Override
+    public void clockCycle(){
+     
     }
     
     /**
@@ -45,9 +57,12 @@ public class SpeculativeExecutionUnit {
     /**
      * Scans memory
      */
-    public void scanMemory() {
-     
-        //TODO:
-     
+    public void scanMemory() throws MachineFaultException {
+ 
+        Word word = memory.engineerFetchByMemoryLocation(memory.getMAR());
+        HashMap<String,Unit> hashmap = controlUnit.decodeInstructionRegister(word);
+        
+        // TODO: iterate hashmap
+
     }
 }
