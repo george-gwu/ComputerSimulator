@@ -14,6 +14,13 @@ public class SpeculativeExecutionUnit {
     private MemoryControlUnit memory;
     private ControlUnit controlUnit;
     
+    private static final int OPCODE_JZ=10;
+    private static final int OPCODE_JNE=11;
+    private static final int OPCODE_JCC=12;
+    private static final int OPCODE_SOB=16;
+    private static final int OPCODE_JGE=17;
+
+    
     public SpeculativeExecutionUnit(MemoryControlUnit memory, ControlUnit controlUnit) {
         this.memory = memory;
         this.controlUnit = controlUnit;
@@ -62,16 +69,19 @@ public class SpeculativeExecutionUnit {
             
             HashMap<String,Unit> hashmap = controlUnit.decodeInstructionRegister(cell);
             
-            if (hashmap.containsKey("JZ") 
-                    || hashmap.containsKey("JNE") 
-                    || hashmap.containsKey("JCC") 
-                    || hashmap.containsKey("SOB") 
-                    || hashmap.containsKey("JGE"))  {
+            int opcode = hashmap.get("opcode").getUnsignedValue();
+            if ((opcode == OPCODE_JZ) 
+                || (opcode == OPCODE_JNE)
+                || (opcode == OPCODE_JCC)
+                || (opcode == OPCODE_SOB)
+                || (opcode == OPCODE_JGE)) {
                 
                 jumpTaken(cell);
+                
             } else {
-                jumpNotTaken(cell);
+               jumpNotTaken(cell); 
             }
+
         }                
     }
 }
