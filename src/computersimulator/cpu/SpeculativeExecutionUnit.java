@@ -28,13 +28,18 @@ public class SpeculativeExecutionUnit implements IClockCycle {
      * 
      * @return true if jump taken
      */
-    public boolean jumpTaken() {
+    public boolean jumpTaken() throws MachineFaultException {
        /*
         1. scan each memory address
         2. read the first 6 chars
         3. and look for: JZ, JNE, JCC, SOB, JGE
         
         */
+         Word word = memory.engineerFetchByMemoryLocation(memory.getMAR());
+        HashMap<String,Unit> hashmap = controlUnit.decodeInstructionRegister(word);
+        
+         // TODO: iterate hashmap
+        
         return true;
         
     }
@@ -43,13 +48,19 @@ public class SpeculativeExecutionUnit implements IClockCycle {
      * 
      * @return true if jump not taken
      */
-    public boolean jumpNotTaken() {
+    public boolean jumpNotTaken() throws MachineFaultException {
         /*
         1. scan each memory address
         2. read the first 6 chars
         3. and look for: JZ, JNE, JCC, SOB, JGE
         
         */
+        
+        Word word = memory.engineerFetchByMemoryLocation(memory.getMAR());
+        HashMap<String,Unit> hashmap = controlUnit.decodeInstructionRegister(word);
+        
+        // TODO: iterate hashmap
+        
         return true;
         
     }
@@ -58,11 +69,8 @@ public class SpeculativeExecutionUnit implements IClockCycle {
      * Scans memory
      */
     public void scanMemory() throws MachineFaultException {
- 
-        Word word = memory.engineerFetchByMemoryLocation(memory.getMAR());
-        HashMap<String,Unit> hashmap = controlUnit.decodeInstructionRegister(word);
         
-        // TODO: iterate hashmap
+        // TODO: 
 
     }
 }
