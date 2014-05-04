@@ -460,7 +460,7 @@ public class ControlUnit implements IClockCycle {
      * @param IR Instruction Register 
      * @return HashMap of IR
      */
-    private HashMap<String,Unit> decodeInstructionRegister(Word IR){
+    public HashMap<String,Unit> decodeInstructionRegister(Word IR){
        HashMap<String,Unit> decoded = new HashMap();
        
        decoded.put("opcode",  IR.decomposeByOffset(0, 5  ));       
