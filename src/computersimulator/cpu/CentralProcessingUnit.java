@@ -11,6 +11,7 @@ public class CentralProcessingUnit implements IClockCycle {
     private ControlUnit controlUnit;
     private ArithmeticLogicUnit alu;
     private MemoryControlUnit memory;
+    private SpeculativeExecutionUnit seu;
     
     private Boolean running = false;
     
@@ -21,6 +22,8 @@ public class CentralProcessingUnit implements IClockCycle {
         
         controlUnit = new ControlUnit(this.memory, this.alu);   
         alu.setControlUnit(controlUnit); // exchange reference        
+        
+        this.seu = new SpeculativeExecutionUnit(this.memory, this.controlUnit);
 
         controlUnit.setIOController(io); // pass reference through 
     }
