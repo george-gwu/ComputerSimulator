@@ -123,7 +123,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     public void setOperand1(Unit oper1) {
         this.operand1 = Unit.cloneUnit(oper1);
-        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: OP1<-"+this.operand1);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: OP1<-{0}", this.operand1);
     }
 
     public Unit getOperand2() {
@@ -132,7 +132,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     public void setOperand2(Unit oper2) {        
         this.operand2 = Unit.cloneUnit(oper2);
-        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: OP2<-"+this.operand2);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: OP2<-{0}", this.operand2);
     }
 
     public int getControl() {
@@ -141,7 +141,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     public void setControl(int controlState) {        
         this.control = controlState;
-        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: CNTRL<-"+this.control);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: CNTRL<-{0}", this.control);
     }
 
     public int getState() {
@@ -149,7 +149,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
     }
 
     private void setState(int state) {
-        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: State Change: "+state);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: State Change: {0}", state);
         this.state = state;
     }    
 
@@ -163,7 +163,7 @@ public class ArithmeticLogicUnit implements IClockCycle {
 
     private void setResult(Unit res) {
         this.result = Unit.cloneUnit(res);
-        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: Result: "+this.result);
+        Logger.getLogger(ArithmeticLogicUnit.class.getName()).log(Level.FINER, "[ALU]: Result: {0}", this.result);
     }
     
  
