@@ -20,6 +20,8 @@ public class SpeculativeExecutionUnit {
     private static final int OPCODE_SOB=16;
     private static final int OPCODE_JGE=17;
 
+    HashMap<String, Integer> branchHistory = new HashMap();
+    HashMap<String, String> prediction = new HashMap();
     
     public SpeculativeExecutionUnit(MemoryControlUnit memory, ControlUnit controlUnit) {
         this.memory = memory;
@@ -55,8 +57,26 @@ public class SpeculativeExecutionUnit {
     /**
      * TBD: Determine return structure... hashmap?
      */
-    public void getPredictionTable(){
+    public HashMap getPredictionTable(){
         
+        /**Initialize the HashMap to 1.
+         * 1 - Strongly not taken, 2 - Weakly not taken, 3 - Weakly taken, 4 - Strongly taken.
+         */
+        branchHistory.put("JZ", 1);       
+        branchHistory.put("JNE", 1);
+        branchHistory.put("JCC", 1);
+        branchHistory.put("SOB", 1);
+        branchHistory.put("JGE", 1);
+        
+        /**
+         * Based on branchHistory, we can populate the 'prediction' hashmap with predictions for the instructions.
+         * This can then be used for printing on the GUI.
+         * Sample of prediction hashmap:
+         * prediction.put<"JZ", "Not speculatively executed/Not taken">;
+         * prediction.put<"JNE, "Speculatively executed/Taken">
+         */
+        
+        return prediction;
     }
     
     /**
