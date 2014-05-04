@@ -3,9 +3,10 @@ package computersimulator;
 import computersimulator.cpu.Computer;
 import computersimulator.cpu.ControlUnit;
 import computersimulator.gui.OperatorConsole;
+import java.util.logging.Handler;
 import java.util.logging.Level;
-import javax.swing.SwingUtilities;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 
 /**
  * Computer Simulator Program - This controls the GUI and instantiates a 
@@ -33,7 +34,12 @@ public class ComputerSimulator {
         // Pass file from command line to IO Controller        
         computer.getIO().setFilename(filename);
         
-        Logger.getLogger("").setLevel(Level.INFO);
+        Logger.getLogger("").setLevel(Level.ALL);
+        
+        Handler[] handlers = Logger.getLogger( "" ).getHandlers();
+        for ( int index = 0; index < handlers.length; index++ ) {
+            handlers[index].setLevel( Level.INFO); // This is what level is output
+        }
                 
         
         SwingUtilities.invokeLater(opconsole);

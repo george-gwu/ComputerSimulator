@@ -56,7 +56,7 @@ public class ConsoleKeyboard implements IIODevice {
      * @param keyCode 
      */
     public void buttonPress(int keyCode){        
-        Logger.getLogger(CardReader.class.getName()).log(Level.FINER, "[IO]: Key Press - "+keyCode);
+        Logger.getLogger(CardReader.class.getName()).log(Level.CONFIG, "[IO]: Key Press - "+keyCode);
         buffer = new Word(keyCode);        
     }
     

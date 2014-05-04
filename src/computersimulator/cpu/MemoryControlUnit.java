@@ -142,7 +142,7 @@ public class MemoryControlUnit implements IClockCycle {
             case MemoryControlUnit.STATE_NONE:
                 return false;        
             case MemoryControlUnit.STATE_WAITING: 
-                Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "Memory error. Likely forgot to signal which operation.");
+                Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "Memory error. Likely forgot to signal which operation.");
             default:
                 return true;
         }    
@@ -175,10 +175,10 @@ public class MemoryControlUnit implements IClockCycle {
         int bankIndex = (int)(addressRaw % MemoryControlUnit.BANK_SIZE);
         int cellIndex = (int)Math.floor(addressRaw /MemoryControlUnit.BANK_SIZE);
                
-        Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "Calculated Memory Address: {0} as Bank: {1}, Cell: {2}", new Object[]{addressRaw, bankIndex, cellIndex});
+        Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "Calculated Memory Address: {0} as Bank: {1}, Cell: {2}", new Object[]{addressRaw, bankIndex, cellIndex});
         
         if(bankIndex > MemoryControlUnit.BANK_SIZE){
-            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "Memory index[{0}][{1}] out of bounds. (Memory Size: [{2}][{3}])", new Object[]{bankIndex, cellIndex, MemoryControlUnit.BANK_SIZE, MemoryControlUnit.BANK_CELLS});
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "Memory index[{0}][{1}] out of bounds. (Memory Size: [{2}][{3}])", new Object[]{bankIndex, cellIndex, MemoryControlUnit.BANK_SIZE, MemoryControlUnit.BANK_CELLS});
             throw new MachineFaultException(MachineFaultException.ILLEGAL_MEMORY_ADDRESS);       
         }
         
@@ -201,7 +201,7 @@ public class MemoryControlUnit implements IClockCycle {
             int[] addr = this.calculateActualMemoryLocation(address);
             value = new Word(this.memory[addr[0]][addr[1]]);        
         }
-        Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "ENGINEER: Fetch Addr: {0}  ---  Value: {1}", new Object[]{address.getUnsignedValue(), value});        
+        Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "ENGINEER: Fetch Addr: {0}  ---  Value: {1}", new Object[]{address.getUnsignedValue(), value});        
         
         return value;
     }
@@ -219,7 +219,7 @@ public class MemoryControlUnit implements IClockCycle {
             int[] addr = this.calculateActualMemoryLocation(address);    
             this.memory[addr[0]][addr[1]] = new Word(value);
         }
-        Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "ENGINEER: Set Addr: {0} to  Value: {1}", new Object[]{address.getUnsignedValue(), value});        
+        Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "ENGINEER: Set Addr: {0} to  Value: {1}", new Object[]{address.getUnsignedValue(), value});        
     }       
     
     /**
@@ -231,7 +231,7 @@ public class MemoryControlUnit implements IClockCycle {
         if(result!=null){
             this.memoryBufferRegister = result;
             this.resetState();
-            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Fetch MAR({0}): {1}", new Object[]{this.memoryAddressRegister.getUnsignedValue(), this.memoryBufferRegister});
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "-- Fetch MAR({0}): {1}", new Object[]{this.memoryAddressRegister.getUnsignedValue(), this.memoryBufferRegister});
         } // else cache miss, try next time        
     }    
     
@@ -243,7 +243,7 @@ public class MemoryControlUnit implements IClockCycle {
         Boolean result = cache.storeWord(memoryAddressRegister,memoryBufferRegister);
         if(result==true){            
             this.resetState();
-            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Memory Set - MAR({0}) to {1}", new Object[]{this.memoryAddressRegister.getUnsignedValue(), this.memoryBufferRegister});
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "-- Memory Set - MAR({0}) to {1}", new Object[]{this.memoryAddressRegister.getUnsignedValue(), this.memoryBufferRegister});
         } // else cache miss, try next time        
     }  
     
@@ -333,11 +333,11 @@ public class MemoryControlUnit implements IClockCycle {
         
             // Copy the contents of that memory location into the MBR            
             this.memoryBufferRegister = new Word(this.memory[bankIndex][cellIndex]);            
-            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Fetch MAR({0}): {1}", new Object[]{this.memoryAddressRegister.getUnsignedValue(), this.memoryBufferRegister});
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "-- Fetch MAR({0}): {1}", new Object[]{this.memoryAddressRegister.getUnsignedValue(), this.memoryBufferRegister});
             this.resetState();
         } catch(MachineFaultException e){
             //@TODO: Handle bad addressRaw (virtual memory?)
-            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Bad Address: {0} -> {1}", new Object[]{this.memoryAddressRegister, e.getMessage()});
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "-- Bad Address: {0} -> {1}", new Object[]{this.memoryAddressRegister, e.getMessage()});
         }
         
         
@@ -357,11 +357,11 @@ public class MemoryControlUnit implements IClockCycle {
 
             //Copy the value from MDR to Memory                
             this.memory[bankIndex][cellIndex] = new Word(this.memoryBufferRegister);
-            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Memory Set - MAR({0}) to {1}", new Object[]{this.memoryAddressRegister.getUnsignedValue(), this.memoryBufferRegister});
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "-- Memory Set - MAR({0}) to {1}", new Object[]{this.memoryAddressRegister.getUnsignedValue(), this.memoryBufferRegister});
             this.resetState();
         } catch(MachineFaultException e){
             //@TODO: Handle bad addressRaw (virtual memory?)
-            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.FINER, "-- Bad Address: {0} -> {1}", new Object[]{this.memoryAddressRegister, e.getMessage()});
+            Logger.getLogger(MemoryControlUnit.class.getName()).log(Level.CONFIG, "-- Bad Address: {0} -> {1}", new Object[]{this.memoryAddressRegister, e.getMessage()});
         }                
     }    
     
