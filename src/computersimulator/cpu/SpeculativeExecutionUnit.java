@@ -9,7 +9,7 @@ import java.util.HashMap;
  * Unit for speculative execution
  *
  */
-public class SpeculativeExecutionUnit implements IClockCycle {
+public class SpeculativeExecutionUnit {
     
     private MemoryControlUnit memory;
     private ControlUnit controlUnit;
@@ -19,20 +19,13 @@ public class SpeculativeExecutionUnit implements IClockCycle {
         this.controlUnit = controlUnit;
     }
     
-    @Override
-    public void clockCycle(){
-     
-    }
-    
     /**
      * 
      * @return true if jump taken
      */
-    public boolean jumpTaken() {
-       /*
-        1. scan each memory address
-        2. read the first 6 chars
-        3. and look for: JZ, JNE, JCC, SOB, JGE
+    public boolean jumpTaken(Unit pc) {
+       /*        
+        1. Update table for PC to annotate jump taken
         
         */
         return true;
@@ -43,14 +36,19 @@ public class SpeculativeExecutionUnit implements IClockCycle {
      * 
      * @return true if jump not taken
      */
-    public boolean jumpNotTaken() {
+    public boolean jumpNotTaken(Unit pc) {
         /*
-        1. scan each memory address
-        2. read the first 6 chars
-        3. and look for: JZ, JNE, JCC, SOB, JGE
+        1. Update table for PC to annotate NOT jump taken
         
         */
         return true;
+        
+    }
+    
+    /**
+     * TBD: Determine return structure... hashmap?
+     */
+    public void getPredictionTable(){
         
     }
     
