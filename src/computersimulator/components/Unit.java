@@ -374,7 +374,7 @@ public class Unit {
     
     @Override
     public String toString() {
-        return "Unit("+this.size+"){" + "b10S=" + this.getSignedValue() +", b10U=" + this.getUnsignedValue() +" v:["+this.MIN_UNSIGNED_VALUE+"to"+this.MAX_SIGNED_VALUE+"]), b2=" + this.getBinaryString() + '}';
+        return "Unit("+this.size+"){" + "b10S=" + this.getSignedValue() +", b10U=" + this.getUnsignedValue() +" b2=" + this.getBinaryString() + '}'; // v:["+this.MIN_UNSIGNED_VALUE+"to"+this.MAX_SIGNED_VALUE+"]),X
     }
     
     /**
