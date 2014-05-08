@@ -118,6 +118,8 @@ public class ControlUnit implements IClockCycle {
     // IO Reference
     private InputOutputController ioController;
     
+    private SpeculativeExecutionUnit seu;
+    
     // nextPC	13 bits	Next Program Counter: Interal Register Used to signal program counter was adjusted by instruction
     private Unit nextProgramCounter;
     
@@ -1163,6 +1165,8 @@ public class ControlUnit implements IClockCycle {
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "Micro-6: PC <- EA - {0}", this.nextProgramCounter);              
          this.signalMicroStateExecutionComplete();         
          
+         //seu.updateBranchHistory(10, 1);
+         
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
          Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JZ - R({0}) was Zero -- JUMPING: {1}", new Object[]{RFI, this.nextProgramCounter});
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
@@ -1172,6 +1176,8 @@ public class ControlUnit implements IClockCycle {
         {
              // not zero->PC++
             this.signalMicroStateExecutionComplete();            
+            
+            //seu.updateBranchHistory(10, 0);
             
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JZ - R({0}) was NOT Zero -- Continuing.", RFI);
@@ -1197,6 +1203,8 @@ public class ControlUnit implements IClockCycle {
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "Micro-6: PC <- EA - {0}", this.nextProgramCounter);              
          this.signalMicroStateExecutionComplete();        
          
+         //seu.updateBranchHistory(11, 1);
+         
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
          Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JNE - R({0}) was NOT Zero -- JUMPING: {1}", new Object[]{RFI, this.nextProgramCounter});
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
@@ -1206,6 +1214,8 @@ public class ControlUnit implements IClockCycle {
         {
              // not zero->PC++
             this.signalMicroStateExecutionComplete();            
+           
+            //seu.updateBranchHistory(11, 0);
             
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JNE - R({0}) was  Zero -- Continuing.", RFI);
@@ -1268,12 +1278,7 @@ public class ControlUnit implements IClockCycle {
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "Micro-6: PC <- EA - {0}", this.nextProgramCounter);              
          this.signalMicroStateExecutionComplete();
          
-         /**
-         if (int x < 4)
-         *{
-         *  this.branchHistory[OPCODE_JGE][x] = {OPCODE_JGE, (x + 1)};
-         *}
-         */
+         //seu.updateBranchHistory(17, 1);
          
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
          Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JGE - R({0}) was NOT LESS than Zero -- JUMPING: {1}", new Object[]{RFI, this.nextProgramCounter});
@@ -1285,13 +1290,8 @@ public class ControlUnit implements IClockCycle {
              // not zero->PC++
             this.signalMicroStateExecutionComplete();
             
-            /**
-            if (int x > 0)
-            *{
-            *  this.branchHistory[OPCODE_JGE][x] = {OPCODE_JGE, (x - 1)};
-            *}
-            */
-            
+            //seu.updateBranchHistory(17, 0);
+                        
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JGE - R({0}) was LESS Zero -- Continuing.", RFI);
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
@@ -1313,18 +1313,15 @@ public class ControlUnit implements IClockCycle {
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "Micro-6: PC <- EA - {0}", this.nextProgramCounter);              
             this.signalMicroStateExecutionComplete();
             
+            //seu.updateBranchHistory(12, 1);
+            
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JCC({0}) - Jumping: {1}", new Object[]{CC, this.nextProgramCounter});
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");              
         } else { // not zero->PC++             CC != 1
             this.signalMicroStateExecutionComplete();
             
-            /**
-            if (int x > 0)
-            *{
-            *  this.branchHistory[OPCODE_JCC][x] = {OPCODE_JCC, (x - 1)};
-            *}
-            */
+            //seu.updateBranchHistory(12, 0);
             
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JCC({0}) - Not Jumping. Value was: {1}", new Object[]{CC, this.getConditionCode(CC)});
