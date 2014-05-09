@@ -14,10 +14,10 @@ public class BranchPredictor {
     private final MemoryControlUnit memory;
     private final ControlUnit controlUnit;    
     
-    private static final int BRANCH_NOT_TAKEN = 0;
-    private static final int BRANCH_TAKEN = 1;    
+    private static final Boolean BRANCH_NOT_TAKEN = false;
+    private static final Boolean BRANCH_TAKEN = true;    
 
-    private HashMap<Integer, Integer> branchHistoryTable;
+    private HashMap<Integer, Boolean> branchHistoryTable;
     
     public BranchPredictor(MemoryControlUnit memory, ControlUnit controlUnit) {
         this.memory = memory;
@@ -41,6 +41,14 @@ public class BranchPredictor {
     public void branchNotTaken(int pcRaw) {       
         branchHistoryTable.put(pcRaw, BranchPredictor.BRANCH_NOT_TAKEN);        
     }    
+    
+    /**
+     * Get the branch prediction table
+     * @return
+     */
+    public HashMap<Integer, Boolean> getPredictionTable(){
+        return this.branchHistoryTable;
+    }
 
    
     /**
@@ -48,8 +56,6 @@ public class BranchPredictor {
      * @throws computersimulator.components.MachineFaultException
      */
     public void scanMemory() throws MachineFaultException {
-        
-        System.out.println("Starting Branch Prediction");
         
         for(int m=0;m<MemoryControlUnit.getMemoryMaxSize();m++){
             Word cell = memory.engineerFetchByMemoryLocation(new Word(m));
