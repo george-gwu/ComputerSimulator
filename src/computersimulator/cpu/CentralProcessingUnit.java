@@ -11,7 +11,7 @@ public class CentralProcessingUnit implements IClockCycle {
     private ControlUnit controlUnit;
     private ArithmeticLogicUnit alu;
     private MemoryControlUnit memory;
-    private SpeculativeExecutionUnit seu;
+    private BranchPredictor bp;
     
     private Boolean running = false;
     
@@ -23,8 +23,9 @@ public class CentralProcessingUnit implements IClockCycle {
         controlUnit = new ControlUnit(this.memory, this.alu);   
         alu.setControlUnit(controlUnit); // exchange reference        
         
-        this.seu = new SpeculativeExecutionUnit(this.memory, this.controlUnit);
-
+        this.bp = new BranchPredictor(this.memory, this.controlUnit);
+        
+        controlUnit.setBranchPredictor(bp);// pass reference through
         controlUnit.setIOController(io); // pass reference through 
     }
     
@@ -50,7 +51,12 @@ public class CentralProcessingUnit implements IClockCycle {
 
     public ArithmeticLogicUnit getALU() {
         return alu;
-    }   
+    } 
+
+    public BranchPredictor getBranchPredictor() {
+        return bp;
+    }    
+    
     
     public Boolean isRunning() {
         return running;
