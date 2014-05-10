@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Unit for speculative execution.
@@ -114,7 +112,7 @@ public class BranchPredictor {
                 accuracy = (int)Math.round((double)accurate/(double)count*100.0);
             }
             
-            results += mZeroPadded+" - "+descriptor+": " + ((prediction) ? "Branch Predicted" : "No Branch           ")+" "+accuracy+"%\n";
+            results += mZeroPadded+" - "+descriptor+": " + ((prediction) ? "Branch Predicted" : "No Branch          ")+" ("+accuracy+"% of "+count+")\n";
         }
         
         return results;

@@ -190,7 +190,7 @@ public class OperatorConsole implements Runnable {
         
         // add prediction panel to right panel 
         
-        branchPredictionOutput = new JTextArea(15, 30);
+        branchPredictionOutput = new JTextArea(15, 25);
         branchPredictionOutput.setEditable(false);  
          c.gridx = 3;
         c.gridy = 1;
