@@ -758,7 +758,7 @@ public class ControlUnit implements IClockCycle {
                     this.setGeneralPurposeRegister(RFI, this.memory.getMBR());
 
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " LDR - rfi[{0}] is now: {1}", new Object[]{RFI, this.memory.getMBR()});
+                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": LDR - rfi[{0}] is now: {1}", new Object[]{RFI, this.memory.getMBR()});
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
                     this.signalMicroStateExecutionComplete();
@@ -799,7 +799,7 @@ public class ControlUnit implements IClockCycle {
            
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     try {
-                        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " STR - M({0}) is now {1}", new Object[]{this.effectiveAddress.getUnsignedValue(), this.memory.engineerFetchByMemoryLocation(this.effectiveAddress)});
+                        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": STR - M({0}) is now {1}", new Object[]{this.effectiveAddress.getUnsignedValue(), this.memory.engineerFetchByMemoryLocation(this.effectiveAddress)});
                     } catch (MachineFaultException ex) {
                         Logger.getLogger(ControlUnit.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -825,7 +825,7 @@ public class ControlUnit implements IClockCycle {
                 int RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue();
                 this.setGeneralPurposeRegister(RFI, new Word(this.effectiveAddress.getUnsignedValue()));
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " LDA - rfi[{0}] is now: {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
+                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": LDA - rfi[{0}] is now: {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 this.signalMicroStateExecutionComplete();             
 
@@ -855,7 +855,7 @@ public class ControlUnit implements IClockCycle {
                     this.setIndexRegister(XFI, new Unit(13,this.memory.getMBR().getSignedValue()));
 
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " LDX - X({0}) is now {1}", new Object[]{XFI, this.getIndexRegister(XFI)});
+                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": LDX - X({0}) is now {1}", new Object[]{XFI, this.getIndexRegister(XFI)});
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
                     this.signalMicroStateExecutionComplete();
@@ -896,7 +896,7 @@ public class ControlUnit implements IClockCycle {
 
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     try {
-                        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " STX - M({0}): {1}", new Object[]{this.effectiveAddress.getUnsignedValue(), this.memory.engineerFetchByMemoryLocation(this.effectiveAddress)});
+                        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": STX - M({0}): {1}", new Object[]{this.effectiveAddress.getUnsignedValue(), this.memory.engineerFetchByMemoryLocation(this.effectiveAddress)});
                     } catch (MachineFaultException ex) {
                         Logger.getLogger(ControlUnit.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -921,7 +921,7 @@ public class ControlUnit implements IClockCycle {
         this.setIndexRegister(XFI, new Unit(13,this.getIndexRegister(XFI).getSignedValue() + 1));
 
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " INX - X({0}) is now: {1}", new Object[]{XFI, this.getIndexRegister(XFI).getSignedValue()});
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": INX - X({0}) is now: {1}", new Object[]{XFI, this.getIndexRegister(XFI).getSignedValue()});
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         this.signalMicroStateExecutionComplete();
@@ -978,7 +978,7 @@ public class ControlUnit implements IClockCycle {
               RFI = this.instructionRegisterDecoded.get("rfi").getUnsignedValue(); 
               this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
               Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " AMR - RF({0}): {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
+              Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": AMR - RF({0}): {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
               Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 
               this.signalMicroStateExecutionComplete();
@@ -1037,7 +1037,7 @@ public class ControlUnit implements IClockCycle {
               
               this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
               Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-              Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " SMR - RF({0}): {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
+              Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": SMR - RF({0}): {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
               Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
               this.signalMicroStateExecutionComplete();
@@ -1083,7 +1083,7 @@ public class ControlUnit implements IClockCycle {
                
                 this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " AIR - RF({0}): {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
+                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": AIR - RF({0}): {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
                 this.signalMicroStateExecutionComplete();
@@ -1129,7 +1129,7 @@ public class ControlUnit implements IClockCycle {
                
                 this.setGeneralPurposeRegister(RFI, new Word(alu.getResult()));
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " SIR - RF({0}): {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
+                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": SIR - RF({0}): {1}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI)});
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
                 this.signalMicroStateExecutionComplete();
@@ -1159,7 +1159,7 @@ public class ControlUnit implements IClockCycle {
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "Micro-6: PC <- EA - {0}", this.nextProgramCounter);
             this.signalMicroStateExecutionComplete();
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JMP - IND={0}: {1}", new Object[]{this.instructionRegisterDecoded.get("index").getUnsignedValue(), this.nextProgramCounter});
+            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JMP - IND={0}: {1}", new Object[]{this.instructionRegisterDecoded.get("index").getUnsignedValue(), this.nextProgramCounter});
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
      
     }
@@ -1181,7 +1181,7 @@ public class ControlUnit implements IClockCycle {
          bp.branchTaken(this.getProgramCounter().getUnsignedValue());
          
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-         Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JZ - R({0}) was Zero -- JUMPING: {1}", new Object[]{RFI, this.nextProgramCounter});
+         Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JZ - R({0}) was Zero -- JUMPING: {1}", new Object[]{RFI, this.nextProgramCounter});
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
            
         }
@@ -1193,7 +1193,7 @@ public class ControlUnit implements IClockCycle {
             bp.branchNotTaken(this.getProgramCounter().getUnsignedValue());
             
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JZ - R({0}) was NOT Zero -- Continuing.", RFI);
+            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JZ - R({0}) was NOT Zero -- Continuing.", RFI);
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
             
         }
@@ -1219,7 +1219,7 @@ public class ControlUnit implements IClockCycle {
          bp.branchTaken(this.getProgramCounter().getUnsignedValue());
          
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-         Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JNE - R({0}) was NOT Zero -- JUMPING: {1}", new Object[]{RFI, this.nextProgramCounter});
+         Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JNE - R({0}) was NOT Zero -- JUMPING: {1}", new Object[]{RFI, this.nextProgramCounter});
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
            
         }
@@ -1231,7 +1231,7 @@ public class ControlUnit implements IClockCycle {
             bp.branchNotTaken(this.getProgramCounter().getUnsignedValue());
             
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JNE - R({0}) was  Zero -- Continuing.", RFI);
+            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JNE - R({0}) was  Zero -- Continuing.", RFI);
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
             
         }
@@ -1264,7 +1264,7 @@ public class ControlUnit implements IClockCycle {
                     this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "Micro-7: PC <- EA - {0}", this.nextProgramCounter);                                  
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " SOB - R({0}) was {1}, GREATER than Zero after minus 1 -- JUMPING: {2}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI).getUnsignedValue(), this.nextProgramCounter});
+                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": SOB - R({0}) was {1}, GREATER than Zero after minus 1 -- JUMPING: {2}", new Object[]{RFI, this.getGeneralPurposeRegister(RFI).getUnsignedValue(), this.nextProgramCounter});
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
                     this.signalMicroStateExecutionComplete();
                 } else {
@@ -1273,7 +1273,7 @@ public class ControlUnit implements IClockCycle {
                     bp.branchNotTaken(this.getProgramCounter().getUnsignedValue());
                     
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " SOB - R({0}) was {1}, NOT GREATER than Zero after minus 1  -- Continuing.", new Object[]{RFI, this.getGeneralPurposeRegister(RFI).getUnsignedValue()});
+                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": SOB - R({0}) was {1}, NOT GREATER than Zero after minus 1  -- Continuing.", new Object[]{RFI, this.getGeneralPurposeRegister(RFI).getUnsignedValue()});
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");              
                     this.signalMicroStateExecutionComplete();
                 }
@@ -1300,7 +1300,7 @@ public class ControlUnit implements IClockCycle {
          bp.branchTaken(this.getProgramCounter().getUnsignedValue());
          
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-         Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JGE - R({0}) was NOT LESS than Zero -- JUMPING: {1}", new Object[]{RFI, this.nextProgramCounter});
+         Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JGE - R({0}) was NOT LESS than Zero -- JUMPING: {1}", new Object[]{RFI, this.nextProgramCounter});
          Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); 
            
         }
@@ -1312,7 +1312,7 @@ public class ControlUnit implements IClockCycle {
             bp.branchNotTaken(this.getProgramCounter().getUnsignedValue());
                         
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JGE - R({0}) was LESS Zero -- Continuing.", RFI);
+            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JGE - R({0}) was LESS Zero -- Continuing.", RFI);
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
             
         }
@@ -1335,7 +1335,7 @@ public class ControlUnit implements IClockCycle {
             bp.branchTaken(this.getProgramCounter().getUnsignedValue());
             
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JCC({0}) - Jumping: {1}", new Object[]{CC, this.nextProgramCounter});
+            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JCC({0}) - Jumping: {1}", new Object[]{CC, this.nextProgramCounter});
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");              
         } else { // not zero->PC++             CC != 1
             this.signalMicroStateExecutionComplete();
@@ -1343,7 +1343,7 @@ public class ControlUnit implements IClockCycle {
             bp.branchNotTaken(this.getProgramCounter().getUnsignedValue());
             
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JCC({0}) - Not Jumping. Value was: {1}", new Object[]{CC, this.getConditionCode(CC)});
+            Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JCC({0}) - Not Jumping. Value was: {1}", new Object[]{CC, this.getConditionCode(CC)});
             Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");  
         }
             
@@ -1371,7 +1371,7 @@ public class ControlUnit implements IClockCycle {
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "Micro-7: PC <- c(R3)");
             
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " RFS - Ret: {0} - Jump: {1}", new Object[]{this.getGeneralPurposeRegister(0), this.nextProgramCounter});
+                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": RFS - Ret: {0} - Jump: {1}", new Object[]{this.getGeneralPurposeRegister(0), this.nextProgramCounter});
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                 
                 this.signalMicroStateExecutionComplete();
@@ -1399,7 +1399,7 @@ public class ControlUnit implements IClockCycle {
                 this.nextProgramCounter=new Unit(13,this.effectiveAddress.getUnsignedValue());
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "Micro-8: PC <- EA - {0}", this.nextProgramCounter);
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " JSR - Next: {0}, RET: {1}", new Object[]{this.nextProgramCounter, this.getGeneralPurposeRegister(3)});
+                Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": JSR - Next: {0}, RET: {1}", new Object[]{this.nextProgramCounter, this.getGeneralPurposeRegister(3)});
                 Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                                 
                 this.signalMicroStateExecutionComplete(); 
                 break;                
@@ -1425,7 +1425,7 @@ public class ControlUnit implements IClockCycle {
         this.getGeneralPurposeRegister(RFI).shiftByCount(leftRight, count, algorithmicLogical);
         
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " SRC - Shift Register {0} {1} {2} by {3}: {4}", new Object[]{RFI, (leftRight==1) ? "Left" : "Right", (algorithmicLogical==1) ? "Logical" : "Algorithmic", count, this.getGeneralPurposeRegister(RFI)});
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": SRC - Shift Register {0} {1} {2} by {3}: {4}", new Object[]{RFI, (leftRight==1) ? "Left" : "Right", (algorithmicLogical==1) ? "Logical" : "Algorithmic", count, this.getGeneralPurposeRegister(RFI)});
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                                 
         this.signalMicroStateExecutionComplete();
     }
@@ -1447,7 +1447,7 @@ public class ControlUnit implements IClockCycle {
         this.getGeneralPurposeRegister(RFI).rotateByCount(leftRight, count);
         
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " RRC - Rotate Register {0} {1} by {2}: {3}", new Object[]{RFI, (leftRight==1) ? "Left" : "Right", count, this.getGeneralPurposeRegister(RFI)});
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": RRC - Rotate Register {0} {1} by {2}: {3}", new Object[]{RFI, (leftRight==1) ? "Left" : "Right", count, this.getGeneralPurposeRegister(RFI)});
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");    
         this.signalMicroStateExecutionComplete();
     }
@@ -1487,7 +1487,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         
         this.setGeneralPurposeRegister(rx, new Word(result));
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " AND rx({0}), ry({1}) = {2}", new Object[]{contentsOfRx.getBinaryString(), contentsOfRy.getBinaryString(), result});
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": AND rx({0}), ry({1}) = {2}", new Object[]{contentsOfRx.getBinaryString(), contentsOfRy.getBinaryString(), result});
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
         this.signalMicroStateExecutionComplete();      
  
@@ -1508,7 +1508,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         
         this.setGeneralPurposeRegister(rx, new Word(result));
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " ORR rx({0}), ry({1}) = {2}", new Object[]{contentsOfRx.getBinaryString(), contentsOfRy.getBinaryString(), result});
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": ORR rx({0}), ry({1}) = {2}", new Object[]{contentsOfRx.getBinaryString(), contentsOfRy.getBinaryString(), result});
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
         this.signalMicroStateExecutionComplete();
     }
@@ -1526,7 +1526,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
        
         this.setGeneralPurposeRegister(rx, new Word(InvertedContentsOfRx));
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " NOT rx({0}) = {1}", new Object[]{contentsOfRx.getBinaryString(), InvertedContentsOfRx});
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": NOT rx({0}) = {1}", new Object[]{contentsOfRx.getBinaryString(), InvertedContentsOfRx});
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
         this.signalMicroStateExecutionComplete();
         
@@ -1728,7 +1728,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "Micro-5: M(0) [{0}] +TC [{1}] -> PC [{2}]", new Object[]{this.memory.getMBR().getUnsignedValue(), trapCode, newLoc});
                     
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " TRAP {0}", trapCode);
+                    Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": TRAP {0}", trapCode);
                     Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");                                         
                     this.signalMicroStateExecutionComplete();
                     break;
@@ -1747,7 +1747,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
      */
     private void executeOpcodeHLT() throws HaltSystemException {                
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " HLT");
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": HLT");
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         this.signalMicroStateExecutionComplete();
         throw new HaltSystemException();
@@ -1768,7 +1768,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         this.setGeneralPurposeRegister(r, received);    
         
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " IN - Set R{0} to {1} from device {2}", new Object[]{r, received, DEVID});
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": IN - Set R{0} to {1} from device {2}", new Object[]{r, received, DEVID});
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         this.signalMicroStateExecutionComplete();
     }  
@@ -1786,7 +1786,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         ioController.output(DEVID, contentsOfR);
         
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " OUT - Pushed {0} to Device: {1}", new Object[]{contentsOfR, DEVID});
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": OUT - Pushed {0} to Device: {1}", new Object[]{contentsOfR, DEVID});
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         this.signalMicroStateExecutionComplete();
     }   
@@ -1804,7 +1804,7 @@ If c(rx) = c(ry), set cc(4) <- 1; else, cc(4) <- 0
         this.setGeneralPurposeRegister(r, new Word(status));        
         
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, " CHK  - Status: {0}", status);
+        Logger.getLogger(ControlUnit.class.getName()).log(Level.INFO, this.getProgramCounter().getUnsignedValue()+": CHK  - Status: {0}", status);
         Logger.getLogger(ControlUnit.class.getName()).log(Level.CONFIG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         this.signalMicroStateExecutionComplete();
     }       
