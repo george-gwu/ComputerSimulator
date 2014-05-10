@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Unit for speculative execution
- *
+ * Unit for speculative execution.
+ * Scans memory for conditional jump instructions and returns their predicted behavior.
  */
 public class BranchPredictor {
     
@@ -49,6 +49,10 @@ public class BranchPredictor {
         branchDescriptorTable.put(pcRaw, descriptor);
     }
     
+    /**
+     * Initialize the branch history table for conditional jump instructions as 'Will be taken'.
+     * @param pcRaw 
+     */
     public void setInitialStatus(int pcRaw){
         if(!branchHistoryTable.containsKey(pcRaw)){
             branchHistoryTable.put(pcRaw, BranchPredictor.BRANCH_TAKEN); 
