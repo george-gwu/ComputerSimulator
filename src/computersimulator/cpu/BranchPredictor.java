@@ -3,8 +3,12 @@ package computersimulator.cpu;
 import computersimulator.components.MachineFaultException;
 import computersimulator.components.Unit;
 import computersimulator.components.Word;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Unit for speculative execution.
@@ -20,6 +24,8 @@ public class BranchPredictor {
 
     private HashMap<Integer, Boolean> branchHistoryTable;
     private HashMap<Integer, String> branchDescriptorTable;
+    private HashMap<Integer, Integer> branchCountTable;
+    private HashMap<Integer, Integer> branchAccuracyTable;
     
     public BranchPredictor(MemoryControlUnit memory, ControlUnit controlUnit) {
         this.memory = memory;
@@ -27,26 +33,53 @@ public class BranchPredictor {
         
         this.branchHistoryTable = new HashMap();
         this.branchDescriptorTable = new HashMap();
+        this.branchCountTable = new HashMap();
+        this.branchAccuracyTable = new HashMap();
+        
     }
     
     /**
      * Update table for PC to annotate jump taken
      * @param pcRaw
      */
-    public void branchTaken(int pcRaw) {       
-        branchHistoryTable.put(pcRaw, BranchPredictor.BRANCH_TAKEN);        
+    public void branchTaken(int pcRaw) {  
+        if(Boolean.compare(branchHistoryTable.get(pcRaw), BranchPredictor.BRANCH_TAKEN) == 0){                  
+            int accurateCount = branchAccuracyTable.get(pcRaw);
+            branchAccuracyTable.put(pcRaw,++accurateCount);
+        }                        
+        
+        int branches = branchCountTable.get(pcRaw);
+        branchCountTable.put(pcRaw,++branches);
+        
+        branchHistoryTable.put(pcRaw, BranchPredictor.BRANCH_TAKEN);  
     }
     
     /**
      * Update table for PC to annotate jump NOT taken
      * @param pcRaw
      */
-    public void branchNotTaken(int pcRaw) {       
-        branchHistoryTable.put(pcRaw, BranchPredictor.BRANCH_NOT_TAKEN);        
+    public void branchNotTaken(int pcRaw) {
+        if(Boolean.compare(branchHistoryTable.get(pcRaw), BranchPredictor.BRANCH_NOT_TAKEN) == 0){                  
+            int accurateCount = branchAccuracyTable.get(pcRaw);
+            branchAccuracyTable.put(pcRaw,++accurateCount);
+        }
+                        
+        int branches = branchCountTable.get(pcRaw);
+        branchCountTable.put(pcRaw,++branches);
+        
+        branchHistoryTable.put(pcRaw, BranchPredictor.BRANCH_NOT_TAKEN);
     }
     
     public void setBranchDescriptor(int pcRaw, String descriptor) {
         branchDescriptorTable.put(pcRaw, descriptor);
+        
+        if(!branchCountTable.containsKey(pcRaw)){
+            branchCountTable.put(pcRaw, 0);
+        }
+        
+        if(!branchAccuracyTable.containsKey(pcRaw)){
+            branchAccuracyTable.put(pcRaw, 0);
+        }               
     }
     
     /**
@@ -66,13 +99,22 @@ public class BranchPredictor {
     public String getPredictionTableForTextArea(){
         String results="";
         
-        for (Map.Entry<Integer,String> entry : branchDescriptorTable.entrySet()) {            
-            Integer m = entry.getKey();
-            String descriptor = entry.getValue();
+        List<Integer> keys = new ArrayList(branchDescriptorTable.keySet());
+        Collections.sort(keys);
+        
+        for (Integer m : keys) {            
+            String descriptor = branchDescriptorTable.get(m);
             Boolean prediction = branchHistoryTable.get(m);            
             String mZeroPadded = String.format("%04d", m);
             
-            results += mZeroPadded+" - "+descriptor+": " + ((prediction) ? "Branch Predicted" : "Branch Not Predicted")+"\n";
+            int count = branchCountTable.get(m);
+            int accurate = branchAccuracyTable.get(m);
+            int accuracy = 0;
+            if(count>0){
+                accuracy = (int)Math.round((double)accurate/(double)count*100.0);
+            }
+            
+            results += mZeroPadded+" - "+descriptor+": " + ((prediction) ? "Branch Predicted" : "No Branch           ")+" "+accuracy+"%\n";
         }
         
         return results;
