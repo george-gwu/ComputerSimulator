@@ -106,7 +106,8 @@ public class OperatorConsole implements Runnable {
         Font font = new Font("Verdana", Font.BOLD, 14);
         title.setFont(font);
         title.setForeground(Color.BLACK);
-        labelHolder.add(title);        
+        labelHolder.add(title);    
+        
   
         // Create grid bag layout to achieve the ability of modifying the size of its
         // child elements (for example: right pane)
@@ -121,6 +122,20 @@ public class OperatorConsole implements Runnable {
         c.gridy = 0;
         c.weighty = 2;
         mainWindow.add(labelHolder, c);  
+        
+        // prediction label
+        JPanel labelPreditionHolder = new JPanel();
+        // create title
+        JLabel labelPreditionTitle = new JLabel("Branch Prediction:");
+        labelPreditionTitle.setFont(font);
+        labelPreditionTitle.setForeground(Color.BLACK);
+        labelPreditionHolder.add(labelPreditionTitle);  
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 3;
+        c.gridy = 0;
+        c.weighty = 2;
+        mainWindow.add(labelPreditionHolder, c);  
+        
         
         // create grid layout - each component/register will be placed as a separate line
         GridLayout leftLayout = new GridLayout(14, 1, 15, 4);
@@ -217,10 +232,10 @@ public class OperatorConsole implements Runnable {
         // add center panel to main window
         mainWindow.add(centerPanel, c);  
         
-        
+        //TODO: most likely the code below will be removed
+        /*
         JLabel branchPredictionLabel  = new JLabel();
         branchPredictionLabel.setText("Branch Prediction:");
-     
         
         // add text area for console printer 
         branchPredictionOutput = new JTextArea(15, 20);
@@ -229,15 +244,18 @@ public class OperatorConsole implements Runnable {
         
         rightPanel.add(branchPredictionLabel);
         rightPanel.add(branchScrollPane);
+       */
+ 
+        // add prediction panel to right panel first
         
-        // allows to apply size, padding etc.
+        branchPredictionOutput = new JTextArea(15, 20);
+        branchPredictionOutput.setEditable(false);  
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 2;
+        c.gridx = 3;
         c.gridy = 1;
-        c.insets = new Insets(10,10,10,10);  // padding so it looks nicer
-        
-        
-        // add right panel to main window
+        c.insets = new Insets(5,0,10,10); 
+        // and then add right panel to main window
+        rightPanel.add(branchPredictionOutput);
         mainWindow.add(rightPanel, c);
         
         // add bottom panel
