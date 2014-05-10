@@ -21,7 +21,6 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -99,58 +98,48 @@ public class OperatorConsole implements Runnable {
         // Create the bottom pane
         bottomPanel = new JPanel();       
         
-        // create panel to hold all components
+        // Create Grids
+        
+        // Create grid bag layout to achieve the ability to organize elements
+        GridBagLayout layout = new GridBagLayout();                     
+        //layout.setVgap(1);
+        mainWindow.setLayout(layout);
+        
+        // create grid layout for left panel
+        GridLayout leftLayout = new GridLayout(14, 1, 15, 4);
+        leftPanel.setLayout(leftLayout);
+
+        // create grid layout for center panel
+        GridLayout centerLayout = new GridLayout(2, 1);
+        centerPanel.setLayout(centerLayout);
+        
+        // create grid layout for right panel
+        GridLayout rightLayout = new GridLayout(2, 1);
+        rightPanel.setLayout(rightLayout);
+        
+        // create top label panel for simulator 
         JPanel labelHolder = new JPanel();
-        // create title
         JLabel title = new JLabel("Operator Console");
         Font font = new Font("Verdana", Font.BOLD, 14);
         title.setFont(font);
         title.setForeground(Color.BLACK);
         labelHolder.add(title);    
-        
-  
-        // Create grid bag layout to achieve the ability of modifying the size of its
-        // child elements (for example: right pane)
-        GridBagLayout layout = new GridBagLayout();                     // Grid Bag Layout
-        //layout.setVgap(1);
-        mainWindow.setLayout(layout);
-        
-         // add labelHolder panel to main window
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 0;
-        c.weighty = 2;
         mainWindow.add(labelHolder, c);  
         
-        // prediction label
+        // create top label panel for prediction 
         JPanel labelPreditionHolder = new JPanel();
-        // create title
         JLabel labelPreditionTitle = new JLabel("Branch Prediction:");
         labelPreditionTitle.setFont(font);
         labelPreditionTitle.setForeground(Color.BLACK);
         labelPreditionHolder.add(labelPreditionTitle);  
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 3;
         c.gridy = 0;
-        c.weighty = 2;
         mainWindow.add(labelPreditionHolder, c);  
         
-        
-        // create grid layout - each component/register will be placed as a separate line
-        GridLayout leftLayout = new GridLayout(14, 1, 15, 4);
-        leftPanel.setLayout(leftLayout);
-
-        // create grid layout - it will hold the numberic pad
-        GridLayout centerLayout = new GridLayout(2, 1);
-        centerPanel.setLayout(centerLayout);
-        
-        // create grid layout - it will hold the numberic pad
-        GridLayout rightLayout = new GridLayout(2, 1);
-        rightPanel.setLayout(rightLayout);
-        
-        
-
         // Create simulator components and initialize the initial state         
         try {
             createComponent("R0", true);
@@ -173,18 +162,58 @@ public class OperatorConsole implements Runnable {
         } catch (Exception err) {
             System.out.println("Error: " + err);
         }
-        
-        // add left panel to main window
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 1;
-        c.insets = new Insets(0,0,0,0);  // padding 
+        c.insets = new Insets(0,0,0,0);  
+        // add left panel to main window
         mainWindow.add(leftPanel, c);
 
+        
+        // add text area for console printer 
+        
+        JTextArea guiTextPrinter = new JTextArea(15, 20);
+        JScrollPane scrollPane = new JScrollPane(guiTextPrinter);
+        centerPanel.add(scrollPane);
+        ConsolePrinter consolePrinter = (ConsolePrinter)computer.getIO().getDevice(InputOutputController.DEVICE_CONSOLEPRINTER);
+        guiTextPrinter.setEditable(false);
+        consolePrinter.setDisplay(guiTextPrinter);
+        
+        // add numeric pad component to right pane
+        
+        PadComposite pad = new PadComposite(computer);
+        pad.createComposite();
+        centerPanel.add(pad.getGUI());
+        c.gridx = 1;
+        c.gridy = 1;
+        c.insets = new Insets(10,10,10,10);  
+        // add center panel to main window
+        mainWindow.add(centerPanel, c);  
+        
+        // add prediction panel to right panel 
+        
+        branchPredictionOutput = new JTextArea(15, 20);
+        branchPredictionOutput.setEditable(false);  
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 3;
+        c.gridy = 1;
+        c.insets = new Insets(5,0,10,10); 
+        // add right panel to main window
+        rightPanel.add(branchPredictionOutput);
+        mainWindow.add(rightPanel, c);
+        
+        // bottom panel
+        
         input = new DataEntryComposite(20, "Input");
         bottomPanel.add(input.getGUI());        // add to bottom
-
-        // create button panel with all buttons
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 0;
+        c.gridy = 3;
+        c.insets = new Insets(0,0,0,0);  // padding so it looks nicer
+        c.gridwidth = 4;
+        mainWindow.add(bottomPanel, c);
+        
+        // button panel with all buttons
+        
         JPanel buttonPanel = new JPanel();
         // create buttons
         JButton start = new JButton("IPL");
@@ -192,7 +221,6 @@ public class OperatorConsole implements Runnable {
         JButton deposit = new JButton("Deposit");
         JButton go = new JButton("Go");
         JButton halt = new JButton("Halt");
-        
         buttonPanel.add(start);
         buttonPanel.add(load);
         buttonPanel.add(deposit);
@@ -209,67 +237,10 @@ public class OperatorConsole implements Runnable {
         buttonPanel.add(spinner);
         buttonPanel.add(go);
         buttonPanel.add(halt);       
-        
-        // add text area for console printer 
-        JTextArea guiTextPrinter = new JTextArea(15, 20);
-        JScrollPane scrollPane = new JScrollPane(guiTextPrinter);
-        centerPanel.add(scrollPane);
-        ConsolePrinter consolePrinter = (ConsolePrinter)computer.getIO().getDevice(InputOutputController.DEVICE_CONSOLEPRINTER);
-        guiTextPrinter.setEditable(false);
-        consolePrinter.setDisplay(guiTextPrinter);
-        
-        // add numeric pad component to right pane
-        PadComposite pad = new PadComposite(computer);
-        pad.createComposite();
-        centerPanel.add(pad.getGUI());
-        
-        // allows to apply size, padding etc.
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 1;
-        c.gridy = 1;
-        c.insets = new Insets(10,10,10,10);  // padding so it looks nicer
-        
-        // add center panel to main window
-        mainWindow.add(centerPanel, c);  
-        
-        //TODO: most likely the code below will be removed
-        /*
-        JLabel branchPredictionLabel  = new JLabel();
-        branchPredictionLabel.setText("Branch Prediction:");
-        
-        // add text area for console printer 
-        branchPredictionOutput = new JTextArea(15, 20);
-        JScrollPane branchScrollPane = new JScrollPane(branchPredictionOutput);
-        branchPredictionOutput.setEditable(false);        
-        
-        rightPanel.add(branchPredictionLabel);
-        rightPanel.add(branchScrollPane);
-       */
- 
-        // add prediction panel to right panel first
-        
-        branchPredictionOutput = new JTextArea(15, 20);
-        branchPredictionOutput.setEditable(false);  
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 3;
-        c.gridy = 1;
-        c.insets = new Insets(5,0,10,10); 
-        // and then add right panel to main window
-        rightPanel.add(branchPredictionOutput);
-        mainWindow.add(rightPanel, c);
-        
-        // add bottom panel
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 0;
-        c.gridy = 2;
-        c.insets = new Insets(0,0,0,0);  // padding so it looks nicer
-        c.gridwidth = 2;
-        mainWindow.add(bottomPanel, c);
-        
         // add button panel to Main window
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 4;
         mainWindow.add(buttonPanel, c);
         
         // add listeners
