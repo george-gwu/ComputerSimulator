@@ -167,7 +167,6 @@ public class OperatorConsole implements Runnable {
         c.insets = new Insets(0,0,0,0);  
         // add left panel to main window
         mainWindow.add(leftPanel, c);
-
         
         // add text area for console printer 
         
@@ -191,24 +190,22 @@ public class OperatorConsole implements Runnable {
         
         // add prediction panel to right panel 
         
-        branchPredictionOutput = new JTextArea(15, 20);
+        branchPredictionOutput = new JTextArea(15, 30);
         branchPredictionOutput.setEditable(false);  
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridx = 3;
+         c.gridx = 3;
         c.gridy = 1;
         c.insets = new Insets(5,0,10,10); 
         // add right panel to main window
         rightPanel.add(branchPredictionOutput);
         mainWindow.add(rightPanel, c);
         
-        // bottom panel
-        
+        // bottom/input panel
+
         input = new DataEntryComposite(20, "Input");
-        bottomPanel.add(input.getGUI());        // add to bottom
-        c.fill = GridBagConstraints.HORIZONTAL;
+        bottomPanel.add(input.getGUI());        
         c.gridx = 0;
         c.gridy = 3;
-        c.insets = new Insets(0,0,0,0);  // padding so it looks nicer
+        c.insets = new Insets(0,0,0,0);  
         c.gridwidth = 4;
         mainWindow.add(bottomPanel, c);
         
@@ -238,7 +235,6 @@ public class OperatorConsole implements Runnable {
         buttonPanel.add(go);
         buttonPanel.add(halt);       
         // add button panel to Main window
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 4;
         mainWindow.add(buttonPanel, c);
