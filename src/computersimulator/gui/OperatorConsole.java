@@ -50,7 +50,7 @@ import javax.swing.event.ChangeListener;
  * Numeric pad 
  */
 
-public class OperatorConsole implements Runnable {
+public class OperatorConsole implements Runnable {    
 
     private Computer computer;
 
@@ -62,13 +62,11 @@ public class OperatorConsole implements Runnable {
 
     private JFrame mainWindow;
 
-    private JPanel leftPanel;
+    private JPanel leftPanel, centerPanel, rightPanel;    
     
-    private JPanel rightPanel;
+    private JTextArea branchPredictionOutput;
     
-    private JPanel bottomPanel;
-    
-    private JLabel runLight;
+    private JPanel bottomPanel;    
 
     public void setComputer(Computer computer) {
         this.computer = computer;
@@ -77,7 +75,6 @@ public class OperatorConsole implements Runnable {
     public void createComponent(String name, boolean edit) throws Exception {
         DataDisplayComposite widget = new DataDisplayComposite(this.computer, name, edit);
         this.displayComponents.put(name, widget);
-        //mainWindow.add(widget.getGUI());
         leftPanel.add((widget.getGUI()));
 
     }
@@ -94,10 +91,13 @@ public class OperatorConsole implements Runnable {
         leftPanel = new JPanel();
 
         // Create the right pane
+        centerPanel = new JPanel(); 
+        
+        // Create the right pane
         rightPanel = new JPanel(); 
         
         // Create the bottom pane
-        bottomPanel = new JPanel();
+        bottomPanel = new JPanel();       
         
         // create panel to hold all components
         JPanel labelHolder = new JPanel();
@@ -106,17 +106,7 @@ public class OperatorConsole implements Runnable {
         Font font = new Font("Verdana", Font.BOLD, 14);
         title.setFont(font);
         title.setForeground(Color.BLACK);
-        labelHolder.add(title);
-        
-        JLabel running = new JLabel("Running:");        
-        labelHolder.add(new JSeparator(SwingConstants.VERTICAL));
-        labelHolder.add(running);
-        runLight = new JLabel();
-        runLight.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-        runLight.setBackground(Color.cyan);
-        runLight.setOpaque(true);
-        runLight.setPreferredSize(new Dimension(15, 15));
-        labelHolder.add(runLight);
+        labelHolder.add(title);        
   
         // Create grid bag layout to achieve the ability of modifying the size of its
         // child elements (for example: right pane)
@@ -137,8 +127,14 @@ public class OperatorConsole implements Runnable {
         leftPanel.setLayout(leftLayout);
 
         // create grid layout - it will hold the numberic pad
+        GridLayout centerLayout = new GridLayout(2, 1);
+        centerPanel.setLayout(centerLayout);
+        
+        // create grid layout - it will hold the numberic pad
         GridLayout rightLayout = new GridLayout(2, 1);
         rightPanel.setLayout(rightLayout);
+        
+        
 
         // Create simulator components and initialize the initial state         
         try {
@@ -181,7 +177,6 @@ public class OperatorConsole implements Runnable {
         JButton deposit = new JButton("Deposit");
         JButton go = new JButton("Go");
         JButton halt = new JButton("Halt");
-        JButton console = new JButton("Engineer Console");
         
         buttonPanel.add(start);
         buttonPanel.add(load);
@@ -198,21 +193,12 @@ public class OperatorConsole implements Runnable {
         field.setPreferredSize(prefSize);        
         buttonPanel.add(spinner);
         buttonPanel.add(go);
-        buttonPanel.add(halt);
-        buttonPanel.add(console);
+        buttonPanel.add(halt);       
         
-        // engineer console button
-        console.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    new FieldEngineerConsole().getJFrame();
-                }
-        });
-       
         // add text area for console printer 
         JTextArea guiTextPrinter = new JTextArea(15, 20);
         JScrollPane scrollPane = new JScrollPane(guiTextPrinter);
-        rightPanel.add(scrollPane);
+        centerPanel.add(scrollPane);
         ConsolePrinter consolePrinter = (ConsolePrinter)computer.getIO().getDevice(InputOutputController.DEVICE_CONSOLEPRINTER);
         guiTextPrinter.setEditable(false);
         consolePrinter.setDisplay(guiTextPrinter);
@@ -220,7 +206,7 @@ public class OperatorConsole implements Runnable {
         // add numeric pad component to right pane
         PadComposite pad = new PadComposite(computer);
         pad.createComposite();
-        rightPanel.add(pad.getGUI());
+        centerPanel.add(pad.getGUI());
         
         // allows to apply size, padding etc.
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -228,8 +214,31 @@ public class OperatorConsole implements Runnable {
         c.gridy = 1;
         c.insets = new Insets(10,10,10,10);  // padding so it looks nicer
         
+        // add center panel to main window
+        mainWindow.add(centerPanel, c);  
+        
+        
+        JLabel branchPredictionLabel  = new JLabel();
+        branchPredictionLabel.setText("Branch Prediction:");
+     
+        
+        // add text area for console printer 
+        branchPredictionOutput = new JTextArea(15, 20);
+        JScrollPane branchScrollPane = new JScrollPane(branchPredictionOutput);
+        branchPredictionOutput.setEditable(false);        
+        
+        rightPanel.add(branchPredictionLabel);
+        rightPanel.add(branchScrollPane);
+        
+        // allows to apply size, padding etc.
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 2;
+        c.gridy = 1;
+        c.insets = new Insets(10,10,10,10);  // padding so it looks nicer
+        
+        
         // add right panel to main window
-        mainWindow.add(rightPanel, c);   
+        mainWindow.add(rightPanel, c);
         
         // add bottom panel
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -417,9 +426,9 @@ public class OperatorConsole implements Runnable {
         for (Map.Entry<String, DataDisplayComposite> el : displayComponents.entrySet()) {
             DataDisplayComposite widget = el.getValue();
             widget.updateDisplay();
-        }
-        
-        runLight.setBackground((computer.getCpu().isRunning() ? Color.CYAN : Color.GRAY));
+            
+            branchPredictionOutput.setText(computer.getCpu().getBranchPredictor().getPredictionTableForTextArea());
+        }        
     }
 
 }

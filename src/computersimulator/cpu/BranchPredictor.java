@@ -62,7 +62,7 @@ public class BranchPredictor {
             Boolean prediction = branchHistoryTable.get(m);            
             String mZeroPadded = String.format("%04d", m);
             
-            results += mZeroPadded+"("+descriptor+"): " + ((prediction) ? "Branch Predicted" : "Branch Not Predicted")+"\n";
+            results += mZeroPadded+" - "+descriptor+": " + ((prediction) ? "Branch Predicted" : "Branch Not Predicted")+"\n";
         }
         
         return results;
