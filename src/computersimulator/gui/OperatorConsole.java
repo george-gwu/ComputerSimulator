@@ -223,7 +223,7 @@ public class OperatorConsole implements Runnable {
         buttonPanel.add(deposit);
         buttonPanel.add(new JSeparator(SwingConstants.VERTICAL));
         
-        SpinnerListModel model = new SpinnerListModel(new String[] {"Microstep", "Step", "Run"});
+        SpinnerListModel model = new SpinnerListModel(new String[] {"Step", "Run"});
         final JSpinner spinner = new JSpinner(model);        
         JComponent field = ((JSpinner.DefaultEditor) spinner.getEditor());
         Dimension prefSize = field.getPreferredSize();
@@ -311,11 +311,11 @@ public class OperatorConsole implements Runnable {
                             
                             
                             switch(computer.getRunmode()){
-                                case Computer.RUNMODE_MICROSTEP: // runs one micro instruction
-                                    computer.getCpu().setRunning(true);
-                                    computer.clockCycle();
-                                    publish();
-                                    break;
+//                                case Computer.RUNMODE_MICROSTEP: // runs one micro instruction
+//                                    computer.getCpu().setRunning(true);
+//                                    computer.clockCycle();
+//                                    publish();
+//                                    break;
                                 case Computer.RUNMODE_STEP: // runs until instruction complete
                                     computer.getCpu().setRunning(true);
                                     do {
