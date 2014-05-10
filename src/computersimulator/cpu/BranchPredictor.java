@@ -49,6 +49,12 @@ public class BranchPredictor {
         branchDescriptorTable.put(pcRaw, descriptor);
     }
     
+    public void setInitialStatus(int pcRaw){
+        if(!branchHistoryTable.containsKey(pcRaw)){
+            branchHistoryTable.put(pcRaw, BranchPredictor.BRANCH_TAKEN); 
+        }
+    }
+    
     /**
      * Get the branch prediction table
      * @return
@@ -86,19 +92,19 @@ public class BranchPredictor {
             switch(opcode){
                 case ControlUnit.OPCODE_JCC:
                     this.setBranchDescriptor(m, "JCC");
-                    this.branchTaken(m);
+                    this.setInitialStatus(m);
                     break;
                 case ControlUnit.OPCODE_JNE:
                     this.setBranchDescriptor(m, "JNE");
-                    this.branchTaken(m);
+                    this.setInitialStatus(m);
                     break;
                 case ControlUnit.OPCODE_JGE:                
                     this.setBranchDescriptor(m, "JGE");                  
-                    this.branchTaken(m);
+                    this.setInitialStatus(m);
                     break;
                 case ControlUnit.OPCODE_SOB:
                     this.setBranchDescriptor(m, "SOB");             
-                    this.branchTaken(m);                                        
+                    this.setInitialStatus(m);                                        
                     break;                
             }
             

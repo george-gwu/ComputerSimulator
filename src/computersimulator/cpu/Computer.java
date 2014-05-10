@@ -132,6 +132,12 @@ public class Computer implements IClockCycle {
             }
         }
         
+        try {
+            this.getCpu().getBranchPredictor().scanMemory();
+        } catch (MachineFaultException ex) {
+            Logger.getLogger(Computer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         //Transfer Control to ROM Bootloader
         this.getCpu().getControlUnit().setProgramCounter(new Unit(13, 10)); // Start at 10        
         this.cpu.setRunning(true);          
